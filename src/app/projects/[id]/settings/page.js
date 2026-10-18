@@ -168,8 +168,8 @@ function ProjectSettingsContent() {
     return (
       <ProtectedRoute>
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5] mb-2" />
-          <p className="text-xs text-[#64748B] font-medium">Loading...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-2" />
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading...</p>
         </div>
       </ProtectedRoute>
     );
@@ -179,15 +179,15 @@ function ProjectSettingsContent() {
     return (
       <ProtectedRoute>
         <div className="mx-auto max-w-lg px-4 py-16 text-center">
-          <ShieldAlert className="mx-auto h-12 w-12 text-[#DC2626]" />
-          <h2 className="mt-3 text-lg font-bold text-[#0F172A]">{t("project.accessDenied")}</h2>
-          <p className="mt-1 text-xs text-[#64748B]">
+          <ShieldAlert className="mx-auto h-12 w-12 text-rose-500" />
+          <h2 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">{t("project.accessDenied")}</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {t("project.accessDeniedSub")}
           </p>
           <div className="mt-6">
             <Link
               href={`/projects/${projectId}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#4F46E5] px-4 py-2 text-xs font-semibold text-white"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-semibold text-white shadow-sm transition"
             >
               <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> {t("settings.backToTasks")}
             </Link>
@@ -203,40 +203,40 @@ function ProjectSettingsContent() {
         {/* Navigation */}
         <Link
           href={`/projects/${projectId}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#64748B] hover:text-[#4F46E5]"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
         >
           <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" /> {t("settings.backToTasks")}
         </Link>
 
         {/* Page Header */}
-        <div className="border-b border-[#E2E8F0] pb-4">
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#0F172A] flex items-center gap-2.5">
-            <Settings className="h-6 w-6 text-[#4F46E5]" /> {t("settings.title")}
+        <div className="border-b border-slate-200 dark:border-[#262632] pb-4">
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+            <Settings className="h-6 w-6 text-blue-500" /> {t("settings.title")}
           </h1>
-          <p className="mt-1 text-xs text-[#64748B]">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {t("settings.subtitle")}
           </p>
         </div>
 
         {/* 1. General Settings Form */}
-        <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-2xs">
-          <h2 className="text-base font-bold text-[#0F172A]">{t("settings.generalInfo")}</h2>
-          <p className="text-xs text-[#64748B]">{t("settings.generalInfoSub")}</p>
+        <div className="rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-6 shadow-xs">
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">{t("settings.generalInfo")}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{t("settings.generalInfoSub")}</p>
 
           {updateError && (
-            <div className="mt-3 rounded-xl bg-[#FEF2F2] p-3 text-xs font-semibold text-[#DC2626] border border-[#FECACA]">
+            <div className="mt-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
               {updateError}
             </div>
           )}
           {updateSuccess && (
-            <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-[#ECFDF5] p-3 text-xs font-semibold text-[#15803D] border border-[#BBF7D0]">
+            <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 p-3 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">
               <Check className="h-4 w-4" /> {t("settings.updatedSuccess")}
             </div>
           )}
 
           <form onSubmit={handleUpdateProject} className="mt-4 space-y-4">
             <div>
-              <label htmlFor="settings-name" className="block text-xs font-bold text-[#0F172A]">
+              <label htmlFor="settings-name" className="block text-xs font-bold text-slate-900 dark:text-slate-200">
                 {t("settings.nameLabel")} *
               </label>
               <input
@@ -247,12 +247,12 @@ function ProjectSettingsContent() {
                 maxLength={80}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] px-3.5 py-2.5 text-sm focus:border-[#4F46E5] focus:outline-none"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
               />
             </div>
 
             <div>
-              <label htmlFor="settings-desc" className="block text-xs font-bold text-[#0F172A]">
+              <label htmlFor="settings-desc" className="block text-xs font-bold text-slate-900 dark:text-slate-200">
                 {t("settings.descLabel")}
               </label>
               <textarea
@@ -261,7 +261,7 @@ function ProjectSettingsContent() {
                 maxLength={1000}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] px-3.5 py-2.5 text-sm focus:border-[#4F46E5] focus:outline-none"
+                className="mt-1.5 w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
               />
             </div>
 
@@ -269,7 +269,7 @@ function ProjectSettingsContent() {
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="flex items-center gap-2 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
               >
                 {isUpdating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {t("settings.saveChanges")}
@@ -279,12 +279,12 @@ function ProjectSettingsContent() {
         </div>
 
         {/* 2. Team Membership Management */}
-        <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-2xs">
+        <div className="rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-6 shadow-xs">
           <div>
-            <h2 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
-              <Users className="h-5 w-5 text-[#4F46E5]" /> {t("settings.teamMembers")} ({members.length})
+            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Users className="h-5 w-5 text-blue-500" /> {t("settings.teamMembers")} ({members.length})
             </h2>
-            <p className="text-xs text-[#64748B]">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {t("settings.teamMembersSub")}
             </p>
           </div>
@@ -296,13 +296,13 @@ function ProjectSettingsContent() {
                 placeholder={t("settings.addEmailPlaceholder")}
                 value={newMemberEmail}
                 onChange={(e) => setNewMemberEmail(e.target.value)}
-                className="w-full rounded-xl border border-[#E2E8F0] px-3.5 py-2 text-sm placeholder-[#94A3B8] focus:border-[#4F46E5] focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] px-3.5 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
               />
             </div>
             <button
               type="submit"
               disabled={isAddingMember}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
             >
               {isAddingMember ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
               {t("settings.addMember")}
@@ -310,28 +310,28 @@ function ProjectSettingsContent() {
           </form>
 
           {memberError && (
-            <div className="mt-3 rounded-xl bg-[#FEF2F2] p-3 text-xs font-semibold text-[#DC2626] border border-[#FECACA]">
+            <div className="mt-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
               {memberError}
             </div>
           )}
           {memberSuccess && (
-            <div className="mt-3 rounded-xl bg-[#ECFDF5] p-3 text-xs font-semibold text-[#15803D] border border-[#BBF7D0]">
+            <div className="mt-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 p-3 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">
               {memberSuccess}
             </div>
           )}
 
           {/* Members List with Design System badges */}
-          <div className="mt-5 divide-y divide-[#F1F5F9] rounded-xl border border-[#E2E8F0]">
+          <div className="mt-5 divide-y divide-slate-100 dark:divide-[#22222E] rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#121217]">
             {members.map((member) => {
               const isMemberOwner = member.uid === project.ownerId;
               return (
                 <div key={member.uid} className="flex items-center justify-between p-3.5">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EEF2FF] text-xs font-bold text-[#4F46E5]">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-500">
                       {member.displayName?.charAt(0)?.toUpperCase() || "U"}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-[#0F172A] flex items-center gap-2">
+                      <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <span>{member.displayName || "User"}</span>
                         {isMemberOwner && (
                           <span className="badge-owner inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold">
@@ -339,7 +339,7 @@ function ProjectSettingsContent() {
                           </span>
                         )}
                       </p>
-                      <p className="text-[11px] text-[#64748B]">{member.email}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{member.email}</p>
                     </div>
                   </div>
 
@@ -347,7 +347,7 @@ function ProjectSettingsContent() {
                     <button
                       type="button"
                       onClick={() => handleRemoveMember(member.uid)}
-                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[#DC2626] hover:bg-[#FEF2F2]"
+                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
                       title={t("settings.remove")}
                     >
                       <UserMinus className="h-3.5 w-3.5" /> {t("settings.remove")}
@@ -360,16 +360,16 @@ function ProjectSettingsContent() {
         </div>
 
         {/* 3. Danger Zone */}
-        <div className="rounded-2xl border border-[#FECACA] bg-[#FEF2F2]/40 p-6 shadow-2xs">
-          <h2 className="text-base font-bold text-[#DC2626]">{t("settings.dangerZone")}</h2>
-          <p className="text-xs text-[#DC2626]/80 mt-1">
+        <div className="rounded-2xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/40 dark:bg-rose-950/20 p-6 shadow-xs">
+          <h2 className="text-base font-bold text-rose-600 dark:text-rose-400">{t("settings.dangerZone")}</h2>
+          <p className="text-xs text-rose-600/80 dark:text-rose-400/80 mt-1">
             {t("settings.dangerZoneSub")}
           </p>
           <div className="mt-4">
             <button
               type="button"
               onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-2 rounded-xl bg-[#DC2626] hover:bg-rose-700 px-4 py-2 text-xs font-bold text-white shadow-sm transition"
+              className="flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-sm transition"
             >
               <Trash2 className="h-4 w-4" /> {t("settings.deleteProject")}
             </button>
@@ -378,18 +378,18 @@ function ProjectSettingsContent() {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-2xs">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-[#E2E8F0] text-center">
-              <Trash2 className="mx-auto h-10 w-10 text-[#DC2626] mb-2" />
-              <h3 className="text-lg font-bold text-[#0F172A]">{t("settings.deleteModalTitle")} &quot;{project.name}&quot;?</h3>
-              <p className="mt-2 text-xs text-[#64748B]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+            <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#16161C] p-6 shadow-2xl border border-slate-200 dark:border-[#262632] text-center">
+              <Trash2 className="mx-auto h-10 w-10 text-rose-500 mb-2" />
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t("settings.deleteModalTitle")} &quot;{project.name}&quot;?</h3>
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                 {t("settings.deleteModalSub")}
               </p>
               <div className="mt-6 flex items-center justify-center gap-3">
                 <button
                   type="button"
                   onClick={() => setShowDeleteModal(false)}
-                  className="rounded-xl border border-[#E2E8F0] bg-white px-4 py-2 text-xs font-bold text-[#0F172A] hover:bg-[#F1F5F9]"
+                  className="rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#1F1F28] px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#282836] transition"
                 >
                   {t("taskModal.cancel")}
                 </button>
@@ -397,7 +397,7 @@ function ProjectSettingsContent() {
                   type="button"
                   disabled={isDeletingProject}
                   onClick={handleDeleteProject}
-                  className="flex items-center gap-1.5 rounded-xl bg-[#DC2626] hover:bg-rose-700 px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50"
+                  className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
                 >
                   {isDeletingProject && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   {t("settings.confirmDelete")}

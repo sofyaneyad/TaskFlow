@@ -19,48 +19,40 @@ export default function FilterBar({
 }) {
   const { t } = useLanguage();
 
-  const hasActiveFilters =
-    searchQuery ||
-    statusFilter !== "all" ||
-    priorityFilter !== "all" ||
-    assigneeFilter !== "all" ||
-    overdueOnly;
-
   return (
-    <div className="rounded-2xl border border-[#E2E8F0] bg-white p-4 shadow-2xs space-y-3">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        {/* Search Input */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+    <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-4 shadow-xs">
+      {/* Top Search Bar & Overdue Filter */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("filter.searchPlaceholder")}
-            className="w-full rounded-xl border border-[#E2E8F0] bg-white py-2 pl-9 rtl:pl-3 rtl:pr-9 pr-3 text-xs placeholder-[#94A3B8] focus:border-[#4F46E5] focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
-            aria-label="Search tasks"
+            className="w-full rounded-xl border border-slate-200 dark:border-[#2A2A38] bg-slate-50 dark:bg-[#111116] py-2 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none transition"
           />
         </div>
 
-        {/* Live Exercise Feature: Overdue Tasks Toggle */}
+        {/* Overdue Button */}
         <button
           type="button"
           onClick={() => setOverdueOnly(!overdueOnly)}
-          className={`flex items-center justify-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition border ${
+          className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition shrink-0 ${
             overdueOnly
-              ? "bg-[#DC2626] text-white border-[#DC2626] shadow-sm"
-              : "border-[#E2E8F0] bg-white text-[#DC2626] hover:bg-[#FEF2F2]"
+              ? "bg-red-600 text-white border-red-600 shadow-sm"
+              : "border-slate-200 dark:border-[#2A2A38] bg-white dark:bg-[#16161C] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
           }`}
           aria-pressed={overdueOnly}
         >
-          <AlertTriangle className={`h-3.5 w-3.5 ${overdueOnly ? "text-white" : "text-[#DC2626]"}`} />
-          {t("filter.overdueOnly")}
+          <AlertTriangle className={`h-3.5 w-3.5 ${overdueOnly ? "text-white" : "text-red-500"}`} />
+          <span>{t("filter.overdueOnly")}</span>
         </button>
       </div>
 
       {/* Dropdown Filters */}
-      <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#F8FAFC]">
-        <span className="flex items-center gap-1 text-xs font-semibold text-[#64748B] mr-1 rtl:mr-0 rtl:ml-1">
+      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 dark:border-[#22222B]">
+        <span className="flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-[#8E8E9F] mr-1 rtl:mr-0 rtl:ml-1">
           <Filter className="h-3.5 w-3.5" /> {t("filter.filters")}:
         </span>
 
@@ -68,7 +60,7 @@ export default function FilterBar({
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-xl border border-[#E2E8F0] bg-white px-2.5 py-1.5 text-xs font-medium text-[#0F172A] focus:border-[#4F46E5] focus:outline-none"
+          className="rounded-xl border border-slate-200 dark:border-[#2A2A38] bg-slate-50 dark:bg-[#14141A] px-2.5 py-1.5 text-xs font-medium text-slate-800 dark:text-slate-200 focus:border-blue-500 focus:outline-none"
           aria-label="Filter by status"
         >
           <option value="all">{t("filter.statusAll")}</option>
@@ -82,7 +74,7 @@ export default function FilterBar({
         <select
           value={priorityFilter}
           onChange={(e) => setPriorityFilter(e.target.value)}
-          className="rounded-xl border border-[#E2E8F0] bg-white px-2.5 py-1.5 text-xs font-medium text-[#0F172A] focus:border-[#4F46E5] focus:outline-none"
+          className="rounded-xl border border-slate-200 dark:border-[#2A2A38] bg-slate-50 dark:bg-[#14141A] px-2.5 py-1.5 text-xs font-medium text-slate-800 dark:text-slate-200 focus:border-blue-500 focus:outline-none"
           aria-label="Filter by priority"
         >
           <option value="all">{t("filter.priorityAll")}</option>
@@ -95,7 +87,7 @@ export default function FilterBar({
         <select
           value={assigneeFilter}
           onChange={(e) => setAssigneeFilter(e.target.value)}
-          className="rounded-xl border border-[#E2E8F0] bg-white px-2.5 py-1.5 text-xs font-medium text-[#0F172A] focus:border-[#4F46E5] focus:outline-none"
+          className="rounded-xl border border-slate-200 dark:border-[#2A2A38] bg-slate-50 dark:bg-[#14141A] px-2.5 py-1.5 text-xs font-medium text-slate-800 dark:text-slate-200 focus:border-blue-500 focus:outline-none"
           aria-label="Filter by assignee"
         >
           <option value="all">{t("filter.assigneeAll")}</option>
@@ -107,14 +99,15 @@ export default function FilterBar({
           ))}
         </select>
 
-        {/* Reset Filters */}
-        {hasActiveFilters && (
+        {/* Reset button */}
+        {(searchQuery || statusFilter !== "all" || priorityFilter !== "all" || assigneeFilter !== "all" || overdueOnly) && (
           <button
             type="button"
             onClick={onReset}
-            className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] transition"
+            className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#202028] transition"
           >
-            <RotateCcw className="h-3 w-3" /> {t("filter.reset")}
+            <RotateCcw className="h-3 w-3" />
+            <span>{t("filter.reset")}</span>
           </button>
         )}
       </div>

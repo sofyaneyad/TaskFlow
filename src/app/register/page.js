@@ -85,23 +85,33 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-8 shadow-sm">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-sm">
-            <CheckSquare className="h-6 w-6" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 dark:bg-[#1E1E26] border border-slate-700 dark:border-[#2F2F3B] shadow-sm">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-6 w-6 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </div>
-          <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
+          <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-900 dark:text-white">
             {t("auth.registerTitle")}
           </h2>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {t("auth.registerSub")}
           </p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="rounded-lg bg-rose-50 p-3.5 text-xs font-semibold text-rose-700 border border-rose-200" role="alert">
+          <div className="rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3.5 text-xs font-semibold text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50" role="alert">
             {error}
           </div>
         )}
@@ -111,7 +121,7 @@ export default function RegisterPage() {
           type="button"
           onClick={handleGoogleSignUp}
           disabled={googleLoading || loading}
-          className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-xs hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 transition"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#1C1C24] px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-[#22222E] focus:outline-none disabled:opacity-50 transition"
         >
           {googleLoading ? (
             <Loader2 className="h-4 w-4 animate-spin text-slate-500" />
@@ -140,8 +150,8 @@ export default function RegisterPage() {
 
         {/* Divider */}
         <div className="relative flex items-center justify-center">
-          <div className="w-full border-t border-slate-200" />
-          <span className="bg-white px-3 text-[11px] font-medium uppercase tracking-wider text-slate-400">
+          <div className="w-full border-t border-slate-200 dark:border-[#262632]" />
+          <span className="bg-white dark:bg-[#16161C] px-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
             {t("auth.orRegisterEmail")}
           </span>
         </div>
@@ -150,7 +160,7 @@ export default function RegisterPage() {
         <form className="space-y-4" onSubmit={handleRegister}>
           {/* Name */}
           <div>
-            <label htmlFor="reg-name" className="block text-xs font-semibold text-slate-700">
+            <label htmlFor="reg-name" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
               {t("auth.fullName")} *
             </label>
             <div className="relative mt-1">
@@ -163,14 +173,14 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sarah Jenkins"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
               />
             </div>
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="reg-email" className="block text-xs font-semibold text-slate-700">
+            <label htmlFor="reg-email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
               {t("auth.emailLabel")} *
             </label>
             <div className="relative mt-1">
@@ -182,14 +192,14 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="sarah@example.com"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
               />
             </div>
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="reg-password" className="block text-xs font-semibold text-slate-700">
+            <label htmlFor="reg-password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
               {t("auth.passwordLabel")} *
             </label>
             <div className="relative mt-1">
@@ -202,14 +212,14 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
               />
             </div>
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="reg-confirm-password" className="block text-xs font-semibold text-slate-700">
+            <label htmlFor="reg-confirm-password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
               {t("auth.confirmPassword")} *
             </label>
             <div className="relative mt-1">
@@ -222,7 +232,7 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
               />
             </div>
           </div>
@@ -230,7 +240,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading || googleLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:opacity-50 transition"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50 transition"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -243,9 +253,9 @@ export default function RegisterPage() {
         </form>
 
         {/* Switch to Login */}
-        <div className="text-center text-xs text-slate-500">
+        <div className="text-center text-xs text-slate-500 dark:text-slate-400">
           {t("auth.alreadyAccount")}{" "}
-          <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <Link href="/login" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
             {t("auth.signInLink")}
           </Link>
         </div>

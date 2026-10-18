@@ -1,68 +1,77 @@
 "use client";
 
-import { FolderKanban, CheckCircle2, ListTodo, Users } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { FolderKanban, ListTodo, Clock, CheckCircle2, TrendingUp } from "lucide-react";
 
 export default function DashboardStats({ stats }) {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const isRTL = lang === "ar";
 
   const cards = [
     {
-      label: t("dashboard.totalProjects"),
-      value: stats?.totalProjects ?? 6,
-      subtext: `+2 ${t("dashboard.thisWeek")}`,
+      label: isRTL ? "إجمالي المشاريع" : "Total Projects",
+      value: stats?.totalProjects || 26,
+      trend: "+4",
+      subtext: isRTL ? "مقارنة بالشهر الماضي" : "vs last month",
       icon: FolderKanban,
-      color: "text-[#4F46E5]",
-      bgColor: "bg-[#EEF2FF]",
     },
     {
-      label: t("dashboard.activeTasks"),
-      value: stats ? (stats.todoTasks ?? 0) + (stats.inProgressTasks ?? 0) : 18,
-      subtext: `+4 ${t("dashboard.thisWeek")}`,
+      label: isRTL ? "إجمالي المهام" : "Total Tasks",
+      value: stats?.totalTasks || 10,
+      trend: "+2",
+      subtext: isRTL ? "مقارنة بالشهر الماضي" : "vs last month",
       icon: ListTodo,
-      color: "text-[#2563EB]",
-      bgColor: "bg-[#EFF6FF]",
     },
     {
-      label: t("dashboard.completedTasks"),
-      value: stats?.doneTasks ?? 24,
-      subtext: `+6 ${t("dashboard.thisWeek")}`,
+      label: isRTL ? "قيد المراجعة" : "In Reviews",
+      value: 27,
+      trend: "+13",
+      subtext: isRTL ? "مقارنة بالشهر الماضي" : "vs last month",
+      icon: Clock,
+    },
+    {
+      label: isRTL ? "المهام المكتملة" : "Completed Tasks",
+      value: stats?.doneTasks || 50,
+      trend: "+15",
+      subtext: isRTL ? "مقارنة بالشهر الماضي" : "vs last month",
       icon: CheckCircle2,
-      color: "text-[#15803D]",
-      bgColor: "bg-[#ECFDF5]",
-    },
-    {
-      label: t("dashboard.teamMembers"),
-      value: stats?.totalProjects > 0 ? stats.totalProjects * 2 + 2 : 8,
-      subtext: `+1 ${t("dashboard.thisWeek")}`,
-      icon: Users,
-      color: "text-[#0F172A]",
-      bgColor: "bg-[#F1F5F9]",
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card) => {
-        const Icon = card.icon;
         return (
           <div
             key={card.label}
-            className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-2xs transition hover:shadow-xs hover:border-[#CBD5E1]"
+            className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-5 shadow-xs transition hover:border-slate-300 dark:hover:border-[#353545]"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#64748B]">{card.label}</span>
-              <div className={`rounded-xl p-2 ${card.bgColor}`}>
-                <Icon className={`h-4 w-4 ${card.color}`} />
+            {/* Top row: Label + 3D card icon emblem */}
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-xs font-semibold text-slate-500 dark:text-[#8E8E9F]">
+                  {card.label}
+                </p>
+                <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                  {card.value}
+                </p>
+              </div>
+
+              {/* Embossed Card Emblem from Mockup */}
+              <div className="flex h-11 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2C2C38] shadow-inner shrink-0">
+                <div className="flex flex-col gap-1 w-5">
+                  <div className="h-1 w-full bg-slate-300 dark:bg-[#343444] rounded-full" />
+                  <div className="h-1 w-3/4 bg-slate-300 dark:bg-[#343444] rounded-full" />
+                </div>
               </div>
             </div>
-            <div className="mt-3">
-              <p className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
-                {card.value}
-              </p>
-              <p className="mt-1 text-[11px] font-semibold text-[#15803D]">
-                {card.subtext}
-              </p>
+
+            {/* Bottom trend row: ^ +X vs last month in green */}
+            <div className="mt-4 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-[#22C55E]">
+              <TrendingUp className="h-3 w-3" />
+              <span>
+                ^{card.trend} {card.subtext}
+              </span>
             </div>
           </div>
         );
