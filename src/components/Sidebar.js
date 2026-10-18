@@ -8,19 +8,9 @@ import TaskFlowLogo from "@/components/TaskFlowLogo";
 import {
   LayoutDashboard,
   FolderKanban,
-  Calendar,
-  Settings,
-  Search,
-  Sparkles,
-  LayoutTemplate,
-  Bell,
-  Inbox,
-  BarChart2,
-  HelpCircle,
-  Crown,
+  Plus,
   X,
   LogOut,
-  ChevronDown,
 } from "lucide-react";
 
 export default function Sidebar({ isOpen, onClose }) {
