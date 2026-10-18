@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
   updateProfile,
@@ -17,6 +19,7 @@ const AuthContext = createContext({
   loading: true,
   register: async () => {},
   login: async () => {},
+  loginWithGoogle: async () => {},
   logout: async () => {},
 });
 
@@ -122,6 +125,16 @@ export function AuthProvider({ children }) {
     return loggedUser;
   };
 
+  // FR-02 & US-02: Sign in with Google (Gmail)
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+    const userCredential = await signInWithPopup(auth, provider);
+    const loggedUser = userCredential.user;
+    await syncUserProfile(loggedUser);
+    return loggedUser;
+  };
+
   // FR-02 & US-02: Sign out user
   const logout = async () => {
     await signOut(auth);
@@ -137,6 +150,7 @@ export function AuthProvider({ children }) {
         loading,
         register,
         login,
+        loginWithGoogle,
         logout,
       }}
     >
@@ -144,3 +158,4 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
+
