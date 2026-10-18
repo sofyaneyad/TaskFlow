@@ -159,7 +159,7 @@ export async function getUserProjects(userId) {
 
   // 1. Read local cache first for instant 0ms UI response
   const localProjects = getCachedProjects().filter(
-    (p) => p.memberIds && p.memberIds.includes(userId)
+    (p) => (p.memberIds && p.memberIds.includes(userId)) || p.ownerId === userId
   );
 
   // If we already have cached projects, return them IMMEDIATELY and sync in background!

@@ -3,21 +3,26 @@
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   const { t } = useLanguage();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !loading && !user) {
       router.push("/login");
     }
-  }, [user, loading, router]);
+  }, [mounted, user, loading, router]);
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 text-center">
         <Loader2 className="h-10 w-10 animate-spin text-[#166534] dark:text-[#86A789] mb-4" />

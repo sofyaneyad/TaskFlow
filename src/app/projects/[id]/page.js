@@ -95,7 +95,7 @@ function ProjectDetailsContent() {
         return;
       }
 
-      if (!proj.memberIds || !proj.memberIds.includes(user?.uid)) {
+      if ((!proj.memberIds || !proj.memberIds.includes(user?.uid)) && proj.ownerId !== user?.uid) {
         setAccessDenied(true);
         return;
       }

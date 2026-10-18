@@ -47,7 +47,7 @@ export default function ProjectsPage() {
       syncRemoteProjects(user.uid)
         .then((latest) => {
           if (latest && latest.length > 0) {
-            const userOnly = latest.filter((p) => p.memberIds && p.memberIds.includes(user.uid));
+            const userOnly = latest.filter((p) => (p.memberIds && p.memberIds.includes(user.uid)) || p.ownerId === user.uid);
             setProjects(userOnly);
           }
         })
@@ -87,11 +87,23 @@ export default function ProjectsPage() {
     if (sortBy === "name") {
       result.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     } else {
-      result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      result.sort((a, b) => {
+        const timeB = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : new Date(b.createdAt || 0).getTime();
+        const timeA = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : new Date(a.createdAt || 0).getTime();
+        return timeB - timeA;
+      });
     }
 
     return result;
   }, [projects, filterType, searchQuery, sortBy, user]);
+
+  if (!user) {
+    return (
+      <ProtectedRoute>
+        <div />
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
