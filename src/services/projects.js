@@ -96,7 +96,7 @@ export async function createProject({ name, description = "", ownerId }) {
 }
 
 // Helper to sync remote projects in background
-async function syncRemoteProjects(userId) {
+export async function syncRemoteProjects(userId) {
   try {
     const q = query(
       collection(db, "projects"),

@@ -7,7 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import DashboardStats from "@/components/DashboardStats";
 import ProjectCard from "@/components/ProjectCard";
-import { getUserProjects } from "@/services/projects";
+import { getUserProjects, syncRemoteProjects } from "@/services/projects";
 import { getUserDashboardStats } from "@/services/tasks";
 import {
   Plus,
@@ -36,20 +36,73 @@ export default function DashboardPage() {
     }
     return [];
   });
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("taskflow_dashboard_stats");
+        if (raw) return JSON.parse(raw);
+      } catch {}
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("taskflow_local_projects");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return false;
+        }
+      } catch {}
+    }
+    return true;
+  });
   const [projectSearch, setProjectSearch] = useState("");
+
+  const scrollToProjects = useCallback((e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setProjectSearch("");
+    const el = document.getElementById("projects");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.classList.add("ring-2", "ring-[#166534]", "rounded-2xl", "transition-all", "duration-500");
+      setTimeout(() => {
+        el.classList.remove("ring-2", "ring-[#166534]");
+      }, 1200);
+    }
+  }, []);
 
   const loadData = useCallback(async () => {
     if (!user) return;
     try {
+      // 1. Fetch user projects immediately (returns cached at 0ms, or fetches remote)
       const userProjects = await getUserProjects(user.uid);
       setProjects(userProjects);
-      const calculatedStats = await getUserDashboardStats(userProjects);
-      setStats(calculatedStats);
+      setLoading(false);
+
+      // Background remote sync in case of updates on other sessions/devices
+      syncRemoteProjects(user.uid)
+        .then((latest) => {
+          if (latest && latest.length > 0) {
+            const userOnly = latest.filter((p) => p.memberIds && p.memberIds.includes(user.uid));
+            setProjects(userOnly);
+          }
+        })
+        .catch(() => {});
+
+      // 2. Compute task stats asynchronously without blocking project rendering
+      getUserDashboardStats(userProjects)
+        .then((calculatedStats) => {
+          setStats(calculatedStats);
+          try {
+            localStorage.setItem("taskflow_dashboard_stats", JSON.stringify(calculatedStats));
+          } catch {}
+        })
+        .catch((err) => {
+          console.error("Dashboard stats error:", err);
+        });
     } catch (err) {
       console.error("Dashboard error:", err);
-    } finally {
       setLoading(false);
     }
   }, [user]);
@@ -57,6 +110,23 @@ export default function DashboardPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Handle hash navigation to #projects on mount or hash change
+  useEffect(() => {
+    const handleHash = () => {
+      if (typeof window !== "undefined" && window.location.hash === "#projects") {
+        setTimeout(() => {
+          const el = document.getElementById("projects");
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 80);
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
 
   // Filter user's real projects (Hooks must be called unconditionally)
   const filteredProjects = useMemo(() => {
@@ -124,7 +194,11 @@ export default function DashboardPage() {
 
         {/* 2. Top Metric Cards (Driven by 100% Real User Data) */}
         <section aria-label="Metrics Cards">
-          <DashboardStats stats={stats} />
+          <DashboardStats
+            stats={stats}
+            projectsCount={projects.length}
+            onProjectsClick={scrollToProjects}
+          />
         </section>
 
         {/* 3. Overdue Tasks Alert (Earth Gold Palette) */}

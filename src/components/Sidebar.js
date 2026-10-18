@@ -78,7 +78,15 @@ export default function Sidebar({ isOpen, onClose }) {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={onClose}
+                onClick={(e) => {
+                  if (onClose) onClose();
+                  if (item.href === "/dashboard#projects" && pathname === "/dashboard") {
+                    const el = document.getElementById("projects");
+                    if (el) {
+                      el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                  }
+                }}
                 className={`relative flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition group cursor-pointer ${
                   item.active
                     ? "bg-[#E8EFE9] dark:bg-[#1E2E24] text-[#166534] dark:text-[#86A789] shadow-2xs font-bold"
