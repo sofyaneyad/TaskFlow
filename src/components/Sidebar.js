@@ -138,7 +138,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 {displayName}
               </p>
               <p className="text-[10px] text-[#5E7164] dark:text-[#8EA393] truncate">
-                {user.email}
+                {user?.email || ""}
               </p>
             </div>
           </div>

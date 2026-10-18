@@ -48,19 +48,7 @@ export default function DashboardPage() {
     loadData();
   }, [loadData]);
 
-  if (!user) {
-    return (
-      <ProtectedRoute>
-        <div />
-      </ProtectedRoute>
-    );
-  }
-
-  const userName =
-    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
-  const isRTL = lang === "ar";
-
-  // Filter user's real projects
+  // Filter user's real projects (Hooks must be called unconditionally)
   const filteredProjects = useMemo(() => {
     if (!projectSearch.trim()) return projects;
     return projects.filter((p) =>
@@ -71,6 +59,18 @@ export default function DashboardPage() {
   const recentTasks = useMemo(() => {
     return stats?.allTasks?.slice(0, 8) || [];
   }, [stats]);
+
+  const userName =
+    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
+  const isRTL = lang === "ar";
+
+  if (!user) {
+    return (
+      <ProtectedRoute>
+        <div />
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>

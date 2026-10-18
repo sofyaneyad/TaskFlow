@@ -37,7 +37,7 @@ export default function NewProjectPage() {
       const created = await createProject({
         name: name.trim(),
         description: description.trim(),
-        ownerId: user.uid,
+        ownerId: user?.uid,
       });
       router.push(`/projects/${created.id}`);
     } catch (err) {

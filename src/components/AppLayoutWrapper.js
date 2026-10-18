@@ -42,13 +42,11 @@ export default function AppLayoutWrapper({ children }) {
 
       {/* 4. Minimal Footer */}
       <footer
-        className={`border-t border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] py-3.5 text-center text-xs text-[#5E7164] dark:text-[#8EA393] transition-colors ${
+        className={`border-t border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] py-3 text-center text-xs text-[#5E7164] dark:text-[#8EA393] transition-colors ${
           user ? "lg:pl-60 rtl:lg:pl-0 rtl:lg:pr-60" : ""
         }`}
       >
-        <div className="mx-auto max-w-7xl px-4 flex items-center justify-center gap-2 text-[11px] font-medium" dir="ltr">
-          <span className="font-bold text-[#166534] dark:text-[#86A789]">TaskFlow</span>
-          <span className="text-[#5E7164]/40 dark:text-[#8EA393]/40">•</span>
+        <div className="mx-auto max-w-7xl px-4 flex items-center justify-center text-[11px] font-medium">
           <span>{t("common.footerTagline") || "Modern Task & Project Management"}</span>
         </div>
       </footer>

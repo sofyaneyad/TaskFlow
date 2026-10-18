@@ -75,7 +75,7 @@ function ProjectDetailsContent() {
         return;
       }
 
-      if (!proj.memberIds || !proj.memberIds.includes(user.uid)) {
+      if (!proj.memberIds || !proj.memberIds.includes(user?.uid)) {
         setAccessDenied(true);
         return;
       }
@@ -105,7 +105,7 @@ function ProjectDetailsContent() {
       if (editingTask) {
         await updateTask(projectId, editingTask.id, taskData);
       } else {
-        await createTask(projectId, taskData, user.uid);
+        await createTask(projectId, taskData, user?.uid || "");
       }
       await loadProjectData();
     } catch (err) {
