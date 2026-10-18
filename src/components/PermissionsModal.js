@@ -29,8 +29,8 @@ export default function PermissionsModal({ isOpen, onClose }) {
           </h3>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             {isRTL
-              ? "تفاصيل إدارة الأدوار والصلاحيات في مشاريع UrTask"
-              : "Role-based access control and authority breakdown in UrTask"}
+              ? "تفاصيل إدارة الأدوار والصلاحيات في مشاريع TaskFlow"
+              : "Role-based access control and authority breakdown in TaskFlow"}
           </p>
         </div>
 

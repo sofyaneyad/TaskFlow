@@ -25,7 +25,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="mt-8 text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-6xl">
-            Streamline your workflow with <span className="text-blue-600 dark:text-blue-500">UrTask</span>.
+            Streamline your workflow with <span className="text-blue-600 dark:text-blue-500">TaskFlow</span>.
           </h1>
 
           <p className="mt-6 text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400">

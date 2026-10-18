@@ -5,7 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import AppLayoutWrapper from "@/components/AppLayoutWrapper";
 
 export const metadata = {
-  title: "UrTask | Project & Task Management",
+  title: "TaskFlow | Project & Task Management",
   description: "Modern, responsive project & task management system with dark/light mode and multi-language support.",
 };
 

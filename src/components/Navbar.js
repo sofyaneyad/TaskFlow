@@ -23,7 +23,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
   const pathname = usePathname();
 
   const displayName =
-    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "Saif";
+    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
   const userInitials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -33,17 +33,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
 
   const isRTL = lang === "ar";
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "UrTask - Project & Task Management",
-        url: window.location.href,
-      }).catch(() => {});
-    } else {
-      navigator.clipboard?.writeText(window.location.href);
-      alert(isRTL ? "تم نسخ الرابط بنجاح!" : "Link copied to clipboard!");
-    }
-  };
+
 
   return (
     <header
@@ -82,36 +72,16 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
           )}
         </div>
 
-        {/* Right Side Actions - Matching Mockup */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        {/* Right Side Actions */}
+        <div className="flex items-center gap-2 sm:gap-3">
           {isLoggedIn && (
-            <>
-              {/* Last Updated + Team Avatars (from mockup) */}
-              <div className="hidden md:flex items-center gap-2.5 text-[11px] text-slate-500 dark:text-[#8E8E9F] mr-1 rtl:mr-0 rtl:ml-1">
-                <span>{isRTL ? "آخر تحديث: 18 أغسطس 2025" : "Last Updated 18 Aug 2025"}</span>
-                <div className="flex -space-x-1.5 rtl:space-x-reverse">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white ring-2 ring-white dark:ring-[#101014]">
-                    JD
-                  </span>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white ring-2 ring-white dark:ring-[#101014]">
-                    FA
-                  </span>
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white ring-2 ring-white dark:ring-[#101014]">
-                    MK
-                  </span>
-                </div>
-              </div>
-
-              {/* Share button - from mockup */}
-              <button
-                type="button"
-                onClick={handleShare}
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#2A2A38] bg-white dark:bg-[#16161C] px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#202028] transition shadow-2xs"
-              >
-                <Share2 className="h-3.5 w-3.5 text-slate-400" />
-                <span>{isRTL ? "مشاركة" : "Share"}</span>
-              </button>
-            </>
+            <Link
+              href="/projects/new"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 text-xs font-bold transition shadow-xs"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t("dashboard.newProject")}</span>
+            </Link>
           )}
 
           {/* Theme Toggle (Dark / Light) */}

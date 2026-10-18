@@ -45,7 +45,7 @@ export default function AppLayoutWrapper({ children }) {
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px]">
-          <span>UrTask • Modern Task & Project Management</span>
+          <span>TaskFlow • Modern Task & Project Management</span>
           <span className="text-slate-400 dark:text-slate-600">Built with Next.js 16, React 19 & Tailwind CSS</span>
         </div>
       </footer>

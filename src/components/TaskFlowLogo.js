@@ -11,7 +11,7 @@ export default function TaskFlowLogo({ showTagline = false, className = "", size
     <Link
       href="/"
       className={`inline-flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl transition group ${className}`}
-      aria-label="UrTask Home"
+      aria-label="TaskFlow Home"
     >
       {/* Brand Icon: Rounded box with bright blue checkmark */}
       <div
@@ -32,14 +32,14 @@ export default function TaskFlowLogo({ showTagline = false, className = "", size
         </svg>
       </div>
 
-      {/* Brand Name: UrTask */}
+      {/* Brand Name: TaskFlow */}
       <div className="flex flex-col">
         <span
           className={`font-black tracking-tight text-slate-900 dark:text-white leading-none ${
             isSmall ? "text-base" : "text-lg"
           }`}
         >
-          UrTask
+          Task<span className="text-blue-600 dark:text-blue-500">Flow</span>
         </span>
         {showTagline && (
           <span className="text-[10px] font-medium tracking-wide text-slate-400 dark:text-slate-400 mt-0.5">

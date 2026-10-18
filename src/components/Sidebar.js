@@ -31,7 +31,7 @@ export default function Sidebar({ isOpen, onClose }) {
   if (!user) return null;
 
   const displayName =
-    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "Saif";
+    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
   const userInitials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -41,67 +41,24 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const isRTL = lang === "ar";
 
-  const featureItems = [
-    {
-      label: isRTL ? "مساعد الذكاء الاصطناعي" : "UrTask AI",
-      icon: Sparkles,
-      href: "/dashboard#ai",
-    },
-    {
-      label: isRTL ? "القوالب الجاهزة" : "Templates",
-      icon: LayoutTemplate,
-      href: "/dashboard#templates",
-    },
-    {
-      label: isRTL ? "الإشعارات" : "Notification",
-      icon: Bell,
-      href: "/dashboard#notifications",
-    },
-  ];
-
   const mainNavItems = [
     {
-      label: t("nav.dashboard"),
+      label: t("nav.dashboard") || "Dashboard",
       href: "/dashboard",
       icon: LayoutDashboard,
       active: pathname === "/dashboard",
     },
     {
-      label: isRTL ? "صندوق الوارد" : "Inbox",
-      href: "/dashboard#inbox",
-      icon: Inbox,
-      badge: "4",
-      active: false,
-    },
-    {
-      label: isRTL ? "المشاريع" : "Project",
+      label: t("dashboard.myProjects") || "Projects",
       href: "/dashboard#projects",
       icon: FolderKanban,
       active: pathname.startsWith("/projects") && pathname !== "/projects/new",
     },
     {
-      label: isRTL ? "التقويم" : "Calendar",
-      href: "/dashboard#calendar",
-      icon: Calendar,
-      active: false,
-    },
-    {
-      label: isRTL ? "التقارير" : "Reports",
-      href: "/dashboard#reports",
-      icon: BarChart2,
-      active: false,
-    },
-    {
-      label: isRTL ? "مركز المساعدة" : "Help & Center",
-      href: "/dashboard#help",
-      icon: HelpCircle,
-      active: false,
-    },
-    {
-      label: isRTL ? "الإعدادات" : "Settings",
-      href: "/dashboard#settings",
-      icon: Settings,
-      active: false,
+      label: t("dashboard.newProject") || "New Project",
+      href: "/projects/new",
+      icon: Plus,
+      active: pathname === "/projects/new",
     },
   ];
 
@@ -126,49 +83,18 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Search input with ⌘K badge */}
-        <div className="relative">
-          <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-          <input
-            type="text"
-            placeholder={isRTL ? "بحث..." : "Search"}
-            className="w-full rounded-xl border border-slate-200 dark:border-[#24242F] bg-slate-50 dark:bg-[#14141A] py-1.5 pl-8 pr-8 rtl:pr-8 rtl:pl-8 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none transition"
-          />
-          <span className="absolute right-2.5 rtl:right-auto rtl:left-2.5 top-1/2 -translate-y-1/2 rounded bg-slate-200 dark:bg-[#202028] px-1 py-0.5 text-[9px] font-mono font-semibold text-slate-500 dark:text-slate-400">
-            ⌘K
-          </span>
-        </div>
-
-        {/* Section 1: Features */}
-        <div className="space-y-1 pt-1">
-          {featureItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={onClose}
-                className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium text-slate-600 dark:text-[#8E8E9F] hover:bg-slate-100 dark:hover:bg-[#181820] hover:text-slate-900 dark:hover:text-white transition group"
-              >
-                <Icon className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500 group-hover:text-blue-500 transition" />
-                <span className="truncate">{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Section 2: Main Navigation */}
-        <div className="space-y-1 pt-2 border-t border-slate-200 dark:border-[#22222B]">
+        {/* Navigation Links */}
+        <nav className="space-y-1.5 pt-1">
           {mainNavItems.map((item) => {
             const Icon = item.icon;
             return (
               <Link
-                key={item.label}
+                key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`relative flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition group ${
+                className={`relative flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold transition group ${
                   item.active
-                    ? "bg-slate-100 dark:bg-[#191922] text-blue-600 dark:text-white shadow-2xs font-bold"
+                    ? "bg-slate-100 dark:bg-[#191922] text-blue-600 dark:text-blue-400 shadow-2xs font-bold"
                     : "text-slate-600 dark:text-[#8E8E9F] hover:bg-slate-50 dark:hover:bg-[#15151C] hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
@@ -184,45 +110,35 @@ export default function Sidebar({ isOpen, onClose }) {
                   />
                   <span className="truncate">{item.label}</span>
                 </div>
-                {item.badge && (
-                  <span className="rounded-full bg-blue-600 px-1.5 py-0.2 text-[10px] font-bold text-white">
-                    {item.badge}
-                  </span>
-                )}
               </Link>
             );
           })}
-        </div>
+        </nav>
       </div>
 
-      {/* Bottom: Activate Pro Card - From Mockup */}
-      <div className="pt-4 mt-4 border-t border-slate-200 dark:border-[#22222B]">
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-[#2A2A38] bg-gradient-to-br from-slate-100 to-white dark:from-[#181822] dark:to-[#121218] p-3 shadow-md">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400">
-              <Crown className="h-4 w-4" />
+      {/* Bottom User Profile + Quick Logout */}
+      <div className="pt-4 border-t border-slate-200 dark:border-[#22222B]">
+        <div className="flex items-center justify-between rounded-xl p-2 bg-slate-50 dark:bg-[#15151C] border border-slate-100 dark:border-[#22222C]">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+              {userInitials}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                {isRTL ? "ترقية لحساب Pro" : "Activate Pro"}
+                {displayName}
               </p>
-              <p className="text-[10px] text-slate-500 dark:text-[#8E8E9F] truncate">
-                {isRTL ? "افتح جميع الميزات المتقدمة" : "Unlock all features on UrTask"}
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                {user.email}
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Quick logout */}
-        <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
-          <span className="truncate text-[11px] font-medium">{user.email}</span>
           <button
             type="button"
             onClick={logout}
-            className="hover:text-red-500 dark:hover:text-red-400 transition"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition shrink-0"
             title={t("nav.signOut")}
           >
-            <LogOut className="h-3.5 w-3.5" />
+            <LogOut className="h-4 w-4" />
           </button>
         </div>
       </div>

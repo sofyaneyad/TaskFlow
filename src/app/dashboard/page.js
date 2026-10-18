@@ -6,21 +6,19 @@ import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import DashboardStats from "@/components/DashboardStats";
+import ProjectCard from "@/components/ProjectCard";
 import { getUserProjects } from "@/services/projects";
 import { getUserDashboardStats } from "@/services/tasks";
 import {
   Plus,
-  Download,
-  Filter,
   Search,
-  CheckSquare,
-  Square,
+  FolderKanban,
+  AlertTriangle,
   Clock,
   ArrowRight,
-  TrendingUp,
-  FolderKanban,
+  ListTodo,
   CheckCircle2,
-  AlertTriangle,
+  Calendar,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -29,7 +27,6 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [taskSearch, setTaskSearch] = useState("");
   const [projectSearch, setProjectSearch] = useState("");
 
   const loadData = useCallback(async () => {
@@ -52,458 +49,243 @@ export default function DashboardPage() {
   }, [loadData]);
 
   const userName =
-    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "Saif";
+    userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
   const isRTL = lang === "ar";
 
-  // Today's Tasks matching exact mockup rows
-  const todayTasksList = useMemo(() => {
-    return [
-      {
-        id: "t1",
-        name: isRTL ? "إنهاء تصميم الصفحة الرئيسية" : "Finalize Home Page Design",
-        project: "SAAS Project",
-        color: "bg-blue-600",
-        due: "21 AUG 2025",
-        completed: false,
-      },
-      {
-        id: "t2",
-        name: isRTL ? "مراجعة صفحة التواصل" : "Review contact page design",
-        project: "Fintech Project",
-        color: "bg-purple-600",
-        due: "21 AUG 2025",
-        completed: false,
-      },
-      {
-        id: "t3",
-        name: isRTL ? "إنهاء تصميم صفحة الأسعار" : "Finalize Pricing Page Design",
-        project: "Agency Project",
-        color: "bg-cyan-500",
-        due: "21 AUG 2025",
-        completed: false,
-      },
-      {
-        id: "t4",
-        name: isRTL ? "العمل على نظام التصميم" : "Working on Design System",
-        project: "HR Dashboard Project",
-        color: "bg-emerald-600",
-        due: "21 AUG 2025",
-        completed: false,
-      },
-      {
-        id: "t5",
-        name: isRTL ? "تجهيز تقرير الدعم الفني" : "Prepare Support Report",
-        project: "Website Project",
-        color: "bg-blue-500",
-        due: "21 AUG 2025",
-        completed: false,
-      },
-      {
-        id: "t6",
-        name: isRTL ? "إنهاء الهيكل العام للتطبيق" : "Finalize Home Page Design",
-        project: "HealthTech Project",
-        color: "bg-amber-600",
-        due: "21 AUG 2025",
-        completed: false,
-      },
-    ];
-  }, [isRTL]);
-
-  const filteredTasks = useMemo(() => {
-    if (!taskSearch.trim()) return todayTasksList;
-    return todayTasksList.filter(
-      (t) =>
-        t.name.toLowerCase().includes(taskSearch.toLowerCase()) ||
-        t.project.toLowerCase().includes(taskSearch.toLowerCase())
-    );
-  }, [todayTasksList, taskSearch]);
-
-  // List of Projects matching mockup data table
-  const listProjectsData = useMemo(() => {
-    const defaultList = [
-      {
-        id: "p1",
-        name: "SAAS Project",
-        color: "bg-blue-600",
-        status: "In Progress",
-        statusKey: "in_progress",
-        progress: 75,
-        totalTasks: "15 / 20",
-        dueDate: "03 AUG 2025",
-        ownerName: "Michael Johnson",
-        ownerAvatar: "MJ",
-      },
-      {
-        id: "p2",
-        name: "Fintech Project",
-        color: "bg-purple-600",
-        status: "Completed",
-        statusKey: "done",
-        progress: 100,
-        totalTasks: "32 / 32",
-        dueDate: "10 AUG 2025",
-        ownerName: "Fatima Zainab Ali",
-        ownerAvatar: "FZ",
-      },
-      {
-        id: "p3",
-        name: "HR Dashboard Project",
-        color: "bg-emerald-600",
-        status: "On Hold",
-        statusKey: "on_hold",
-        progress: 43,
-        totalTasks: "6 / 15",
-        dueDate: "06 AUG 2025",
-        ownerName: "Ananya Das Gupta",
-        ownerAvatar: "AD",
-      },
-    ];
-
-    if (projects.length === 0) return defaultList;
-
-    // Merge real user projects with demo structure
-    return projects.map((p, idx) => ({
-      id: p.id,
-      name: p.name,
-      color: idx % 3 === 0 ? "bg-blue-600" : idx % 3 === 1 ? "bg-purple-600" : "bg-emerald-600",
-      status: "In Progress",
-      statusKey: "in_progress",
-      progress: p.progressPercent || 65,
-      totalTasks: "8 / 12",
-      dueDate: "25 AUG 2025",
-      ownerName: userName,
-      ownerAvatar: userName.slice(0, 2).toUpperCase(),
-    }));
-  }, [projects, userName]);
-
+  // Filter user's real projects
   const filteredProjects = useMemo(() => {
-    if (!projectSearch.trim()) return listProjectsData;
-    return listProjectsData.filter((p) =>
-      p.name.toLowerCase().includes(projectSearch.toLowerCase())
+    if (!projectSearch.trim()) return projects;
+    return projects.filter((p) =>
+      p.name?.toLowerCase().includes(projectSearch.toLowerCase().trim())
     );
-  }, [listProjectsData, projectSearch]);
+  }, [projects, projectSearch]);
 
-  // Performance Equalizer Bar Data (Mon - Fri from mockup)
-  const performanceDays = [
-    { day: "Mon", score: "+81", bars: 7 },
-    { day: "Tue", score: "+56", bars: 5 },
-    { day: "Wed", score: "+90", bars: 9 },
-    { day: "Thu", score: "+34", bars: 3 },
-    { day: "Fri", score: "+76", bars: 7 },
-  ];
+  const recentTasks = useMemo(() => {
+    return stats?.allTasks?.slice(0, 8) || [];
+  }, [stats]);
 
   return (
     <ProtectedRoute>
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-6">
-        {/* 1. Greeting Banner with Metric Pills + Export & New Buttons */}
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-8">
+        {/* 1. Header: Greeting + Real Stats Badges + Action */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{isRTL ? `مرحباً بعودتك، ${userName}!` : `Welcome Back, ${userName}!`}</span>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <span>{isRTL ? `مرحباً بك، ${userName}!` : `Welcome back, ${userName}!`}</span>
               <span className="text-2xl">👋</span>
             </h1>
 
-            {/* Quick Summary Badges / Pills from Mockup */}
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <span className="rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] px-3 py-1 font-semibold text-slate-700 dark:text-[#A1A1B2]">
-                {isRTL ? "5 مهام تستحق اليوم" : "5 Tasks Due Today"}
+            {/* Real Dynamic Summary Pills */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] px-3 py-1 font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <FolderKanban className="h-3.5 w-3.5 text-blue-500" />
+                <span>{projects.length} {t("dashboard.totalProjects")}</span>
               </span>
-              <span className="rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] px-3 py-1 font-semibold text-rose-600 dark:text-rose-400">
-                {isRTL ? "2 مهام متأخرة" : "2 Overdue Tasks"}
+
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] px-3 py-1 font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <ListTodo className="h-3.5 w-3.5 text-purple-500" />
+                <span>{stats?.totalTasks || 0} {t("dashboard.totalTasks")}</span>
               </span>
-              <span className="rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] px-3 py-1 font-semibold text-slate-700 dark:text-[#A1A1B2]">
-                {isRTL ? "9 مواعيد نهائية قادمة" : "9 Upcoming Deadlines"}
+
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] px-3 py-1 font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <Clock className="h-3.5 w-3.5 text-amber-500" />
+                <span>{stats?.inProgressTasks || 0} {t("dashboard.inProgress")}</span>
               </span>
+
+              {stats?.overdueTasks && stats.overdueTasks.length > 0 && (
+                <span className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 px-3 py-1 font-bold text-rose-600 dark:text-rose-400">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  <span>{stats.overdueTasks.length} {t("dashboard.overdueTasks")}</span>
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Action Buttons: Export + New */}
-          <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => alert(isRTL ? "جاري تصدير التقرير..." : "Exporting report...")}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#2A2A38] bg-white dark:bg-[#16161C] px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#202028] transition shadow-2xs"
-            >
-              <Download className="h-3.5 w-3.5 text-slate-400" />
-              <span>{isRTL ? "تصدير" : "Export"}</span>
-            </button>
-
+          {/* Primary Action Button */}
+          <div>
             <Link
               href="/projects/new"
-              className="flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-bold text-white shadow-sm transition"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition"
             >
               <Plus className="h-4 w-4" />
-              <span>{isRTL ? "مشروع جديد" : "+ New"}</span>
+              <span>{t("dashboard.newProject")}</span>
             </Link>
           </div>
         </div>
 
-        {/* 2. Top 4 Stat Cards */}
+        {/* 2. Top Metric Cards (Driven by 100% Real User Data) */}
         <section aria-label="Metrics Cards">
           <DashboardStats stats={stats} />
         </section>
 
-        {/* 3. Middle Row: Today's Tasks (Left 2/3) + Performance (Right 1/3) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          {/* Today's Tasks */}
-          <section className="lg:col-span-2 rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-5 shadow-xs">
-            {/* Header with Title + Search + Filter */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-100 dark:border-[#22222B]">
-              <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-                {isRTL ? "مهام اليوم" : "Today's Tasks"}
-              </h2>
-
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-2.5 rtl:left-auto rtl:right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-                  <input
-                    type="text"
-                    value={taskSearch}
-                    onChange={(e) => setTaskSearch(e.target.value)}
-                    placeholder={isRTL ? "بحث هنا..." : "Search here..."}
-                    className="rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#111116] py-1.5 pl-8 pr-3 rtl:pr-8 rtl:pl-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none transition w-36 sm:w-44"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#16161C] px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#202028] transition"
-                >
-                  <Filter className="h-3 w-3" />
-                  <span>{isRTL ? "تصفية" : "Filter"}</span>
-                </button>
-              </div>
+        {/* 3. Overdue Tasks Alert (Visible only if user actually has overdue tasks) */}
+        {stats?.overdueTasks && stats.overdueTasks.length > 0 && (
+          <section className="rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-5 shadow-xs">
+            <div className="flex items-center gap-2.5 text-rose-600 dark:text-rose-400 font-bold text-sm">
+              <AlertTriangle className="h-5 w-5" />
+              <h2>{isRTL ? "مهام متأخرة تحتاج إلى اتخاذ إجراء" : "Overdue Tasks Requiring Attention"} ({stats.overdueTasks.length})</h2>
             </div>
-
-            {/* Table Header */}
-            <div className="mt-3 grid grid-cols-12 text-[11px] font-semibold text-slate-400 dark:text-[#8E8E9F] px-3 pb-2 border-b border-slate-100 dark:border-[#1E1E26]">
-              <span className="col-span-6">{isRTL ? "اسم المهمة" : "Task Name"}</span>
-              <span className="col-span-3">{isRTL ? "المشروع" : "Project"}</span>
-              <span className="col-span-3 text-right rtl:text-left">{isRTL ? "الاستحقاق" : "Due"}</span>
-            </div>
-
-            {/* Task Rows List */}
-            <div className="divide-y divide-slate-100 dark:divide-[#1C1C24]">
-              {filteredTasks.map((t) => (
-                <div
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {stats.overdueTasks.map((t) => (
+                <Link
                   key={t.id}
-                  className="grid grid-cols-12 items-center py-3 px-3 hover:bg-slate-50 dark:hover:bg-[#1A1A22] rounded-xl transition text-xs"
+                  href={`/projects/${t.projectId}`}
+                  className="rounded-xl border border-rose-200 dark:border-rose-900/40 bg-white dark:bg-[#16161C] p-3 text-xs hover:border-rose-400 transition flex flex-col justify-between"
                 >
-                  {/* Task Name */}
-                  <div className="col-span-6 flex items-center gap-2.5 min-w-0 pr-2 rtl:pr-0 rtl:pl-2">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border border-slate-300 dark:border-[#333342] bg-slate-100 dark:bg-[#202028] text-slate-400">
-                      <Square className="h-3 w-3" />
-                    </span>
-                    <span className="font-semibold text-slate-900 dark:text-slate-200 truncate">
-                      {t.name}
-                    </span>
+                  <div>
+                    <span className="font-bold text-slate-900 dark:text-white line-clamp-1">{t.title}</span>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 block">{t.projectName}</span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-[10px] text-rose-600 dark:text-rose-400 font-semibold">
+                    <span>{t.dueDate || "Overdue"}</span>
+                    <span className="uppercase">{t.priority}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 4. My Projects Section (Real User Projects) */}
+        <section id="projects" className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+                {t("dashboard.myProjects")}
+              </h2>
+              <span className="rounded-full bg-slate-100 dark:bg-[#202028] px-2.5 py-0.5 text-xs font-bold text-slate-700 dark:text-slate-300">
+                {projects.length}
+              </span>
+            </div>
+
+            {/* Projects Search Bar */}
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+              <input
+                type="text"
+                value={projectSearch}
+                onChange={(e) => setProjectSearch(e.target.value)}
+                placeholder={isRTL ? "بحث في المشاريع..." : "Search projects..."}
+                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] py-1.5 pl-8 pr-3 rtl:pl-3 rtl:pr-8 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:outline-none transition"
+              />
+            </div>
+          </div>
+
+          {/* Projects Rendering */}
+          {filteredProjects.length === 0 ? (
+            <div className="rounded-2xl border-2 border-dashed border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-12 text-center">
+              <FolderKanban className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600" />
+              <h3 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+                {projectSearch.trim() ? t("dashboard.noProjectsFound") : (isRTL ? "لا توجد مشاريع حتى الآن" : "No projects created yet")}
+              </h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                {projectSearch.trim()
+                  ? (isRTL ? "لم يتم العثور على أي مشروع يطابق بحثك." : "No projects matched your search keyword.")
+                  : (isRTL ? "ابدأ بإنشاء أول مشروع لك لإدارة المهام ومشاركتها مع فريقك." : "Create your first project to organize tasks, track deadlines, and collaborate with your team.")}
+              </p>
+              {!projectSearch.trim() && (
+                <div className="mt-5">
+                  <Link
+                    href="/projects/new"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-bold text-white shadow-sm transition"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>{t("dashboard.newProject")}</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredProjects.map((project, idx) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  currentUserId={user.uid}
+                  index={idx}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 5. Recent Tasks Section (Real Tasks across User Projects) */}
+        {recentTasks.length > 0 && (
+          <section className="rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#22222E]">
+              <div className="flex items-center gap-2">
+                <ListTodo className="h-4 w-4 text-blue-500" />
+                <h2 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                  {isRTL ? "المهام الأخيرة عبر المشاريع" : "Recent Tasks Across Projects"}
+                </h2>
+              </div>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                {recentTasks.length} {t("project.total")}
+              </span>
+            </div>
+
+            <div className="divide-y divide-slate-100 dark:divide-[#202028]">
+              {recentTasks.map((task) => (
+                <div
+                  key={task.id}
+                  className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 hover:bg-slate-50/50 dark:hover:bg-[#181822] rounded-xl px-2 transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full shrink-0 ${
+                        task.status === "done"
+                          ? "bg-emerald-500"
+                          : task.status === "in_progress"
+                          ? "bg-blue-500"
+                          : task.status === "review"
+                          ? "bg-amber-500"
+                          : "bg-slate-400"
+                      }`}
+                    />
+                    <div>
+                      <Link
+                        href={`/projects/${task.projectId}`}
+                        className="text-xs font-bold text-slate-900 dark:text-white hover:text-blue-500 transition line-clamp-1"
+                      >
+                        {task.title}
+                      </Link>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {task.projectName}
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Project Tag with Colored Pill */}
-                  <div className="col-span-3 flex items-center gap-1.5 min-w-0">
-                    <span className={`h-2.5 w-2.5 shrink-0 rounded ${t.color}`} />
-                    <span className="text-[11px] font-medium text-slate-600 dark:text-[#A1A1B2] truncate">
-                      {t.project}
+                  <div className="flex items-center gap-2 sm:gap-3 text-xs">
+                    {task.dueDate && (
+                      <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
+                        <Calendar className="h-3 w-3" />
+                        {task.dueDate}
+                      </span>
+                    )}
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
+                        task.priority === "high"
+                          ? "bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40"
+                          : task.priority === "medium"
+                          ? "bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+                      }`}
+                    >
+                      {task.priority}
                     </span>
-                  </div>
-
-                  {/* Due Date */}
-                  <div className="col-span-3 text-right rtl:text-left text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                    {t.due}
+                    <Link
+                      href={`/projects/${task.projectId}`}
+                      className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                    >
+                      <span>{isRTL ? "فتح" : "Open"}</span>
+                      <ArrowRight className="h-3 w-3 rtl:rotate-180" />
+                    </Link>
                   </div>
                 </div>
               ))}
             </div>
           </section>
-
-          {/* Right Card: Performance Segmented Equalizer */}
-          <section className="rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-5 shadow-xs flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#22222B]">
-                <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  {isRTL ? "مستوى الأداء" : "Performance"}
-                </h2>
-              </div>
-
-              {/* Huge Percentage + Trend */}
-              <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-4xl font-black text-slate-900 dark:text-white">90%</span>
-                <span className="text-xs font-bold text-emerald-600 dark:text-[#22C55E] flex items-center">
-                  ^ +15 {isRTL ? "عن الشهر الماضي" : "vs last month"}
-                </span>
-              </div>
-
-              {/* Segmented Equalizer Bar Chart (Mon - Fri from Mockup) */}
-              <div className="mt-6 grid grid-cols-5 gap-3 items-end pt-4">
-                {performanceDays.map((item) => (
-                  <div key={item.day} className="flex flex-col items-center gap-2">
-                    <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">
-                      {item.score}
-                    </span>
-
-                    {/* Stacked Blue Segment Bars */}
-                    <div className="flex flex-col-reverse gap-1 h-36 w-full max-w-[28px] justify-start items-center">
-                      {[...Array(10)].map((_, i) => {
-                        const isFilled = i < item.bars;
-                        return (
-                          <div
-                            key={i}
-                            className={`h-2 w-full rounded-sm transition-all duration-300 ${
-                              isFilled
-                                ? "bg-blue-600 dark:bg-blue-500 shadow-xs"
-                                : "bg-slate-100 dark:bg-[#202028]"
-                            }`}
-                          />
-                        );
-                      })}
-                    </div>
-
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400 mt-1">
-                      {item.day}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-6 pt-3 border-t border-slate-100 dark:border-[#22222B] text-center">
-              <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
-                {isRTL ? "كفاءة إنجاز المهام الأسبوعية" : "Weekly Team Deliverable Velocity"}
-              </span>
-            </div>
-          </section>
-        </div>
-
-        {/* 4. Bottom Row: List Projects Data Table */}
-        <section className="rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-5 shadow-xs">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-100 dark:border-[#22222B]">
-            <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-              {isRTL ? "قائمة المشاريع" : "List Projects"}
-            </h2>
-
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 rtl:left-auto rtl:right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
-                <input
-                  type="text"
-                  value={projectSearch}
-                  onChange={(e) => setProjectSearch(e.target.value)}
-                  placeholder={isRTL ? "بحث هنا..." : "Search here..."}
-                  className="rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#111116] py-1.5 pl-8 pr-3 rtl:pr-8 rtl:pl-3 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none transition w-36 sm:w-44"
-                />
-              </div>
-
-              <button
-                type="button"
-                className="flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#16161C] px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#202028] transition"
-              >
-                <Filter className="h-3 w-3" />
-                <span>{isRTL ? "تصفية" : "Filter"}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Table Header */}
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full text-left rtl:text-right text-xs">
-              <thead>
-                <tr className="border-b border-slate-100 dark:border-[#1E1E26] text-[11px] font-semibold text-slate-400 dark:text-[#8E8E9F]">
-                  <th className="py-2.5 px-3">{isRTL ? "اسم المشروع" : "Project Name"}</th>
-                  <th className="py-2.5 px-3">{isRTL ? "الحالة" : "Status"}</th>
-                  <th className="py-2.5 px-3">{isRTL ? "نسبة الإنجاز" : "Progress"}</th>
-                  <th className="py-2.5 px-3">{isRTL ? "إجمالي المهام" : "Total Tasks"}</th>
-                  <th className="py-2.5 px-3">{isRTL ? "الموعد النهائي" : "Due Date"}</th>
-                  <th className="py-2.5 px-3">{isRTL ? "المالك" : "Owner"}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-[#1C1C24]">
-                {filteredProjects.map((p) => {
-                  return (
-                    <tr
-                      key={p.id}
-                      className="hover:bg-slate-50 dark:hover:bg-[#1A1A22] transition group"
-                    >
-                      {/* Project Name + Color Box */}
-                      <td className="py-3 px-3">
-                        <Link
-                          href={`/projects/${p.id}`}
-                          className="flex items-center gap-2.5 font-bold text-slate-900 dark:text-white hover:text-blue-500 transition"
-                        >
-                          <span className={`h-3 w-3 rounded ${p.color} shrink-0`} />
-                          <span className="truncate">{p.name}</span>
-                        </Link>
-                      </td>
-
-                      {/* Status Outline Pill */}
-                      <td className="py-3 px-3">
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${
-                            p.statusKey === "done"
-                              ? "border-emerald-500/40 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10"
-                              : p.statusKey === "on_hold"
-                              ? "border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10"
-                              : "border-blue-500/40 text-blue-600 dark:text-blue-400 bg-blue-500/10"
-                          }`}
-                        >
-                          <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                          {p.status}
-                        </span>
-                      </td>
-
-                      {/* Segmented Progress Indicator (|||||||||| 75%) from mockup */}
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-2">
-                          <div className="flex gap-0.5">
-                            {[...Array(10)].map((_, i) => {
-                              const activeSegments = Math.round((p.progress / 100) * 10);
-                              const isFilled = i < activeSegments;
-                              return (
-                                <span
-                                  key={i}
-                                  className={`h-3.5 w-1 rounded-xs ${
-                                    isFilled
-                                      ? "bg-blue-600 dark:bg-blue-500"
-                                      : "bg-slate-200 dark:bg-[#252530]"
-                                  }`}
-                                />
-                              );
-                            })}
-                          </div>
-                          <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
-                            {p.progress}%
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Total Tasks */}
-                      <td className="py-3 px-3 font-semibold text-slate-700 dark:text-slate-300">
-                        {p.totalTasks}
-                      </td>
-
-                      {/* Due Date */}
-                      <td className="py-3 px-3 text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                        {p.dueDate}
-                      </td>
-
-                      {/* Owner with Avatar */}
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-2">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 dark:bg-[#282836] text-[10px] font-bold text-slate-800 dark:text-white shrink-0">
-                            {p.ownerAvatar}
-                          </span>
-                          <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">
-                            {p.ownerName}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        )}
       </div>
     </ProtectedRoute>
   );

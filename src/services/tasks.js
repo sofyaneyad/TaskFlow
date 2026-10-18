@@ -230,25 +230,41 @@ export async function getUserDashboardStats(accessibleProjects) {
   let totalTasks = 0;
   let todoTasks = 0;
   let inProgressTasks = 0;
+  let reviewTasks = 0;
   let doneTasks = 0;
   let overdueTasks = [];
+  let allTasks = [];
 
   for (const project of accessibleProjects) {
     const tasks = await getProjectTasks(project.id);
+    let projectCompleted = 0;
+
     for (const task of tasks) {
       totalTasks += 1;
       if (task.status === "todo") todoTasks += 1;
       else if (task.status === "in_progress") inProgressTasks += 1;
-      else if (task.status === "done") doneTasks += 1;
+      else if (task.status === "review") reviewTasks += 1;
+      else if (task.status === "done") {
+        doneTasks += 1;
+        projectCompleted += 1;
+      }
+
+      const taskWithProject = {
+        ...task,
+        projectName: project.name,
+        projectId: project.id,
+      };
+
+      allTasks.push(taskWithProject);
 
       if (task.isOverdue) {
-        overdueTasks.push({
-          ...task,
-          projectName: project.name,
-          projectId: project.id,
-        });
+        overdueTasks.push(taskWithProject);
       }
     }
+
+    project.taskCount = tasks.length;
+    project.completedCount = projectCompleted;
+    project.progressPercent = tasks.length > 0 ? Math.round((projectCompleted / tasks.length) * 100) : 0;
   }
 
   return {
@@ -256,7 +272,9 @@ export async function getUserDashboardStats(accessibleProjects) {
     totalTasks,
     todoTasks,
     inProgressTasks,
+    reviewTasks,
     doneTasks,
     overdueTasks,
+    allTasks,
   };
 }
