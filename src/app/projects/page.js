@@ -18,35 +18,24 @@ export default function ProjectsPage() {
   const { lang, t } = useLanguage();
   const isRTL = lang === "ar";
 
-  const [projects, setProjects] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          return Array.isArray(parsed) ? parsed : [];
-        }
-      } catch {}
-    }
-    return [];
-  });
-
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return false;
-        }
-      } catch {}
-    }
-    return true;
-  });
-
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("taskflow_local_projects");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setProjects(parsed);
+          setLoading(false);
+        }
+      }
+    } catch {}
+  }, []);
 
   const loadProjects = useCallback(async () => {
     if (!user) return;

@@ -24,40 +24,28 @@ import {
 export default function DashboardPage() {
   const { user, userProfile } = useAuth();
   const { lang, t } = useLanguage();
-  const [projects, setProjects] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          return Array.isArray(parsed) ? parsed : [];
-        }
-      } catch {}
-    }
-    return [];
-  });
-  const [stats, setStats] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("taskflow_dashboard_stats");
-        if (raw) return JSON.parse(raw);
-      } catch {}
-    }
-    return null;
-  });
-  const [loading, setLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return false;
-        }
-      } catch {}
-    }
-    return true;
-  });
+  const [projects, setProjects] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [projectSearch, setProjectSearch] = useState("");
+
+  useEffect(() => {
+    try {
+      const rawProjects = localStorage.getItem("taskflow_local_projects");
+      if (rawProjects) {
+        const parsed = JSON.parse(rawProjects);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setProjects(parsed);
+          setLoading(false);
+        }
+      }
+      const rawStats = localStorage.getItem("taskflow_dashboard_stats");
+      if (rawStats) {
+        const parsedStats = JSON.parse(rawStats);
+        if (parsedStats) setStats(parsedStats);
+      }
+    } catch {}
+  }, []);
 
   const scrollToProjects = useCallback((e) => {
     if (e && e.preventDefault) e.preventDefault();
