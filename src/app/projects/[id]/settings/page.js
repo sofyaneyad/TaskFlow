@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -32,6 +32,7 @@ function ProjectSettingsContent() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const router = useRouter();
+  const initialLoadedRef = useRef(false);
 
   const [project, setProject] = useState(() => {
     if (typeof window !== "undefined" && projectId) {
@@ -85,8 +86,11 @@ function ProjectSettingsContent() {
       }
 
       setProject(proj);
-      setName(proj.name || "");
-      setDescription(proj.description || "");
+      if (!initialLoadedRef.current) {
+        setName(proj.name || "");
+        setDescription(proj.description || "");
+        initialLoadedRef.current = true;
+      }
 
       const memberDetails = await getProjectMembersDetails(proj.memberIds || []);
       setMembers(memberDetails);
@@ -95,7 +99,7 @@ function ProjectSettingsContent() {
     } finally {
       setLoading(false);
     }
-  }, [projectId, user, router, project]);
+  }, [projectId, user?.uid, router]);
 
   useEffect(() => {
     loadData();
