@@ -22,6 +22,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const displayName =
     userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
+  const photoURL = user?.photoURL || userProfile?.photoURL;
   const userInitials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -59,9 +60,18 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="flex items-center justify-between pb-3 border-b border-[#E5EBE5] dark:border-[#26372D]">
           <TaskFlowLogo size="sm" />
           <div className="flex items-center gap-1.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#166534] text-[10px] font-bold text-white ring-1 ring-white dark:ring-[#26372D]">
-              {userInitials}
-            </div>
+            {photoURL ? (
+              <img
+                src={photoURL}
+                alt={displayName}
+                referrerPolicy="no-referrer"
+                className="h-7 w-7 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
+              />
+            ) : (
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#166534] text-[10px] font-bold text-white ring-1 ring-white dark:ring-[#26372D]">
+                {userInitials}
+              </div>
+            )}
             <button
               type="button"
               onClick={onClose}
@@ -110,9 +120,18 @@ export default function Sidebar({ isOpen, onClose }) {
       <div className="pt-4 border-t border-[#E5EBE5] dark:border-[#26372D]">
         <div className="flex items-center justify-between rounded-xl p-2 bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#166534] text-xs font-bold text-white">
-              {userInitials}
-            </div>
+            {photoURL ? (
+              <img
+                src={photoURL}
+                alt={displayName}
+                referrerPolicy="no-referrer"
+                className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
+              />
+            ) : (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#166534] text-xs font-bold text-white">
+                {userInitials}
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] truncate">
                 {displayName}
@@ -125,7 +144,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <button
             type="button"
             onClick={logout}
-            className="p-1.5 rounded-lg text-[#5E7164] dark:text-[#8EA393] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition shrink-0"
+            className="p-1.5 rounded-lg text-[#5E7164] dark:text-[#8EA393] hover:text-[#CA8A04] dark:hover:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition shrink-0"
             title={t("nav.signOut")}
           >
             <LogOut className="h-4 w-4" />

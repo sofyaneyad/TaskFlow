@@ -24,9 +24,9 @@ export default function TaskCard({
       case "high":
         return {
           label: t("task.highPriority"),
-          bg: "bg-rose-50 dark:bg-rose-950/40",
-          text: "text-rose-600 dark:text-rose-400",
-          border: "border-rose-200 dark:border-rose-900/50",
+          bg: "bg-[#FAF5E8] dark:bg-[#6B5424]/30",
+          text: "text-[#854D0E] dark:text-[#FACC15]",
+          border: "border-[#CA8A04]/40 dark:border-[#6B5424]",
         };
       case "low":
         return {
@@ -65,7 +65,7 @@ export default function TaskCard({
     <div
       className={`relative flex flex-col justify-between rounded-xl border bg-[#FFFFFF] dark:bg-[#17221C] p-4 shadow-2xs hover:border-[#86A789]/60 transition duration-200 ${
         task.isOverdue
-          ? "border-rose-300 dark:border-rose-900/60 ring-1 ring-rose-300 dark:ring-rose-900/50"
+          ? "border-[#CA8A04] dark:border-[#6B5424] ring-1 ring-[#CA8A04]/40 dark:ring-[#6B5424]"
           : "border-[#E5EBE5] dark:border-[#26372D]"
       }`}
     >
@@ -81,8 +81,8 @@ export default function TaskCard({
 
           {/* Overdue Badge */}
           {task.isOverdue && (
-            <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
-              <AlertCircle className="h-3 w-3" /> {t("task.overdue")}
+            <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#FAF5E8] dark:bg-[#6B5424]/30 text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
+              <AlertCircle className="h-3 w-3 text-[#CA8A04]" /> {t("task.overdue")}
             </span>
           )}
 
@@ -133,10 +133,10 @@ export default function TaskCard({
           <div className="flex items-center gap-1.5 text-[#5E7164] dark:text-[#8EA393]">
             <Calendar
               className={`h-3.5 w-3.5 ${
-                task.isOverdue ? "text-rose-500 dark:text-rose-400" : "text-[#86A789]"
+                task.isOverdue ? "text-[#CA8A04] dark:text-[#FACC15]" : "text-[#86A789]"
               }`}
             />
-            <span className={task.isOverdue ? "text-rose-500 dark:text-rose-400 font-bold" : ""}>
+            <span className={task.isOverdue ? "text-[#854D0E] dark:text-[#FACC15] font-bold" : ""}>
               {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : t("task.noDeadline")}
             </span>
           </div>
@@ -146,9 +146,18 @@ export default function TaskCard({
             className="flex items-center gap-1 text-[#26332B] dark:text-[#FAF9F6] max-w-[120px] truncate"
             title={assignee?.email || t("task.unassigned")}
           >
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#166534] text-[10px] font-bold text-white shrink-0">
-              {assignee?.displayName?.charAt(0)?.toUpperCase() || "U"}
-            </div>
+            {assignee?.photoURL ? (
+              <img
+                src={assignee.photoURL}
+                alt={assignee?.displayName || "User"}
+                referrerPolicy="no-referrer"
+                className="h-5 w-5 rounded-full object-cover shrink-0 ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
+              />
+            ) : (
+              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#166534] text-[10px] font-bold text-white shrink-0">
+                {assignee?.displayName?.charAt(0)?.toUpperCase() || "U"}
+              </div>
+            )}
             <span className="truncate text-[11px]">
               {assignee?.displayName || assignee?.email?.split("@")[0] || t("task.unassigned")}
             </span>
@@ -171,7 +180,7 @@ export default function TaskCard({
             <button
               type="button"
               onClick={() => setShowConfirmDelete(true)}
-              className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393] hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition"
+              className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393] hover:text-[#CA8A04] dark:hover:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition"
             >
               <Trash2 className="h-3 w-3" /> {t("task.delete")}
             </button>
@@ -181,7 +190,7 @@ export default function TaskCard({
 
       {/* Delete Confirmation Modal */}
       {showConfirmDelete && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl bg-white/95 dark:bg-[#17221C]/95 p-4 text-center backdrop-blur-2xs border border-rose-300 dark:border-rose-900/60">
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl bg-white/95 dark:bg-[#17221C]/95 p-4 text-center backdrop-blur-2xs border border-[#CA8A04]/40 dark:border-[#6B5424]">
           <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6]">{t("task.deleteConfirmTitle")}</p>
           <p className="mt-1 text-[11px] text-[#5E7164] dark:text-[#8EA393]">{t("task.deleteConfirmSub")}</p>
           <div className="mt-3 flex items-center gap-2">
@@ -196,7 +205,7 @@ export default function TaskCard({
               type="button"
               disabled={isDeleting}
               onClick={handleDelete}
-              className="rounded-lg bg-rose-600 hover:bg-rose-500 px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-50"
+              className="rounded-lg bg-[#CA8A04] hover:bg-[#A16207] px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-50 transition"
             >
               {isDeleting ? t("task.deleting") : t("task.confirm")}
             </button>

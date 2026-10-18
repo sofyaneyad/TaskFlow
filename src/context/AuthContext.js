@@ -40,17 +40,27 @@ export function AuthProvider({ children }) {
     try {
       const userRef = doc(db, "users", firebaseUser.uid);
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("timeout")), 3000)
+        setTimeout(() => reject(new Error("timeout")), 2000)
       );
       const userSnap = await Promise.race([getDoc(userRef), timeoutPromise]);
 
       if (userSnap && userSnap.exists()) {
-        setUserProfile(userSnap.data());
+        const data = userSnap.data();
+        if (firebaseUser.photoURL && data.photoURL !== firebaseUser.photoURL) {
+          setDoc(userRef, { photoURL: firebaseUser.photoURL }, { merge: true }).catch(() => {});
+          setUserProfile({ ...data, photoURL: firebaseUser.photoURL });
+        } else {
+          setUserProfile({
+            ...data,
+            photoURL: data.photoURL || firebaseUser.photoURL || null,
+          });
+        }
       } else if (userSnap) {
         // Create user profile document if missing
         const newProfile = {
           displayName: firebaseUser.displayName || firebaseUser.email.split("@")[0],
           email: firebaseUser.email.toLowerCase(),
+          photoURL: firebaseUser.photoURL || null,
           createdAt: serverTimestamp(),
         };
         await setDoc(userRef, newProfile);
@@ -58,10 +68,12 @@ export function AuthProvider({ children }) {
       }
     } catch {
       // Fallback local representation immediately without blocking
-      setUserProfile((prev) => prev || {
-        displayName: firebaseUser.displayName || firebaseUser.email.split("@")[0],
-        email: firebaseUser.email.toLowerCase(),
-      });
+      setUserProfile((prev) => ({
+        displayName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
+        email: firebaseUser.email?.toLowerCase() || "",
+        photoURL: firebaseUser.photoURL || prev?.photoURL || null,
+        ...(prev || {}),
+      }));
     }
   };
 
@@ -69,10 +81,11 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        // 1. Immediately provide profile from Auth to unblock UI instantly
+        // 1. Immediately provide profile from Auth to unblock UI instantly with photoURL
         setUserProfile({
           displayName: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
           email: currentUser.email?.toLowerCase() || "",
+          photoURL: currentUser.photoURL || null,
         });
         setLoading(false); // Immediate unblock!
 
@@ -135,13 +148,27 @@ export function AuthProvider({ children }) {
     return loggedUser;
   };
 
-  // FR-02 & US-02: Sign in with Google (Gmail)
+  // FR-02 & US-02: Sign in with Google (Gmail) - Superfast responsive login
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
     const userCredential = await signInWithPopup(auth, provider);
     const loggedUser = userCredential.user;
-    await syncUserProfile(loggedUser);
+
+    // Immediately set active user and profile with Google photo to unblock router redirect instantly
+    setUser(loggedUser);
+    setUserProfile({
+      displayName: loggedUser.displayName || loggedUser.email?.split("@")[0] || "User",
+      email: loggedUser.email?.toLowerCase() || "",
+      photoURL: loggedUser.photoURL || null,
+    });
+    setLoading(false);
+
+    // Sync full profile to Firestore in background without delaying user
+    syncUserProfile(loggedUser).catch((err) =>
+      console.warn("Background user sync note:", err?.message)
+    );
+
     return loggedUser;
   };
 

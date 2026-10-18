@@ -90,9 +90,9 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Error Alert */}
+        {/* Error Alert (Earth Gold Palette) */}
         {error && (
-          <div className="rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3.5 text-xs font-semibold text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50" role="alert">
+          <div className="rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3.5 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]" role="alert">
             {error}
           </div>
         )}

@@ -223,7 +223,7 @@ function ProjectDetailsContent() {
     return (
       <ProtectedRoute>
         <div className="mx-auto max-w-lg px-4 py-16 text-center">
-          <ShieldAlert className="mx-auto h-12 w-12 text-rose-500" />
+          <ShieldAlert className="mx-auto h-12 w-12 text-[#CA8A04]" />
           <h2 className="mt-3 text-lg font-bold text-[#26332B] dark:text-[#FAF9F6]">{t("project.accessDenied")}</h2>
           <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393]">
             {t("project.accessDeniedSub")}
@@ -327,7 +327,7 @@ function ProjectDetailsContent() {
 
         {/* Global Error Notice */}
         {error && (
-          <div className="rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 p-4 text-xs font-semibold text-rose-600 dark:text-rose-400">
+          <div className="rounded-xl border border-[#CA8A04]/40 dark:border-[#6B5424] bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-4 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15]">
             {error}
           </div>
         )}

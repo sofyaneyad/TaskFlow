@@ -2,15 +2,17 @@
 
 import { useState, Suspense } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
 export default function AppLayoutWrapper({ children }) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0C0C0E] text-slate-900 dark:text-white transition-colors">
+    <div className="min-h-screen flex flex-col bg-[#FAF9F6] dark:bg-[#0E1512] text-[#26332B] dark:text-[#FAF9F6] transition-colors">
       {/* 1. Sidebar (Visible when logged in) */}
       {user && (
         <Suspense fallback={null}>
@@ -22,7 +24,7 @@ export default function AppLayoutWrapper({ children }) {
       )}
 
       {/* 2. Top Bar */}
-      <Suspense fallback={<div className="h-14 w-full bg-white dark:bg-[#101014] border-b border-slate-200 dark:border-[#22222B]" />}>
+      <Suspense fallback={<div className="h-14 w-full bg-[#FFFFFF] dark:bg-[#17221C] border-b border-[#E5EBE5] dark:border-[#26372D]" />}>
         <Navbar
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
           isLoggedIn={Boolean(user)}
@@ -40,13 +42,12 @@ export default function AppLayoutWrapper({ children }) {
 
       {/* 4. Minimal Footer */}
       <footer
-        className={`border-t border-slate-200 dark:border-[#1E1E26] bg-white dark:bg-[#101014] py-3 text-center text-xs text-slate-500 dark:text-slate-500 transition-colors ${
+        className={`border-t border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] py-3.5 text-center text-xs text-[#5E7164] dark:text-[#8EA393] transition-colors ${
           user ? "lg:pl-60 rtl:lg:pl-0 rtl:lg:pr-60" : ""
         }`}
       >
-        <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px]">
-          <span>TaskFlow • Modern Task & Project Management</span>
-          <span className="text-slate-400 dark:text-slate-600">Built with Next.js 16, React 19 & Tailwind CSS</span>
+        <div className="mx-auto max-w-7xl px-4 flex items-center justify-center text-[11px] font-medium">
+          <span>{t("common.footerCopyright") || "TaskFlow • Modern Task & Project Management"}</span>
         </div>
       </footer>
     </div>

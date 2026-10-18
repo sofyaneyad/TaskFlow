@@ -24,6 +24,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
 
   const displayName =
     userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
+  const photoURL = user?.photoURL || userProfile?.photoURL;
   const userInitials = displayName
     .split(" ")
     .map((n) => n[0])
@@ -75,13 +76,27 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
         {/* Right Side Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
           {isLoggedIn && (
-            <Link
-              href="/projects/new"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] text-white px-3 py-1.5 text-xs font-bold transition shadow-xs"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{t("dashboard.newProject")}</span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/projects/new"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] text-white px-3 py-1.5 text-xs font-bold transition shadow-xs"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{t("dashboard.newProject")}</span>
+              </Link>
+              {photoURL ? (
+                <img
+                  src={photoURL}
+                  alt={displayName}
+                  referrerPolicy="no-referrer"
+                  className="h-8 w-8 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D] shadow-2xs shrink-0"
+                />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#166534] text-xs font-bold text-white ring-1 ring-[#C8DAC9] dark:ring-[#26372D] shrink-0">
+                  {userInitials}
+                </div>
+              )}
+            </div>
           )}
 
           {/* Theme Toggle (Dark / Light) */}

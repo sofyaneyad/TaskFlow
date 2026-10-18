@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { ArrowRight, CheckCircle2, ShieldCheck, Zap, LayoutDashboard } from "lucide-react";
+import { ArrowRight, LayoutDashboard } from "lucide-react";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -39,8 +39,8 @@ export default function HomePage() {
 
           <p className="mt-6 text-base sm:text-lg leading-relaxed text-[#5E7164] dark:text-[#8EA393]">
             {isRTL
-              ? "مساحة عمل هادئة ومصممة بعناية لمساعدتك أنت وفريقك على التخطيط، والمتابعة، وإنجاز المشاريع في وقتها. تدعم الوضعين الداكن والفاتح ولغات متعددة مع استجابة فائقة السرعة."
-              : "A calm, purposeful workspace designed to help you and your team plan, track, and complete projects with clarity. Supporting dark & light modes and multiple languages seamlessly."}
+              ? "مساحة عمل هادئة ومصممة بعناية لمساعدتك أنت وفريقك على التخطيط، والمتابعة، وإنجاز المشاريع في وقتها."
+              : "A calm, purposeful workspace designed to help you and your team plan, track, and complete projects with clarity."}
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -67,22 +67,6 @@ export default function HomePage() {
                 </Link>
               </>
             )}
-          </div>
-
-          {/* Quick Features List */}
-          <div className="mt-12 border-t border-[#E5EBE5] dark:border-[#26372D] pt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393]">
-              <CheckCircle2 className="h-4 w-4 text-[#166534] dark:text-[#86A789] shrink-0" />
-              <span>{isRTL ? "استجابة فورية وحفظ محلي" : "Instant Local Responsiveness"}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393]">
-              <ShieldCheck className="h-4 w-4 text-[#166534] dark:text-[#86A789] shrink-0" />
-              <span>{isRTL ? "دعم كامل للغات والوضع الداكن" : "Multi-Language & Dark/Light"}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393]">
-              <Zap className="h-4 w-4 text-[#166534] dark:text-[#86A789] shrink-0" />
-              <span>{isRTL ? "لوحة كانبان وإحصائيات دقيقة" : "Kanban Board & Real Stats"}</span>
-            </div>
           </div>
         </div>
       </div>

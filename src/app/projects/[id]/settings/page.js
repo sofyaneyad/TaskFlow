@@ -179,7 +179,7 @@ function ProjectSettingsContent() {
     return (
       <ProtectedRoute>
         <div className="mx-auto max-w-lg px-4 py-16 text-center">
-          <ShieldAlert className="mx-auto h-12 w-12 text-rose-500" />
+          <ShieldAlert className="mx-auto h-12 w-12 text-[#CA8A04]" />
           <h2 className="mt-3 text-lg font-bold text-[#26332B] dark:text-[#FAF9F6]">{t("project.accessDenied")}</h2>
           <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393]">
             {t("project.accessDeniedSub")}
@@ -224,7 +224,7 @@ function ProjectSettingsContent() {
           <p className="text-xs text-[#5E7164] dark:text-[#8EA393]">{t("settings.generalInfoSub")}</p>
 
           {updateError && (
-            <div className="mt-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
+            <div className="mt-3 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
               {updateError}
             </div>
           )}
@@ -310,7 +310,7 @@ function ProjectSettingsContent() {
           </form>
 
           {memberError && (
-            <div className="mt-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
+            <div className="mt-3 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
               {memberError}
             </div>
           )}
@@ -327,9 +327,18 @@ function ProjectSettingsContent() {
               return (
                 <div key={member.uid} className="flex items-center justify-between p-3.5">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] text-xs font-bold text-[#166534] dark:text-[#86A789]">
-                      {member.displayName?.charAt(0)?.toUpperCase() || "U"}
-                    </div>
+                    {member.photoURL ? (
+                      <img
+                        src={member.photoURL}
+                        alt={member.displayName || "User"}
+                        referrerPolicy="no-referrer"
+                        className="h-8 w-8 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
+                      />
+                    ) : (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] text-xs font-bold text-[#166534] dark:text-[#86A789]">
+                        {member.displayName?.charAt(0)?.toUpperCase() || "U"}
+                      </div>
+                    )}
                     <div>
                       <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] flex items-center gap-2">
                         <span>{member.displayName || "User"}</span>
@@ -347,7 +356,7 @@ function ProjectSettingsContent() {
                     <button
                       type="button"
                       onClick={() => handleRemoveMember(member.uid)}
-                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition"
                       title={t("settings.remove")}
                     >
                       <UserMinus className="h-3.5 w-3.5" /> {t("settings.remove")}
@@ -359,17 +368,17 @@ function ProjectSettingsContent() {
           </div>
         </div>
 
-        {/* 3. Danger Zone */}
-        <div className="rounded-2xl border border-rose-200 dark:border-rose-900/40 bg-rose-50/40 dark:bg-rose-950/20 p-6 shadow-xs">
-          <h2 className="text-base font-bold text-rose-600 dark:text-rose-400">{t("settings.dangerZone")}</h2>
-          <p className="text-xs text-rose-600/80 dark:text-rose-400/80 mt-1">
+        {/* 3. Danger Zone (Earth Gold Palette) */}
+        <div className="rounded-2xl border border-[#CA8A04]/40 dark:border-[#6B5424] bg-[#FAF5E8]/60 dark:bg-[#6B5424]/20 p-6 shadow-xs">
+          <h2 className="text-base font-bold text-[#854D0E] dark:text-[#FACC15]">{t("settings.dangerZone")}</h2>
+          <p className="text-xs text-[#854D0E]/80 dark:text-[#FACC15]/80 mt-1">
             {t("settings.dangerZoneSub")}
           </p>
           <div className="mt-4">
             <button
               type="button"
               onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-xs transition"
+              className="flex items-center gap-2 rounded-xl bg-[#CA8A04] hover:bg-[#A16207] px-4 py-2 text-xs font-bold text-white shadow-xs transition"
             >
               <Trash2 className="h-4 w-4" /> {t("settings.deleteProject")}
             </button>
@@ -380,7 +389,7 @@ function ProjectSettingsContent() {
         {showDeleteModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-2xs">
             <div className="w-full max-w-md rounded-2xl bg-[#FFFFFF] dark:bg-[#17221C] p-6 shadow-2xl border border-[#E5EBE5] dark:border-[#26372D] text-center">
-              <Trash2 className="mx-auto h-10 w-10 text-rose-500 mb-2" />
+              <Trash2 className="mx-auto h-10 w-10 text-[#CA8A04] mb-2" />
               <h3 className="text-lg font-bold text-[#26332B] dark:text-[#FAF9F6]">{t("settings.deleteModalTitle")} &quot;{project.name}&quot;?</h3>
               <p className="mt-2 text-xs text-[#5E7164] dark:text-[#8EA393]">
                 {t("settings.deleteModalSub")}
@@ -397,7 +406,7 @@ function ProjectSettingsContent() {
                   type="button"
                   disabled={isDeletingProject}
                   onClick={handleDeleteProject}
-                  className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
+                  className="flex items-center gap-1.5 rounded-xl bg-[#CA8A04] hover:bg-[#A16207] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
                 >
                   {isDeletingProject && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   {t("settings.confirmDelete")}
@@ -412,12 +421,15 @@ function ProjectSettingsContent() {
 }
 
 export default function ProjectSettingsPage() {
+  const { t } = useLanguage();
   return (
     <Suspense
       fallback={
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#4F46E5] mb-2" />
-          <p className="text-xs text-[#64748B] font-medium">Loading project settings...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#166534] dark:text-[#86A789] mb-2" />
+          <p className="text-xs text-[#5E7164] dark:text-[#8EA393] font-medium">
+            {t("common.loadingSettings") || "Loading project settings..."}
+          </p>
         </div>
       }
     >

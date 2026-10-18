@@ -93,10 +93,10 @@ export default function TaskModal({
           </button>
         </div>
 
-        {/* Error Alert */}
+        {/* Error Alert (Earth Gold Palette) */}
         {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
-            <AlertCircle className="h-4 w-4 shrink-0" />
+          <div className="mt-4 flex items-center gap-2 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
+            <AlertCircle className="h-4 w-4 shrink-0 text-[#CA8A04]" />
             <span>{error}</span>
           </div>
         )}

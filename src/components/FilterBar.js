@@ -34,18 +34,18 @@ export default function FilterBar({
           />
         </div>
 
-        {/* Overdue Button */}
+        {/* Overdue Button (Earth Gold Palette) */}
         <button
           type="button"
           onClick={() => setOverdueOnly(!overdueOnly)}
           className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition shrink-0 ${
             overdueOnly
-              ? "bg-rose-700 text-white border-rose-700 shadow-2xs"
-              : "border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+              ? "bg-[#CA8A04] text-white border-[#A16207] shadow-2xs"
+              : "border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] text-[#854D0E] dark:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30"
           }`}
           aria-pressed={overdueOnly}
         >
-          <AlertTriangle className={`h-3.5 w-3.5 ${overdueOnly ? "text-white" : "text-rose-500"}`} />
+          <AlertTriangle className={`h-3.5 w-3.5 ${overdueOnly ? "text-white" : "text-[#CA8A04]"}`} />
           <span>{t("filter.overdueOnly")}</span>
         </button>
       </div>
