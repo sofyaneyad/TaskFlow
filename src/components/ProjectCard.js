@@ -1,11 +1,13 @@
+"use client";
+
 import Link from "next/link";
-import { Folder, Users, Settings, ArrowRight, ShieldCheck, UserCheck, Clock } from "lucide-react";
+import { Folder, Users, Settings, ArrowRight, ShieldCheck, UserCheck } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function ProjectCard({ project, currentUserId }) {
+  const { t } = useLanguage();
   const isOwner = project.ownerId === currentUserId;
   const memberCount = project.memberIds?.length || 1;
-
-  // Visual progress calculation or mock percentage if fresh
   const progressPercent = project.progressPercent || 65;
 
   return (
@@ -24,11 +26,11 @@ export default function ProjectCard({ project, currentUserId }) {
               <div className="mt-1 flex items-center gap-2">
                 {isOwner ? (
                   <span className="badge-owner inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold">
-                    <ShieldCheck className="h-3 w-3" /> Owner
+                    <ShieldCheck className="h-3 w-3" /> {t("project.owner")}
                   </span>
                 ) : (
                   <span className="badge-member inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold">
-                    <UserCheck className="h-3 w-3" /> Member
+                    <UserCheck className="h-3 w-3" /> {t("project.member")}
                   </span>
                 )}
               </div>
@@ -39,7 +41,7 @@ export default function ProjectCard({ project, currentUserId }) {
             <Link
               href={`/projects/${project.id}/settings`}
               className="rounded-lg p-1.5 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] transition"
-              title="Project Settings"
+              title={t("project.settings")}
             >
               <Settings className="h-4 w-4" />
             </Link>
@@ -48,13 +50,13 @@ export default function ProjectCard({ project, currentUserId }) {
 
         {/* Description */}
         <p className="mt-3.5 text-xs text-[#64748B] line-clamp-2 leading-relaxed">
-          {project.description || "No description provided for this project."}
+          {project.description || "No description provided."}
         </p>
 
-        {/* Progress Bar (from TaskFlow Design System) */}
+        {/* Progress Bar */}
         <div className="mt-5 space-y-1.5">
           <div className="flex items-center justify-between text-[11px] font-semibold">
-            <span className="text-[#64748B]">Project Progress</span>
+            <span className="text-[#64748B]">{t("dashboard.projectProgress")}</span>
             <span className="text-[#4F46E5] font-bold">{progressPercent}%</span>
           </div>
           <div className="h-1.5 w-full rounded-full bg-[#F1F5F9] overflow-hidden">
@@ -66,20 +68,20 @@ export default function ProjectCard({ project, currentUserId }) {
         </div>
       </div>
 
-      {/* Footer Info with Members & Update time */}
+      {/* Footer Info */}
       <div className="mt-5 border-t border-[#F1F5F9] pt-3.5 flex items-center justify-between text-xs">
         <div className="flex items-center gap-1.5 text-[#64748B]">
           <Users className="h-3.5 w-3.5 text-[#4F46E5]" />
           <span className="font-medium text-[#0F172A]">{memberCount}</span>
-          <span>{memberCount === 1 ? "member" : "members"}</span>
+          <span>{memberCount === 1 ? t("dashboard.member") : t("dashboard.members")}</span>
         </div>
 
         <Link
           href={`/projects/${project.id}`}
           className="flex items-center gap-1 font-semibold text-[#4F46E5] hover:text-[#4338CA] transition group text-xs"
         >
-          <span>Open Project</span>
-          <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
+          <span>{t("dashboard.openProject")}</span>
+          <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" />
         </Link>
       </div>
     </div>

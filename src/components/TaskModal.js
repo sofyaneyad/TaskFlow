@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function TaskModal({
   isOpen,
@@ -10,6 +11,7 @@ export default function TaskModal({
   initialData = null,
   members = [],
 }) {
+  const { t } = useLanguage();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("todo");
@@ -44,7 +46,6 @@ export default function TaskModal({
     e.preventDefault();
     setError("");
 
-    // Validate (Section 10.1)
     if (!title || title.trim().length < 3 || title.trim().length > 120) {
       setError("Task title is required and must be between 3 and 120 characters.");
       return;
@@ -74,16 +75,16 @@ export default function TaskModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-xs">
-      <div className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl border border-slate-100">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <h3 className="text-lg font-bold text-slate-900">
-            {initialData ? "Edit Task" : "Create New Task"}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-2xs">
+      <div className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl border border-[#E2E8F0]">
+        <div className="flex items-center justify-between pb-3.5 border-b border-[#F1F5F9]">
+          <h3 className="text-lg font-bold text-[#0F172A]">
+            {initialData && initialData.id ? t("taskModal.editTitle") : t("taskModal.createTitle")}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            className="rounded-lg p-1.5 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
             aria-label="Close modal"
           >
             <X className="h-5 w-5" />
@@ -91,7 +92,7 @@ export default function TaskModal({
         </div>
 
         {error && (
-          <div className="mt-3 rounded-lg bg-rose-50 p-3 text-xs font-semibold text-rose-700">
+          <div className="mt-3 rounded-xl bg-[#FEF2F2] p-3 text-xs font-semibold text-[#DC2626] border border-[#FECACA]">
             {error}
           </div>
         )}
@@ -100,10 +101,10 @@ export default function TaskModal({
           {/* Title */}
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="task-title" className="block text-xs font-semibold text-slate-700">
-                Task Title *
+              <label htmlFor="task-title" className="block text-xs font-bold text-[#0F172A]">
+                {t("taskModal.titleLabel")} *
               </label>
-              <span className="text-[11px] text-slate-400">{title.length}/120</span>
+              <span className="text-[11px] font-medium text-[#64748B]">{title.length}/120</span>
             </div>
             <input
               id="task-title"
@@ -113,18 +114,18 @@ export default function TaskModal({
               maxLength={120}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Implement user authentication"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              placeholder={t("taskModal.titlePlaceholder")}
+              className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] px-3.5 py-2.5 text-xs placeholder-[#94A3B8] focus:border-[#4F46E5] focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
             />
           </div>
 
           {/* Description */}
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="task-desc" className="block text-xs font-semibold text-slate-700">
-                Description (Optional)
+              <label htmlFor="task-desc" className="block text-xs font-bold text-[#0F172A]">
+                {t("taskModal.descLabel")}
               </label>
-              <span className="text-[11px] text-slate-400">{description.length}/1000</span>
+              <span className="text-[11px] font-medium text-[#64748B]">{description.length}/1000</span>
             </div>
             <textarea
               id="task-desc"
@@ -132,42 +133,42 @@ export default function TaskModal({
               maxLength={1000}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Provide context or acceptance details..."
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              placeholder={t("taskModal.descPlaceholder")}
+              className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] px-3.5 py-2.5 text-xs placeholder-[#94A3B8] focus:border-[#4F46E5] focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
             />
           </div>
 
           {/* Status & Priority Row */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="task-status" className="block text-xs font-semibold text-slate-700">
-                Status
+              <label htmlFor="task-status" className="block text-xs font-bold text-[#0F172A]">
+                {t("taskModal.status")}
               </label>
               <select
                 id="task-status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-xs text-[#0F172A] focus:border-[#4F46E5] focus:outline-none"
               >
-                <option value="todo">To Do</option>
-                <option value="in_progress">In Progress</option>
-                <option value="done">Done</option>
+                <option value="todo">{t("dashboard.todo")}</option>
+                <option value="in_progress">{t("dashboard.inProgress")}</option>
+                <option value="done">{t("dashboard.completed")}</option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="task-priority" className="block text-xs font-semibold text-slate-700">
-                Priority
+              <label htmlFor="task-priority" className="block text-xs font-bold text-[#0F172A]">
+                {t("taskModal.priority")}
               </label>
               <select
                 id="task-priority"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-xs text-[#0F172A] focus:border-[#4F46E5] focus:outline-none"
               >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
+                <option value="low">{t("task.lowPriority")}</option>
+                <option value="medium">{t("task.mediumPriority")}</option>
+                <option value="high">{t("task.highPriority")}</option>
               </select>
             </div>
           </div>
@@ -175,29 +176,29 @@ export default function TaskModal({
           {/* Due Date & Assignee Row */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="task-due" className="block text-xs font-semibold text-slate-700">
-                Due Date
+              <label htmlFor="task-due" className="block text-xs font-bold text-[#0F172A]">
+                {t("taskModal.dueDate")}
               </label>
               <input
                 id="task-due"
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-xs text-[#0F172A] focus:border-[#4F46E5] focus:outline-none"
               />
             </div>
 
             <div>
-              <label htmlFor="task-assignee" className="block text-xs font-semibold text-slate-700">
-                Assignee
+              <label htmlFor="task-assignee" className="block text-xs font-bold text-[#0F172A]">
+                {t("taskModal.assignee")}
               </label>
               <select
                 id="task-assignee"
                 value={assigneeId}
                 onChange={(e) => setAssigneeId(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] bg-white px-3 py-2 text-xs text-[#0F172A] focus:border-[#4F46E5] focus:outline-none"
               >
-                <option value="">Unassigned</option>
+                <option value="">{t("taskModal.unassigned")}</option>
                 {members.map((m) => (
                   <option key={m.uid} value={m.uid}>
                     {m.displayName || m.email}
@@ -208,21 +209,21 @@ export default function TaskModal({
           </div>
 
           {/* Action buttons */}
-          <div className="mt-6 flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="mt-6 flex items-center justify-end gap-3 pt-3 border-t border-[#F1F5F9]">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none"
+              className="rounded-xl border border-[#E2E8F0] bg-white px-4 py-2 text-xs font-bold text-[#0F172A] hover:bg-[#F1F5F9]"
             >
-              Cancel
+              {t("taskModal.cancel")}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] px-5 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {initialData ? "Save Changes" : "Create Task"}
+              {initialData && initialData.id ? t("taskModal.saveChanges") : t("taskModal.createTask")}
             </button>
           </div>
         </form>

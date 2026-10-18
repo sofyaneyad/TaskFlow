@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { createProject } from "@/services/projects";
 import { FolderPlus, ArrowLeft, Loader2 } from "lucide-react";
@@ -14,6 +15,7 @@ export default function NewProjectPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -37,7 +39,6 @@ export default function NewProjectPage() {
         description: description.trim(),
         ownerId: user.uid,
       });
-      // Instant navigation!
       router.push(`/projects/${created.id}`);
     } catch (err) {
       console.error("Create project error:", err);
@@ -54,7 +55,7 @@ export default function NewProjectPage() {
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#64748B] hover:text-[#4F46E5] mb-6"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Dashboard
+          <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" /> {t("newProject.backToDashboard")}
         </Link>
 
         <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 sm:p-8 shadow-2xs">
@@ -63,9 +64,9 @@ export default function NewProjectPage() {
               <FolderPlus className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-[#0F172A]">Create New Project</h1>
+              <h1 className="text-xl font-extrabold text-[#0F172A]">{t("newProject.title")}</h1>
               <p className="text-xs text-[#64748B]">
-                You will be the project owner and can add team members.
+                {t("newProject.subtitle")}
               </p>
             </div>
           </div>
@@ -81,7 +82,7 @@ export default function NewProjectPage() {
             <div>
               <div className="flex items-center justify-between">
                 <label htmlFor="project-name" className="block text-xs font-bold text-[#0F172A]">
-                  Project Name * (3–80 characters)
+                  {t("newProject.nameLabel")} * (3–80)
                 </label>
                 <span className="text-[11px] font-medium text-[#64748B]">{name.length}/80</span>
               </div>
@@ -93,7 +94,7 @@ export default function NewProjectPage() {
                 maxLength={80}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Website Redesign"
+                placeholder={t("newProject.namePlaceholder")}
                 className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] px-3.5 py-2.5 text-sm placeholder-[#94A3B8] focus:border-[#4F46E5] focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
               />
             </div>
@@ -102,7 +103,7 @@ export default function NewProjectPage() {
             <div>
               <div className="flex items-center justify-between">
                 <label htmlFor="project-description" className="block text-xs font-bold text-[#0F172A]">
-                  Description (Optional, max 1000 characters)
+                  {t("newProject.descLabel")}
                 </label>
                 <span className="text-[11px] font-medium text-[#64748B]">{description.length}/1000</span>
               </div>
@@ -112,7 +113,7 @@ export default function NewProjectPage() {
                 maxLength={1000}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe project objectives and deliverables..."
+                placeholder={t("newProject.descPlaceholder")}
                 className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] px-3.5 py-2.5 text-sm placeholder-[#94A3B8] focus:border-[#4F46E5] focus:outline-none focus:ring-1 focus:ring-[#4F46E5]"
               />
             </div>
@@ -123,7 +124,7 @@ export default function NewProjectPage() {
                 href="/dashboard"
                 className="rounded-xl border border-[#E2E8F0] bg-white px-4 py-2.5 text-xs font-bold text-[#0F172A] hover:bg-[#F1F5F9] transition"
               >
-                Cancel
+                {t("newProject.cancel")}
               </Link>
               <button
                 type="submit"
@@ -131,7 +132,7 @@ export default function NewProjectPage() {
                 className="flex items-center gap-2 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] px-5 py-2.5 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                Create Project
+                {loading ? t("newProject.creating") : t("newProject.submit")}
               </button>
             </div>
           </form>

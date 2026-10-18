@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { Lock, Mail, Loader2, ArrowRight, CheckSquare } from "lucide-react";
 
 export default function LoginPage() {
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { login, loginWithGoogle } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const handleLogin = async (e) => {
@@ -71,10 +73,10 @@ export default function LoginPage() {
             <CheckSquare className="h-6 w-6" />
           </div>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
-            Sign in to TaskFlow
+            {t("auth.signInTitle")}
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Access your projects with Email or your Google account
+            {t("auth.signInSub")}
           </p>
         </div>
 
@@ -114,14 +116,14 @@ export default function LoginPage() {
               />
             </svg>
           )}
-          <span>Sign in with Google</span>
+          <span>{t("auth.signInGoogle")}</span>
         </button>
 
         {/* Divider */}
         <div className="relative flex items-center justify-center">
           <div className="w-full border-t border-slate-200" />
           <span className="bg-white px-3 text-[11px] font-medium uppercase tracking-wider text-slate-400">
-            or with email
+            {t("auth.orWithEmail")}
           </span>
         </div>
 
@@ -129,10 +131,10 @@ export default function LoginPage() {
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <label htmlFor="login-email" className="block text-xs font-semibold text-slate-700">
-              Email Address
+              {t("auth.emailLabel")}
             </label>
             <div className="relative mt-1">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 id="login-email"
                 type="email"
@@ -141,17 +143,17 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
 
           <div>
             <label htmlFor="login-password" className="block text-xs font-semibold text-slate-700">
-              Password
+              {t("auth.passwordLabel")}
             </label>
             <div className="relative mt-1">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 id="login-password"
                 type="password"
@@ -160,7 +162,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -170,21 +172,21 @@ export default function LoginPage() {
             disabled={loading || googleLoading}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:opacity-50 transition"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Sign In <ArrowRight className="h-4 w-4" /></>}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                {t("auth.signInBtn")} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+              </>
+            )}
           </button>
         </form>
 
-        {/* Demo Accounts Tip */}
-        <div className="rounded-lg bg-slate-50 p-3 text-[11px] text-slate-600 border border-slate-200">
-          <p className="font-semibold text-slate-800 mb-1">Demo Credentials:</p>
-          <p>You can sign in with your Google account, or use email/password accounts.</p>
-        </div>
-
         {/* Switch to Register */}
         <div className="text-center text-xs text-slate-500">
-          Don&apos;t have an account yet?{" "}
+          {t("auth.noAccount")}{" "}
           <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
-            Create an account
+            {t("auth.createAccountLink")}
           </Link>
         </div>
       </div>

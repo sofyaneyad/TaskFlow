@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { Lock, Mail, User, Loader2, ArrowRight, CheckSquare } from "lucide-react";
 
 export default function RegisterPage() {
@@ -15,6 +16,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { register, loginWithGoogle } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const handleRegister = async (e) => {
@@ -90,10 +92,10 @@ export default function RegisterPage() {
             <CheckSquare className="h-6 w-6" />
           </div>
           <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">
-            Create your TaskFlow account
+            {t("auth.registerTitle")}
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Start organizing projects and tracking tasks today
+            {t("auth.registerSub")}
           </p>
         </div>
 
@@ -133,14 +135,14 @@ export default function RegisterPage() {
               />
             </svg>
           )}
-          <span>Continue with Google</span>
+          <span>{t("auth.signUpGoogle")}</span>
         </button>
 
         {/* Divider */}
         <div className="relative flex items-center justify-center">
           <div className="w-full border-t border-slate-200" />
           <span className="bg-white px-3 text-[11px] font-medium uppercase tracking-wider text-slate-400">
-            or register with email
+            {t("auth.orRegisterEmail")}
           </span>
         </div>
 
@@ -149,10 +151,10 @@ export default function RegisterPage() {
           {/* Name */}
           <div>
             <label htmlFor="reg-name" className="block text-xs font-semibold text-slate-700">
-              Full Name *
+              {t("auth.fullName")} *
             </label>
             <div className="relative mt-1">
-              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <User className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 id="reg-name"
                 type="text"
@@ -161,7 +163,7 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sarah Jenkins"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -169,10 +171,10 @@ export default function RegisterPage() {
           {/* Email */}
           <div>
             <label htmlFor="reg-email" className="block text-xs font-semibold text-slate-700">
-              Email Address *
+              {t("auth.emailLabel")} *
             </label>
             <div className="relative mt-1">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 id="reg-email"
                 type="email"
@@ -180,7 +182,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="sarah@example.com"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -188,10 +190,10 @@ export default function RegisterPage() {
           {/* Password */}
           <div>
             <label htmlFor="reg-password" className="block text-xs font-semibold text-slate-700">
-              Password * (min 6 characters)
+              {t("auth.passwordLabel")} *
             </label>
             <div className="relative mt-1">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 id="reg-password"
                 type="password"
@@ -200,7 +202,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -208,10 +210,10 @@ export default function RegisterPage() {
           {/* Confirm Password */}
           <div>
             <label htmlFor="reg-confirm-password" className="block text-xs font-semibold text-slate-700">
-              Confirm Password *
+              {t("auth.confirmPassword")} *
             </label>
             <div className="relative mt-1">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 id="reg-confirm-password"
                 type="password"
@@ -220,7 +222,7 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           </div>
@@ -230,15 +232,21 @@ export default function RegisterPage() {
             disabled={loading || googleLoading}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 disabled:opacity-50 transition"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Create Account <ArrowRight className="h-4 w-4" /></>}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                {t("auth.createAccountBtn")} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+              </>
+            )}
           </button>
         </form>
 
         {/* Switch to Login */}
         <div className="text-center text-xs text-slate-500">
-          Already have an account?{" "}
+          {t("auth.alreadyAccount")}{" "}
           <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
-            Sign in
+            {t("auth.signInLink")}
           </Link>
         </div>
       </div>
