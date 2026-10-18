@@ -25,8 +25,8 @@ export default function ProtectedRoute({ children }) {
   if (!mounted || loading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 text-center">
-        <Loader2 className="h-10 w-10 animate-spin text-[#166534] dark:text-[#86A789] mb-4" />
-        <p className="text-sm font-medium text-[#5E7164] dark:text-[#8EA393]">
+        <Loader2 className="h-10 w-10 animate-spin text-[#059669] dark:text-[#00D084] mb-4" />
+        <p className="text-sm font-medium text-[#64748B] dark:text-[#7B9A89]">
           {t("common.loadingWorkspace") || "Loading your workspace..."}
         </p>
       </div>

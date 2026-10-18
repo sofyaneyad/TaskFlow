@@ -38,7 +38,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
 
   return (
     <header
-      className={`sticky top-0 z-20 w-full border-b border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF]/95 dark:bg-[#17221C]/95 backdrop-blur-md transition-colors ${
+      className={`sticky top-0 z-20 w-full border-b border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF]/95 dark:bg-[#07160D]/95 backdrop-blur-md transition-colors ${
         userLoggedIn ? "lg:pl-60 rtl:lg:pl-0 rtl:lg:pr-60" : ""
       }`}
     >
@@ -51,7 +51,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
               <button
                 type="button"
                 onClick={onToggleSidebar}
-                className="lg:hidden rounded-xl p-1.5 text-[#5E7164] dark:text-[#8EA393] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] focus:outline-none shrink-0"
+                className="lg:hidden rounded-xl p-1.5 text-[#64748B] dark:text-[#7B9A89] hover:bg-[#F1F5F9] dark:hover:bg-[#0D2217] focus:outline-none shrink-0 cursor-pointer"
                 aria-label="Toggle navigation drawer"
               >
                 <Menu className="h-5 w-5" />
@@ -63,8 +63,8 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
               </div>
 
               {/* Desktop breadcrumb */}
-              <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6] truncate">
-                <LayoutDashboard className="h-4 w-4 text-[#86A789] shrink-0" />
+              <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF] truncate">
+                <LayoutDashboard className="h-4 w-4 text-[#059669] dark:text-[#00D084] shrink-0" />
                 <span className="truncate">{pathname.includes("/projects/") ? t("dashboard.myProjects") : t("nav.dashboard")}</span>
               </div>
             </>
@@ -79,7 +79,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Link
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] text-white px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-xs font-bold transition shadow-xs whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00925D] text-white px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-xs font-bold transition shadow-xs whitespace-nowrap shrink-0"
               >
                 <Plus className="h-3.5 w-3.5 shrink-0" />
                 <span className="hidden sm:inline">{t("dashboard.newProject")}</span>
@@ -89,10 +89,10 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
                   src={photoURL}
                   alt={displayName}
                   referrerPolicy="no-referrer"
-                  className="h-8 w-8 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D] shadow-2xs shrink-0"
+                  className="h-8 w-8 rounded-full object-cover ring-1 ring-[#CBD5E1] dark:ring-[#17432B] shadow-2xs shrink-0"
                 />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#166534] text-xs font-bold text-white ring-1 ring-[#C8DAC9] dark:ring-[#26372D] shrink-0">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#059669] dark:bg-[#00A86B] text-xs font-bold text-white ring-1 ring-[#CBD5E1] dark:ring-[#17432B] shrink-0">
                   {userInitials}
                 </div>
               )}
@@ -114,13 +114,13 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Link
                 href="/login"
-                className="text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6] hover:text-[#166534] dark:hover:text-[#86A789] transition px-2 py-1.5 sm:px-2.5 whitespace-nowrap shrink-0"
+                className="text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF] hover:text-[#059669] dark:hover:text-[#00D084] transition px-2 py-1.5 sm:px-2.5 whitespace-nowrap shrink-0"
               >
                 {t("nav.signIn")}
               </Link>
               <Link
                 href="/register"
-                className="rounded-xl bg-[#166534] hover:bg-[#14532D] text-white px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 text-xs font-bold shadow-xs transition whitespace-nowrap shrink-0"
+                className="rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00925D] text-white px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 text-xs font-bold shadow-xs transition whitespace-nowrap shrink-0"
               >
                 {t("nav.getStarted")}
               </Link>

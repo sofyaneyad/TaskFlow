@@ -10,7 +10,7 @@ export default function ThemeToggle({ className = "" }) {
 
   if (!isMounted) {
     return (
-      <div className="h-9 w-9 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] opacity-0" />
+      <div className="h-9 w-9 rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] opacity-0" />
     );
   }
 
@@ -29,16 +29,16 @@ export default function ThemeToggle({ className = "" }) {
       onClick={toggleTheme}
       title={title}
       aria-label={title}
-      className={`relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#166534] shadow-2xs shrink-0 ${
+      className={`relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#059669] dark:focus:ring-[#00D084] shadow-xs shrink-0 ${
         isDark
-          ? "border-[#26372D] bg-[#17221C] text-amber-400 hover:bg-[#1F2E26] hover:text-amber-300"
-          : "border-[#E5EBE5] bg-[#FFFFFF] text-[#26332B] hover:bg-[#FAF9F6] hover:text-[#166534]"
+          ? "border-[#133020] bg-[#0B1F14] text-[#F59E0B] hover:bg-[#133020] hover:text-[#FBBF24]"
+          : "border-[#E2E8F0] bg-[#FFFFFF] text-[#0F172A] hover:bg-[#F1F5F9] hover:text-[#059669]"
       } ${className}`}
     >
       {isDark ? (
         <Sun className="h-4 w-4 animate-in spin-in-180 duration-300" />
       ) : (
-        <Moon className="h-4 w-4 animate-in spin-in-180 duration-300 text-[#166534]" />
+        <Moon className="h-4 w-4 animate-in spin-in-180 duration-300 text-[#059669]" />
       )}
     </button>
   );

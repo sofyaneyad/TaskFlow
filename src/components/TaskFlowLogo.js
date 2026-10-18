@@ -15,12 +15,12 @@ export default function TaskFlowLogo({
   return (
     <Link
       href="/"
-      className={`inline-flex items-center gap-2 sm:gap-2.5 focus:outline-none focus:ring-2 focus:ring-[#166534] rounded-xl transition group shrink-0 ${className}`}
+      className={`inline-flex items-center gap-2 sm:gap-2.5 focus:outline-none focus:ring-2 focus:ring-[#059669] dark:focus:ring-[#00D084] rounded-xl transition group shrink-0 ${className}`}
       aria-label="TaskFlow Home"
     >
       {/* Brand Icon: Forest Green emblem with crisp white checkmark */}
       <div
-        className={`relative flex items-center justify-center shrink-0 rounded-xl bg-[#166534] border border-[#14532D] shadow-xs ${
+        className={`relative flex items-center justify-center shrink-0 rounded-xl bg-[#059669] dark:bg-[#00A86B] border border-[#047857] dark:border-[#008955] shadow-xs ${
           isSmall ? "h-8 w-8" : "h-9 w-9"
         }`}
       >
@@ -40,14 +40,14 @@ export default function TaskFlowLogo({
       {/* Brand Name: TaskFlow */}
       <div className={`flex flex-col ${hideTextOnMobile ? "hidden sm:flex" : "flex"}`}>
         <span
-          className={`font-black tracking-tight text-[#26332B] dark:text-[#FAF9F6] leading-none whitespace-nowrap ${
+          className={`font-black tracking-tight text-[#0F172A] dark:text-[#FFFFFF] leading-none whitespace-nowrap ${
             isSmall ? "text-base" : "text-lg"
           }`}
         >
-          Task<span className="text-[#166534] dark:text-[#86A789]">Flow</span>
+          Task<span className="text-[#059669] dark:text-[#00D084]">Flow</span>
         </span>
         {showTagline && (
-          <span className="text-[10px] font-medium tracking-wide text-[#5E7164] dark:text-[#8EA393] mt-0.5 whitespace-nowrap">
+          <span className="text-[10px] font-medium tracking-wide text-[#64748B] dark:text-[#7B9A89] mt-0.5 whitespace-nowrap">
             {t("nav.tagline")}
           </span>
         )}

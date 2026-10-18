@@ -19,7 +19,7 @@ export default function AppLayoutWrapper({ children }) {
   const isUserLoggedIn = mounted && Boolean(user);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF9F6] dark:bg-[#0E1512] text-[#26332B] dark:text-[#FAF9F6] transition-colors">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#06130B] text-[#0F172A] dark:text-[#FFFFFF] transition-colors">
       {/* 1. Sidebar (Visible only when logged in) */}
       {isUserLoggedIn && (
         <Suspense fallback={null}>
@@ -31,7 +31,7 @@ export default function AppLayoutWrapper({ children }) {
       )}
 
       {/* 2. Top Bar */}
-      <Suspense fallback={<div className="h-14 w-full bg-[#FFFFFF] dark:bg-[#17221C] border-b border-[#E5EBE5] dark:border-[#26372D]" />}>
+      <Suspense fallback={<div className="h-14 w-full bg-[#FFFFFF] dark:bg-[#07160D] border-b border-[#E2E8F0] dark:border-[#133020]" />}>
         <Navbar
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
           isLoggedIn={isUserLoggedIn}
@@ -49,7 +49,7 @@ export default function AppLayoutWrapper({ children }) {
 
       {/* 4. Minimal Footer */}
       <footer
-        className={`border-t border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] py-3 text-center text-xs text-[#5E7164] dark:text-[#8EA393] transition-colors ${
+        className={`border-t border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#07160D] py-3 text-center text-xs text-[#64748B] dark:text-[#7B9A89] transition-colors ${
           isUserLoggedIn ? "lg:pl-60 rtl:lg:pl-0 rtl:lg:pr-60" : ""
         }`}
       >

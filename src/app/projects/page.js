@@ -112,20 +112,20 @@ export default function ProjectsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#166534] text-white shadow-xs shrink-0">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#059669] dark:bg-[#00A86B] text-white shadow-xs shrink-0">
                 <FolderKanban className="h-5 w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#26332B] dark:text-[#FAF9F6]">
-                    {t("dashboard.myProjects") || "My Projects"}
+                  <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0F172A] dark:text-[#FFFFFF]">
+                    {t("dashboard.myProjects") || "المشاريع"}
                   </h1>
-                  <span className="rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-0.5 text-xs font-bold text-[#166534] dark:text-[#86A789]">
+                  <span className="rounded-full bg-[#ECFDF5] dark:bg-[#0E2E1D] px-2.5 py-0.5 text-xs font-bold text-[#059669] dark:text-[#00D084]">
                     {projects.length}
                   </span>
                 </div>
-                <p className="mt-0.5 text-xs text-[#5E7164] dark:text-[#8EA393]">
-                  {t("dashboard.myProjectsSub") || "Manage, organize, and monitor all your ongoing projects."}
+                <p className="mt-0.5 text-xs text-[#64748B] dark:text-[#7B9A89]">
+                  {t("dashboard.myProjectsSub") || "إدارة ومتابعة كافة مشاريعك ومسار إنجاز المهام."}
                 </p>
               </div>
             </div>
@@ -134,37 +134,37 @@ export default function ProjectsPage() {
           {/* Action Button */}
           <Link
             href="/projects/new"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00925D] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition"
           >
             <Plus className="h-4 w-4" />
-            <span>{t("dashboard.newProject") || "New Project"}</span>
+            <span>{t("dashboard.newProject") || "مشروع جديد"}</span>
           </Link>
         </div>
 
         {/* Toolbar: Search + Filter Tabs + Sort */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-2xl bg-white dark:bg-[#17221C] border border-[#E5EBE5] dark:border-[#26372D] p-3 sm:p-4 shadow-2xs">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-2xl bg-[#FFFFFF] dark:bg-[#0B1F14] border border-[#E2E8F0] dark:border-[#133020] p-3 sm:p-4 shadow-2xs">
           {/* Search input */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
+            <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t("dashboard.searchProjectsPlaceholder") || "Search projects by name..."}
-              className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#121B16] py-2 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-xs text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:outline-none transition"
+              placeholder={t("dashboard.searchProjectsPlaceholder") || "بحث في المشاريع..."}
+              className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] py-2 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-xs text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:outline-none transition"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Filter Pills */}
-            <div className="flex items-center rounded-xl bg-[#FAF9F6] dark:bg-[#121B16] p-1 border border-[#E5EBE5] dark:border-[#26372D] text-xs">
+            <div className="flex items-center rounded-xl bg-[#F8FAFC] dark:bg-[#06130B] p-1 border border-[#E2E8F0] dark:border-[#133020] text-xs">
               <button
                 type="button"
                 onClick={() => setFilterType("all")}
                 className={`rounded-lg px-3 py-1 font-semibold transition cursor-pointer ${
                   filterType === "all"
-                    ? "bg-white dark:bg-[#1E2E24] text-[#166534] dark:text-[#86A789] shadow-2xs font-bold"
-                    : "text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
+                    ? "bg-white dark:bg-[#0E2E1D] text-[#059669] dark:text-[#00D084] shadow-2xs font-bold"
+                    : "text-[#64748B] dark:text-[#7B9A89] hover:text-[#0F172A] dark:hover:text-[#FFFFFF]"
                 }`}
               >
                 {isRTL ? "الكل" : "All"} ({projects.length})
@@ -174,8 +174,8 @@ export default function ProjectsPage() {
                 onClick={() => setFilterType("owned")}
                 className={`rounded-lg px-3 py-1 font-semibold transition cursor-pointer ${
                   filterType === "owned"
-                    ? "bg-white dark:bg-[#1E2E24] text-[#166534] dark:text-[#86A789] shadow-2xs font-bold"
-                    : "text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
+                    ? "bg-white dark:bg-[#0E2E1D] text-[#059669] dark:text-[#00D084] shadow-2xs font-bold"
+                    : "text-[#64748B] dark:text-[#7B9A89] hover:text-[#0F172A] dark:hover:text-[#FFFFFF]"
                 }`}
               >
                 {isRTL ? "مشاريعي" : "Owned"}
@@ -185,8 +185,8 @@ export default function ProjectsPage() {
                 onClick={() => setFilterType("shared")}
                 className={`rounded-lg px-3 py-1 font-semibold transition cursor-pointer ${
                   filterType === "shared"
-                    ? "bg-white dark:bg-[#1E2E24] text-[#166534] dark:text-[#86A789] shadow-2xs font-bold"
-                    : "text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
+                    ? "bg-white dark:bg-[#0E2E1D] text-[#059669] dark:text-[#00D084] shadow-2xs font-bold"
+                    : "text-[#64748B] dark:text-[#7B9A89] hover:text-[#0F172A] dark:hover:text-[#FFFFFF]"
                 }`}
               >
                 {isRTL ? "مشارك بها" : "Shared"}
@@ -197,7 +197,7 @@ export default function ProjectsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#121B16] px-3 py-2 text-xs text-[#26332B] dark:text-[#FAF9F6] focus:border-[#166534] dark:focus:border-[#86A789] focus:outline-none transition cursor-pointer"
+              className="rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] px-3 py-2 text-xs text-[#0F172A] dark:text-[#FFFFFF] focus:border-[#059669] dark:focus:border-[#00D084] focus:outline-none transition cursor-pointer"
             >
               <option value="newest">{isRTL ? "الأحدث أولاً" : "Newest first"}</option>
               <option value="name">{isRTL ? "الترتيب الأبجدي" : "Alphabetical (A-Z)"}</option>
@@ -211,29 +211,29 @@ export default function ProjectsPage() {
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                className="rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-5 shadow-2xs animate-pulse space-y-4"
+                className="rounded-2xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-5 shadow-2xs animate-pulse space-y-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-11 w-11 rounded-xl bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                  <div className="h-11 w-11 rounded-xl bg-[#F1F5F9] dark:bg-[#0E2E1D]" />
                   <div className="space-y-2 flex-1">
-                    <div className="h-4 w-3/4 rounded bg-[#E8EFE9] dark:bg-[#1E2E24]" />
-                    <div className="h-3 w-1/3 rounded bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                    <div className="h-4 w-3/4 rounded bg-[#F1F5F9] dark:bg-[#0E2E1D]" />
+                    <div className="h-3 w-1/3 rounded bg-[#F1F5F9] dark:bg-[#0E2E1D]" />
                   </div>
                 </div>
-                <div className="h-3 w-full rounded bg-[#E8EFE9] dark:bg-[#1E2E24]" />
-                <div className="h-2 w-full rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                <div className="h-3 w-full rounded bg-[#F1F5F9] dark:bg-[#0E2E1D]" />
+                <div className="h-2 w-full rounded-full bg-[#F1F5F9] dark:bg-[#0E2E1D]" />
               </div>
             ))}
           </div>
         ) : filteredAndSortedProjects.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-12 text-center">
-            <FolderKanban className="mx-auto h-12 w-12 text-[#86A789]/60" />
-            <h3 className="mt-3 text-sm font-bold text-[#26332B] dark:text-[#FAF9F6]">
+          <div className="rounded-2xl border-2 border-dashed border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-12 text-center">
+            <FolderKanban className="mx-auto h-12 w-12 text-[#64748B]/40 dark:text-[#7B9A89]/40" />
+            <h3 className="mt-3 text-sm font-bold text-[#0F172A] dark:text-[#FFFFFF]">
               {searchQuery.trim()
                 ? (t("dashboard.noProjectsFound") || "No projects found")
                 : (t("dashboard.noProjects") || "No projects yet")}
             </h3>
-            <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393] max-w-sm mx-auto">
+            <p className="mt-1 text-xs text-[#64748B] dark:text-[#7B9A89] max-w-sm mx-auto">
               {searchQuery.trim()
                 ? (t("dashboard.noProjectsFoundSub") || "No projects matched your search keyword.")
                 : (t("dashboard.noProjectsSub") || "Create your first project to get started organizing your tasks.")}
@@ -242,10 +242,10 @@ export default function ProjectsPage() {
               <div className="mt-5">
                 <Link
                   href="/projects/new"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2 text-xs font-bold text-white shadow-xs transition"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00925D] px-4 py-2 text-xs font-bold text-white shadow-xs transition"
                 >
                   <Plus className="h-4 w-4" />
-                  <span>{t("dashboard.newProject") || "New Project"}</span>
+                  <span>{t("dashboard.newProject") || "مشروع جديد"}</span>
                 </Link>
               </div>
             )}

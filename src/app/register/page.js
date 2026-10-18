@@ -102,13 +102,13 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-8 shadow-xs">
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-8 shadow-xs">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#166534] border border-[#14532D] shadow-xs">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#059669] dark:bg-[#00D084] text-white dark:text-[#06130B] shadow-xs">
             <svg
               viewBox="0 0 24 24"
-              className="h-6 w-6 text-white"
+              className="h-6 w-6"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
@@ -118,17 +118,17 @@ export default function RegisterPage() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h2 className="mt-4 text-2xl font-black tracking-tight text-[#26332B] dark:text-[#FAF9F6]">
+          <h2 className="mt-4 text-2xl font-black tracking-tight text-[#0F172A] dark:text-[#FFFFFF]">
             {t("auth.registerTitle")}
           </h2>
-          <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393]">
+          <p className="mt-1 text-xs text-[#64748B] dark:text-[#7B9A89]">
             {t("auth.registerSub")}
           </p>
         </div>
 
-        {/* Error Alert (Earth Gold Palette) */}
+        {/* Error Alert */}
         {error && (
-          <div className="rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3.5 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]" role="alert">
+          <div className="rounded-xl bg-[#FEF3C7] dark:bg-[#242211] p-3.5 text-xs font-semibold text-[#92400E] dark:text-[#F59E0B] border border-[#F59E0B]/30" role="alert">
             {t(`auth.${error}`) || error}
           </div>
         )}
@@ -138,10 +138,10 @@ export default function RegisterPage() {
           type="button"
           onClick={handleGoogleSignUp}
           disabled={googleLoading || loading}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17] px-4 py-2.5 text-sm font-semibold text-[#26332B] dark:text-[#FAF9F6] shadow-2xs hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] focus:outline-none disabled:opacity-50 transition"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#06130B] px-4 py-2.5 text-sm font-semibold text-[#0F172A] dark:text-[#FFFFFF] shadow-xs hover:bg-[#F1F5F9] dark:hover:bg-[#133020] focus:outline-none disabled:opacity-50 transition"
         >
           {googleLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-[#5E7164]" />
+            <Loader2 className="h-4 w-4 animate-spin text-[#64748B] dark:text-[#7B9A89]" />
           ) : (
             <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -167,8 +167,8 @@ export default function RegisterPage() {
 
         {/* Divider */}
         <div className="relative flex items-center justify-center">
-          <div className="w-full border-t border-[#E5EBE5] dark:border-[#26372D]" />
-          <span className="bg-[#FFFFFF] dark:bg-[#17221C] px-3 text-[11px] font-medium uppercase tracking-wider text-[#5E7164] dark:text-[#8EA393]">
+          <div className="w-full border-t border-[#E2E8F0] dark:border-[#133020]" />
+          <span className="bg-[#FFFFFF] dark:bg-[#0B1F14] px-3 text-[11px] font-medium uppercase tracking-wider text-[#64748B] dark:text-[#7B9A89]">
             {t("auth.orRegisterEmail")}
           </span>
         </div>
@@ -177,11 +177,11 @@ export default function RegisterPage() {
         <form className="space-y-4" onSubmit={handleRegister} autoComplete="off">
           {/* Name */}
           <div>
-            <label htmlFor="reg-name" className="block text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
+            <label htmlFor="reg-name" className="block text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF]">
               {t("auth.fullName")} *
             </label>
             <div className="relative mt-1">
-              <User className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
+              <User className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89]" />
               <input
                 id="reg-name"
                 type="text"
@@ -191,18 +191,18 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Sarah Jenkins"
-                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
               />
             </div>
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="reg-email" className="block text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
+            <label htmlFor="reg-email" className="block text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF]">
               {t("auth.emailLabel")} *
             </label>
             <div className="relative mt-1">
-              <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
+              <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89]" />
               <input
                 id="reg-email"
                 type="email"
@@ -211,18 +211,18 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="sarah@example.com"
-                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
               />
             </div>
           </div>
 
           {/* Password */}
           <div>
-            <label htmlFor="reg-password" className="block text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
+            <label htmlFor="reg-password" className="block text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF]">
               {t("auth.passwordLabel")} *
             </label>
             <div className="relative mt-1">
-              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
+              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89]" />
               <input
                 id="reg-password"
                 type={showPassword ? "text" : "password"}
@@ -232,12 +232,12 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-10 rtl:pl-10 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] py-2.5 pl-9 pr-10 rtl:pl-10 rtl:pr-9 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 rtl:right-auto rtl:left-3 top-1/2 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6] focus:outline-none transition p-1"
+                className="absolute right-3 rtl:right-auto rtl:left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89] hover:text-[#0F172A] dark:hover:text-[#FFFFFF] focus:outline-none transition p-1"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
@@ -248,11 +248,11 @@ export default function RegisterPage() {
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="reg-confirm-password" className="block text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
+            <label htmlFor="reg-confirm-password" className="block text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF]">
               {t("auth.confirmPassword")} *
             </label>
             <div className="relative mt-1">
-              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
+              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89]" />
               <input
                 id="reg-confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
@@ -262,12 +262,12 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-10 rtl:pl-10 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] py-2.5 pl-9 pr-10 rtl:pl-10 rtl:pr-9 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute right-3 rtl:right-auto rtl:left-3 top-1/2 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6] focus:outline-none transition p-1"
+                className="absolute right-3 rtl:right-auto rtl:left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89] hover:text-[#0F172A] dark:hover:text-[#FFFFFF] focus:outline-none transition p-1"
                 aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 tabIndex={-1}
               >
@@ -279,7 +279,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading || googleLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] py-2.5 text-sm font-bold text-white shadow-xs disabled:opacity-50 transition"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00D084] dark:hover:text-[#06130B] py-2.5 text-sm font-bold text-white shadow-xs disabled:opacity-50 transition"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -292,9 +292,9 @@ export default function RegisterPage() {
         </form>
 
         {/* Switch to Login */}
-        <div className="text-center text-xs text-[#5E7164] dark:text-[#8EA393]">
+        <div className="text-center text-xs text-[#64748B] dark:text-[#7B9A89]">
           {t("auth.alreadyAccount")}{" "}
-          <Link href="/login" className="font-semibold text-[#166534] dark:text-[#86A789] hover:underline">
+          <Link href="/login" className="font-semibold text-[#059669] dark:text-[#00D084] hover:underline">
             {t("auth.signInLink")}
           </Link>
         </div>

@@ -53,26 +53,26 @@ export default function NewProjectPage() {
         {/* Back Link */}
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393] hover:text-[#166534] dark:hover:text-[#86A789] transition mb-6"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#64748B] dark:text-[#7B9A89] hover:text-[#059669] dark:hover:text-[#00D084] transition mb-6"
         >
           <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" /> {t("newProject.backToDashboard")}
         </Link>
 
-        <div className="rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-6 sm:p-8 shadow-xs">
-          <div className="flex items-center gap-3.5 border-b border-[#E5EBE5] dark:border-[#26372D] pb-5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8EFE9] text-[#166534] dark:bg-[#1E2E24] dark:text-[#86A789]">
+        <div className="rounded-2xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-6 sm:p-8 shadow-xs">
+          <div className="flex items-center gap-3.5 border-b border-[#E2E8F0] dark:border-[#133020] pb-5">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#ECFDF5] text-[#059669] dark:bg-[#0D281A] dark:text-[#00D084]">
               <FolderPlus className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-[#26332B] dark:text-[#FAF9F6]">{t("newProject.title")}</h1>
-              <p className="text-xs text-[#5E7164] dark:text-[#8EA393]">
+              <h1 className="text-xl font-extrabold text-[#0F172A] dark:text-[#FFFFFF]">{t("newProject.title")}</h1>
+              <p className="text-xs text-[#64748B] dark:text-[#7B9A89]">
                 {t("newProject.subtitle")}
               </p>
             </div>
           </div>
 
           {error && (
-            <div className="mt-4 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]" role="alert">
+            <div className="mt-4 rounded-xl bg-[#FEF3C7] dark:bg-[#242211] p-3 text-xs font-semibold text-[#92400E] dark:text-[#F59E0B] border border-[#F59E0B]/30" role="alert">
               {t(`newProject.${error}`) || error}
             </div>
           )}
@@ -81,10 +81,10 @@ export default function NewProjectPage() {
             {/* Project Name */}
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="project-name" className="block text-xs font-bold text-[#26332B] dark:text-[#FAF9F6]">
+                <label htmlFor="project-name" className="block text-xs font-bold text-[#0F172A] dark:text-[#FFFFFF]">
                   {t("newProject.nameLabel")} * (3–80)
                 </label>
-                <span className="text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393]">{name.length}/80</span>
+                <span className="text-[11px] font-medium text-[#64748B] dark:text-[#7B9A89]">{name.length}/80</span>
               </div>
               <input
                 id="project-name"
@@ -95,17 +95,17 @@ export default function NewProjectPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t("newProject.namePlaceholder")}
-                className="mt-1.5 w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] px-3.5 py-2.5 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
+                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] px-3.5 py-2.5 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
               />
             </div>
 
             {/* Description */}
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="project-description" className="block text-xs font-bold text-[#26332B] dark:text-[#FAF9F6]">
+                <label htmlFor="project-description" className="block text-xs font-bold text-[#0F172A] dark:text-[#FFFFFF]">
                   {t("newProject.descLabel")}
                 </label>
-                <span className="text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393]">{description.length}/1000</span>
+                <span className="text-[11px] font-medium text-[#64748B] dark:text-[#7B9A89]">{description.length}/1000</span>
               </div>
               <textarea
                 id="project-description"
@@ -114,22 +114,22 @@ export default function NewProjectPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("newProject.descPlaceholder")}
-                className="mt-1.5 w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] px-3.5 py-2.5 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
+                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] px-3.5 py-2.5 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
               />
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5EBE5] dark:border-[#26372D]">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E2E8F0] dark:border-[#133020]">
               <Link
                 href="/dashboard"
-                className="rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17] px-4 py-2.5 text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] transition"
+                className="rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#06130B] px-4 py-2.5 text-xs font-bold text-[#0F172A] dark:text-[#FFFFFF] hover:bg-[#F1F5F9] dark:hover:bg-[#133020] transition"
               >
                 {t("newProject.cancel")}
               </Link>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] px-5 py-2.5 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00D084] dark:hover:text-[#06130B] px-5 py-2.5 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {loading ? t("newProject.creating") : t("newProject.submit")}

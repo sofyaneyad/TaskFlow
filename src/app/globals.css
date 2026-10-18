@@ -4,50 +4,50 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Exact Forest Green + Cream Palette from design */
-  --app-bg: #FAF9F6;
+  /* Fresh, crisp, high-contrast Light Theme */
+  --app-bg: #F8FAFC;
   --surface: #FFFFFF;
-  --surface-hover: #F3F1EC;
+  --surface-hover: #F1F5F9;
   --surface-card: #FFFFFF;
-  --border: #E5EBE5;
-  --border-light: #EFF3EF;
-  --text-main: #26332B;
-  --text-muted: #5E7164;
-  --primary: #166534;
-  --primary-hover: #14532D;
-  --accent: #86A789;
-  --accent-light: #E8EFE9;
-  --success: #166534;
+  --border: #E2E8F0;
+  --border-light: #F1F5F9;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --primary: #059669;
+  --primary-hover: #047857;
+  --accent: #10B981;
+  --accent-light: #ECFDF5;
+  --success: #059669;
   --warning: #D97706;
-  --error: #CA8A04;
-  --earth-gold: #CA8A04;
-  --earth-gold-light: #FAF5E8;
-  --earth-gold-text: #854D0E;
-  --earth-gold-dark: #6B5424;
+  --error: #DC2626;
+  --earth-gold: #D97706;
+  --earth-gold-light: #FEF3C7;
+  --earth-gold-text: #B45309;
+  --earth-gold-dark: #78350F;
   --font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .dark {
-  /* Deep Forest Night Palette */
-  --app-bg: #0E1512;
-  --surface: #17221C;
-  --surface-hover: #1F2E26;
-  --surface-card: #17221C;
-  --border: #26372D;
-  --border-light: #1D2A22;
-  --text-main: #FAF9F6;
-  --text-muted: #8EA393;
-  --primary: #22C55E;
-  --primary-hover: #16A34A;
-  --accent: #86A789;
-  --accent-light: rgba(134, 167, 137, 0.15);
-  --success: #22C55E;
+  /* Exact Emerald Night Dark Theme from Image 1 */
+  --app-bg: #06130B;
+  --surface: #0B1F14;
+  --surface-hover: #0E281A;
+  --surface-card: #0B1F14;
+  --border: #133020;
+  --border-light: #0D2417;
+  --text-main: #FFFFFF;
+  --text-muted: #7B9A89;
+  --primary: #00D084;
+  --primary-hover: #00B572;
+  --accent: #00D084;
+  --accent-light: #0E2E1D;
+  --success: #00D084;
   --warning: #F59E0B;
-  --error: #CA8A04;
-  --earth-gold: #CA8A04;
-  --earth-gold-light: rgba(202, 138, 4, 0.15);
-  --earth-gold-text: #FACC15;
-  --earth-gold-dark: #6B5424;
+  --error: #EF4444;
+  --earth-gold: #F59E0B;
+  --earth-gold-light: #272210;
+  --earth-gold-text: #FBBF24;
+  --earth-gold-dark: #423612;
 }
 
 html, body {
@@ -105,64 +105,67 @@ label[for],
 
 /* Status & Role Badges */
 .badge-todo {
-  background-color: #F1F4F1;
-  color: #5E7164;
-  border: 1px solid #DFE5DF;
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
 }
 .dark .badge-todo {
-  background-color: #1A2720;
-  color: #8EA393;
-  border: 1px solid #26372D;
+  background-color: #0E2518;
+  color: #7B9A89;
+  border: 1px solid #133020;
 }
 
 .badge-inprogress {
-  background-color: #E8F0EC;
-  color: #166534;
-  border: 1px solid #C2D9CB;
-}
-.dark .badge-inprogress {
-  background-color: rgba(34, 197, 94, 0.15);
-  color: #4ADE80;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.badge-review {
   background-color: #FEF3C7;
   color: #B45309;
   border: 1px solid #FDE68A;
 }
+.dark .badge-inprogress {
+  background-color: #272210;
+  color: #F59E0B;
+  border: 1px solid #423612;
+}
+
+.badge-review {
+  background-color: #EEF2FF;
+  color: #4F46E5;
+  border: 1px solid #C7D2FE;
+}
 .dark .badge-review {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #FCD34D;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background-color: #1A1E36;
+  color: #818CF8;
+  border: 1px solid #2E365E;
 }
 
 .badge-done {
-  background-color: #166534;
-  color: #FFFFFF;
+  background-color: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
 }
 .dark .badge-done {
-  background-color: rgba(34, 197, 94, 0.2);
-  color: #4ADE80;
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  background-color: #0E2E1D;
+  color: #00D084;
+  border: 1px solid #15442A;
 }
 
 .badge-owner {
-  background-color: #166534;
-  color: #FFFFFF;
+  background-color: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
 }
 .dark .badge-owner {
-  background-color: #86A789;
-  color: #0E1512;
+  background-color: #0E2E1D;
+  color: #00D084;
+  border: 1px solid #15442A;
 }
 
 .badge-member {
-  background-color: #E8EFE9;
-  color: #26332B;
-  border: 1px solid #C8DAC9;
+  background-color: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
 }
 .dark .badge-member {
-  background-color: rgba(134, 167, 137, 0.15);
-  color: #A4C4A7;
-  border: 1px solid rgba(134, 167, 137, 0.3);
+  background-color: #0E2518;
+  color: #7B9A89;
+  border: 1px solid #1B3E28;
 }
