@@ -37,9 +37,23 @@ function saveCachedProjects(projects) {
   }
 }
 
-const withTimeout = (promise, ms = 2000) => {
+let firestoreReachable = true;
+
+const withTimeout = (promise, ms = 500) => {
+  if (!firestoreReachable) {
+    return Promise.reject(new Error("Firestore offline or unavailable"));
+  }
   return Promise.race([
-    promise,
+    promise.catch((err) => {
+      if (
+        err?.message?.includes("not found") ||
+        err?.message?.includes("Failed to get document") ||
+        err?.code === "not-found"
+      ) {
+        firestoreReachable = false;
+      }
+      throw err;
+    }),
     new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Network timeout")), ms)
     ),

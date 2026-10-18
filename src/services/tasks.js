@@ -32,9 +32,23 @@ function saveCachedTasks(projectId, tasks) {
   } catch {}
 }
 
-const withTimeout = (promise, ms = 2000) => {
+let firestoreTasksReachable = true;
+
+const withTimeout = (promise, ms = 500) => {
+  if (!firestoreTasksReachable) {
+    return Promise.reject(new Error("Firestore offline or unavailable"));
+  }
   return Promise.race([
-    promise,
+    promise.catch((err) => {
+      if (
+        err?.message?.includes("not found") ||
+        err?.message?.includes("Failed to get document") ||
+        err?.code === "not-found"
+      ) {
+        firestoreTasksReachable = false;
+      }
+      throw err;
+    }),
     new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Timeout")), ms)
     ),
