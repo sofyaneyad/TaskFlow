@@ -37,6 +37,27 @@ function saveCachedProjects(projects) {
   }
 }
 
+const LOCAL_MEMBERS_CACHE_KEY = "taskflow_members_cache";
+
+function getCachedMemberProfiles() {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(LOCAL_MEMBERS_CACHE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveCachedMemberProfile(uid, data) {
+  if (typeof window === "undefined" || !uid) return;
+  try {
+    const map = getCachedMemberProfiles();
+    map[uid] = data;
+    localStorage.setItem(LOCAL_MEMBERS_CACHE_KEY, JSON.stringify(map));
+  } catch {}
+}
+
 let firestoreReachable = true;
 
 const withTimeout = (promise, ms = 500) => {
@@ -89,22 +110,17 @@ export async function createProject({ name, description = "", ownerId }) {
   const cached = getCachedProjects();
   saveCachedProjects([projectData, ...cached]);
 
-  // 3. Persist to Cloud Firestore with short timeout to prevent UI hanging
-  try {
-    await withTimeout(
-      setDoc(newDocRef, {
-        name: projectData.name,
-        description: projectData.description,
-        ownerId: projectData.ownerId,
-        memberIds: projectData.memberIds,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      }),
-      2500
-    );
-  } catch (err) {
+  // 3. Persist to Cloud Firestore in background without blocking
+  setDoc(newDocRef, {
+    name: projectData.name,
+    description: projectData.description,
+    ownerId: projectData.ownerId,
+    memberIds: projectData.memberIds,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }).catch((err) => {
     console.warn("Firestore save deferred or offline, cached locally:", err.message);
-  }
+  });
 
   return projectData;
 }
@@ -218,20 +234,15 @@ export async function updateProject(projectId, { name, description }) {
   });
   saveCachedProjects(list);
 
-  // 2. Persist to Firestore
+  // 2. Persist to Firestore in background without blocking
   try {
     const docRef = doc(db, "projects", projectId);
-    await withTimeout(
-      updateDoc(docRef, {
-        name: trimmedName,
-        description: trimmedDesc,
-        updatedAt: serverTimestamp(),
-      }),
-      2500
-    );
-  } catch (err) {
-    console.warn("Firestore update deferred:", err.message);
-  }
+    updateDoc(docRef, {
+      name: trimmedName,
+      description: trimmedDesc,
+      updatedAt: serverTimestamp(),
+    }).catch(() => {});
+  } catch (err) {}
 }
 
 // FR-06 & Section 13: Delete project
@@ -240,21 +251,28 @@ export async function deleteProject(projectId) {
   const list = getCachedProjects().filter((p) => p.id !== projectId);
   saveCachedProjects(list);
 
-  // 2. Delete tasks and doc in Firestore
+  // 2. Delete tasks and doc in Firestore in background
   try {
     const tasksRef = collection(db, "projects", projectId, "tasks");
-    const tasksSnapshot = await withTimeout(getDocs(tasksRef), 2000);
-    const deletePromises = [];
-    tasksSnapshot.forEach((taskDoc) => {
-      deletePromises.push(deleteDoc(doc(db, "projects", projectId, "tasks", taskDoc.id)));
-    });
-    await Promise.all(deletePromises);
+    getDocs(tasksRef).then((tasksSnapshot) => {
+      tasksSnapshot.forEach((taskDoc) => {
+        deleteDoc(doc(db, "projects", projectId, "tasks", taskDoc.id)).catch(() => {});
+      });
+    }).catch(() => {});
 
     const docRef = doc(db, "projects", projectId);
-    await withTimeout(deleteDoc(docRef), 2000);
-  } catch (err) {
-    console.warn("Firestore project delete sync deferred:", err.message);
+    deleteDoc(docRef).catch(() => {});
+  } catch (err) {}
+}
+
+function sanitizeMemberName(displayName, email) {
+  let name = (displayName || "").replace(/\s*\([^)]*\)/g, "").trim();
+  if (!name || name.toLowerCase() === "member" || name === "عضو" || name.toLowerCase().startsWith("member")) {
+    if (email && email.includes("@")) {
+      name = email.split("@")[0].replace(/\s*\([^)]*\)/g, "").trim();
+    }
   }
+  return name || "عضو";
 }
 
 // FR-07, US-04, TC-07, TC-08: Add member by email
@@ -263,29 +281,13 @@ export async function addProjectMemberByEmail(projectId, email) {
     throw new Error("Email address is required.");
   }
   const cleanEmail = email.trim().toLowerCase();
+  const cleanName = sanitizeMemberName("", cleanEmail);
 
-  // 1. Check user from Firestore users or fallback
-  let targetUserId = null;
-  let targetUserData = null;
+  const targetUserId = "user_" + Math.random().toString(36).substring(2, 9);
+  const targetUserData = { displayName: cleanName, email: cleanEmail };
 
-  try {
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", cleanEmail));
-    const querySnapshot = await withTimeout(getDocs(q), 2500);
-
-    if (!querySnapshot.empty) {
-      const targetUserDoc = querySnapshot.docs[0];
-      targetUserId = targetUserDoc.id;
-      targetUserData = targetUserDoc.data();
-    }
-  } catch {
-    // If lookup fails due to network, create a clean mock member UID
-  }
-
-  if (!targetUserId) {
-    targetUserId = "user_" + Math.random().toString(36).substring(2, 9);
-    targetUserData = { displayName: cleanEmail.split("@")[0], email: cleanEmail };
-  }
+  // Save profile to cache
+  saveCachedMemberProfile(targetUserId, targetUserData);
 
   // Update local cache
   const list = getCachedProjects().map((p) => {
@@ -300,16 +302,13 @@ export async function addProjectMemberByEmail(projectId, email) {
   });
   saveCachedProjects(list);
 
-  // Sync to Firestore
+  // Sync to Firestore in background without blocking
   try {
     const projectRef = doc(db, "projects", projectId);
-    await withTimeout(
-      updateDoc(projectRef, {
-        memberIds: arrayUnion(targetUserId),
-        updatedAt: serverTimestamp(),
-      }),
-      2500
-    );
+    updateDoc(projectRef, {
+      memberIds: arrayUnion(targetUserId),
+      updatedAt: serverTimestamp(),
+    }).catch(() => {});
   } catch {}
 
   return { uid: targetUserId, ...targetUserData };
@@ -321,7 +320,7 @@ export async function removeProjectMember(projectId, memberId, ownerId) {
     throw new Error("The project owner cannot be removed from the project.");
   }
 
-  // Update cache
+  // Update cache immediately
   const list = getCachedProjects().map((p) => {
     if (p.id === projectId) {
       return { ...p, memberIds: (p.memberIds || []).filter((id) => id !== memberId) };
@@ -330,16 +329,13 @@ export async function removeProjectMember(projectId, memberId, ownerId) {
   });
   saveCachedProjects(list);
 
-  // Sync to Firestore
+  // Sync to Firestore in background without blocking
   try {
     const projectRef = doc(db, "projects", projectId);
-    await withTimeout(
-      updateDoc(projectRef, {
-        memberIds: arrayRemove(memberId),
-        updatedAt: serverTimestamp(),
-      }),
-      2500
-    );
+    updateDoc(projectRef, {
+      memberIds: arrayRemove(memberId),
+      updatedAt: serverTimestamp(),
+    }).catch(() => {});
   } catch {}
 }
 
@@ -347,15 +343,25 @@ export async function removeProjectMember(projectId, memberId, ownerId) {
 export async function getProjectMembersDetails(memberIds = []) {
   if (!memberIds || memberIds.length === 0) return [];
 
+  const profilesMap = getCachedMemberProfiles();
+
   return await Promise.all(
     memberIds.map(async (uid) => {
+      if (profilesMap[uid]) {
+        const p = profilesMap[uid];
+        const cleanName = sanitizeMemberName(p.displayName, p.email);
+        return { uid, displayName: cleanName, email: p.email || "" };
+      }
       try {
-        const userDoc = await withTimeout(getDoc(doc(db, "users", uid)), 800);
+        const userDoc = await withTimeout(getDoc(doc(db, "users", uid)), 300);
         if (userDoc && userDoc.exists()) {
-          return { uid: userDoc.id, ...userDoc.data() };
+          const data = userDoc.data();
+          saveCachedMemberProfile(uid, data);
+          const cleanName = sanitizeMemberName(data.displayName, data.email);
+          return { uid: userDoc.id, displayName: cleanName, email: data.email || "" };
         }
       } catch {}
-      return { uid, displayName: "Member (" + uid.slice(0, 5) + ")", email: "" };
+      return { uid, displayName: "عضو", email: "" };
     })
   );
 }

@@ -15,6 +15,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  isTaskOverdue,
 } from "@/services/tasks";
 import {
   Folder,
@@ -118,43 +119,71 @@ function ProjectDetailsContent() {
     loadProjectData();
   }, [loadProjectData]);
 
-  // Handle Create or Update Task
+  // Handle Create or Update Task (Instant optimistic UI)
   const handleSaveTask = async (taskData) => {
     try {
       if (editingTask) {
-        await updateTask(projectId, editingTask.id, taskData);
+        const updated = {
+          ...editingTask,
+          ...taskData,
+          updatedAt: new Date().toISOString(),
+          isOverdue: isTaskOverdue(taskData.dueDate, taskData.status),
+        };
+        setTasks((prev) => prev.map((t) => (t.id === editingTask.id ? updated : t)));
+        updateTask(projectId, editingTask.id, taskData).catch((err) =>
+          console.warn("Background updateTask error:", err)
+        );
       } else {
-        await createTask(projectId, taskData, user?.uid || "");
+        const tempId = "t_" + Date.now();
+        const newTask = {
+          id: tempId,
+          ...taskData,
+          projectId,
+          createdBy: user?.uid || "",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          isOverdue: isTaskOverdue(taskData.dueDate, taskData.status),
+        };
+        setTasks((prev) => [newTask, ...prev]);
+        createTask(projectId, taskData, user?.uid || "")
+          .then((actual) => {
+            if (actual && actual.id) {
+              setTasks((prev) => prev.map((t) => (t.id === tempId ? actual : t)));
+            }
+          })
+          .catch((err) => console.warn("Background createTask error:", err));
       }
-      await loadProjectData();
     } catch (err) {
       console.error("Save task error:", err);
       throw err;
     }
   };
 
-  // Handle Quick Status Change from card
-  const handleStatusChange = async (taskId, newStatus) => {
-    try {
-      await updateTask(projectId, taskId, { status: newStatus });
-      setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
-      );
-    } catch (err) {
-      console.error("Status update error:", err);
-      setError("errUpdateStatus");
-    }
+  // Handle Quick Status Change from card (Instant optimistic UI)
+  const handleStatusChange = (taskId, newStatus) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === taskId) {
+          return {
+            ...t,
+            status: newStatus,
+            isOverdue: isTaskOverdue(t.dueDate, newStatus),
+          };
+        }
+        return t;
+      })
+    );
+    updateTask(projectId, taskId, { status: newStatus }).catch((err) => {
+      console.warn("Status update background error:", err);
+    });
   };
 
-  // Handle Task Deletion
-  const handleDeleteTask = async (taskId) => {
-    try {
-      await deleteTask(projectId, taskId);
-      setTasks((prev) => prev.filter((t) => t.id !== taskId));
-    } catch (err) {
-      console.error("Delete task error:", err);
-      setError("errDeleteTask");
-    }
+  // Handle Task Deletion (Instant optimistic UI)
+  const handleDeleteTask = (taskId) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    deleteTask(projectId, taskId).catch((err) => {
+      console.warn("Delete task background error:", err);
+    });
   };
 
   // Reset Filters
@@ -313,16 +342,20 @@ function ProjectDetailsContent() {
                 <span className="flex items-center gap-1 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393] mr-1 rtl:mr-0 rtl:ml-1 shrink-0">
                   <Users className="h-3.5 w-3.5 text-[#166534] dark:text-[#86A789]" /> {t("project.teamMembers")} ({members.length}):
                 </span>
-                {members.map((m) => (
-                  <span
-                    key={m.uid}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-0.5 text-xs font-medium text-[#26332B] dark:text-[#FAF9F6] shrink-0"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#166534] dark:bg-[#86A789]" />
-                    {m.displayName || m.email}
-                    {m.uid === project.ownerId && ` (${t("project.owner")})`}
-                  </span>
-                ))}
+                {members.map((m) => {
+                  const cleanName = (m.displayName || m.email?.split("@")[0] || "عضو")
+                    .replace(/\s*\([^)]*\)/g, "")
+                    .trim() || "عضو";
+                  return (
+                    <span
+                      key={m.uid}
+                      className="inline-flex items-center rounded-lg bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-1 text-xs font-medium text-[#26332B] dark:text-[#FAF9F6] shrink-0"
+                    >
+                      {cleanName}
+                      {m.uid === project.ownerId && ` (${t("project.owner")})`}
+                    </span>
+                  );
+                })}
               </div>
             </div>
 

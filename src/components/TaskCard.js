@@ -18,6 +18,8 @@ export default function TaskCard({
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const assignee = members.find((m) => m.uid === task.assigneeId);
+  const rawAssigneeName = assignee?.displayName || assignee?.email?.split("@")[0] || (task.assigneeId ? "عضو" : t("task.unassigned"));
+  const cleanAssigneeName = rawAssigneeName.replace(/\s*\([^)]*\)/g, "").trim() || (task.assigneeId ? "عضو" : t("task.unassigned"));
 
   const getPriorityStyle = (priority) => {
     switch (priority) {
@@ -51,14 +53,9 @@ export default function TaskCard({
   const canDelete = isProjectOwner || task.createdBy === currentUserId;
   const canChangeStatus = isProjectOwner || task.assigneeId === currentUserId || task.createdBy === currentUserId;
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    try {
-      await onDelete(task.id);
-    } finally {
-      setIsDeleting(false);
-      setShowConfirmDelete(false);
-    }
+  const handleDelete = () => {
+    setShowConfirmDelete(false);
+    onDelete(task.id);
   };
 
   return (
@@ -143,25 +140,13 @@ export default function TaskCard({
             </span>
           </div>
 
-          {/* Assignee Avatar */}
+          {/* Assignee Name (Clean text, no picture/circle, no second word) */}
           <div
-            className="flex items-center gap-1 text-[#26332B] dark:text-[#FAF9F6] max-w-[130px] truncate shrink-0"
-            title={assignee?.email || t("task.unassigned")}
+            className="flex items-center text-[#26332B] dark:text-[#FAF9F6] max-w-[130px] truncate shrink-0"
+            title={assignee?.email || cleanAssigneeName}
           >
-            {assignee?.photoURL ? (
-              <img
-                src={assignee.photoURL}
-                alt={assignee?.displayName || "User"}
-                referrerPolicy="no-referrer"
-                className="h-5 w-5 rounded-full object-cover shrink-0 ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
-              />
-            ) : (
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#166534] text-[10px] font-bold text-white shrink-0">
-                {assignee?.displayName?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-            )}
-            <span className="truncate text-[11px]">
-              {assignee?.displayName || assignee?.email?.split("@")[0] || t("task.unassigned")}
+            <span className="truncate text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393]">
+              {cleanAssigneeName}
             </span>
           </div>
         </div>

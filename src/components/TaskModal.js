@@ -211,11 +211,16 @@ export default function TaskModal({
                 className="mt-1.5 w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] px-3 py-2 text-xs text-[#26332B] dark:text-[#FAF9F6] focus:border-[#166534] dark:focus:border-[#86A789] focus:outline-none"
               >
                 <option value="">{t("taskModal.unassigned")}</option>
-                {members.map((m) => (
-                  <option key={m.uid} value={m.uid}>
-                    {m.displayName || m.email}
-                  </option>
-                ))}
+                {members.map((m) => {
+                  const cleanName = (m.displayName || m.email?.split("@")[0] || "عضو")
+                    .replace(/\s*\([^)]*\)/g, "")
+                    .trim() || "عضو";
+                  return (
+                    <option key={m.uid} value={m.uid}>
+                      {cleanName}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           </div>

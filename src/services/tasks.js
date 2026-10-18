@@ -124,25 +124,20 @@ export async function createTask(
   const cached = getCachedTasks(projectId);
   saveCachedTasks(projectId, [taskData, ...cached]);
 
-  // 3. Sync to Firestore in background
-  try {
-    await withTimeout(
-      setDoc(newTaskDocRef, {
-        title: taskData.title,
-        description: taskData.description,
-        status: taskData.status,
-        priority: taskData.priority,
-        dueDate: taskData.dueDate,
-        assigneeId: taskData.assigneeId,
-        createdBy: taskData.createdBy,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      }),
-      2500
-    );
-  } catch (err) {
-    console.warn("Firestore task create deferred or offline:", err.message);
-  }
+  // 3. Sync to Firestore in background without blocking
+  setDoc(newTaskDocRef, {
+    title: taskData.title,
+    description: taskData.description,
+    status: taskData.status,
+    priority: taskData.priority,
+    dueDate: taskData.dueDate,
+    assigneeId: taskData.assigneeId,
+    createdBy: taskData.createdBy,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  }).catch((err) => {
+    console.warn("Firestore task create deferred or offline:", err?.message);
+  });
 
   return taskData;
 }
@@ -217,16 +212,13 @@ export async function updateTask(projectId, taskId, updates) {
   });
   saveCachedTasks(projectId, updatedList);
 
-  // 2. Persist to Firestore
+  // 2. Persist to Firestore in background without blocking
   try {
     const taskDocRef = doc(db, "projects", projectId, "tasks", taskId);
-    await withTimeout(
-      updateDoc(taskDocRef, { ...updates, updatedAt: serverTimestamp() }),
-      2500
-    );
-  } catch (err) {
-    console.warn("Firestore task update deferred:", err.message);
-  }
+    updateDoc(taskDocRef, { ...updates, updatedAt: serverTimestamp() }).catch((err) => {
+      console.warn("Firestore task update deferred:", err?.message);
+    });
+  } catch (err) {}
 }
 
 // FR-10: Delete Task
@@ -240,13 +232,13 @@ export async function deleteTask(projectId, taskId) {
   const filtered = cached.filter((t) => t.id !== taskId);
   saveCachedTasks(projectId, filtered);
 
-  // 2. Delete from Firestore
+  // 2. Delete from Firestore in background without blocking
   try {
     const taskDocRef = doc(db, "projects", projectId, "tasks", taskId);
-    await withTimeout(deleteDoc(taskDocRef), 2500);
-  } catch (err) {
-    console.warn("Firestore task delete deferred:", err.message);
-  }
+    deleteDoc(taskDocRef).catch((err) => {
+      console.warn("Firestore task delete deferred:", err?.message);
+    });
+  } catch (err) {}
 }
 
 // FR-14: Calculate User Dashboard Stats across all accessible projects

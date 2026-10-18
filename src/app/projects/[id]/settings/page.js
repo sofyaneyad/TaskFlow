@@ -105,7 +105,7 @@ function ProjectSettingsContent() {
     loadData();
   }, [loadData]);
 
-  // Update Project Info
+  // Update Project Info (Instant optimistic update)
   const handleUpdateProject = async (e) => {
     e.preventDefault();
     setUpdateError("");
@@ -118,7 +118,12 @@ function ProjectSettingsContent() {
 
     setIsUpdating(true);
     try {
-      await updateProject(projectId, { name, description });
+      setProject((prev) =>
+        prev ? { ...prev, name: name.trim(), description: description.trim() } : prev
+      );
+      updateProject(projectId, { name: name.trim(), description: description.trim() }).catch(
+        (err) => console.warn("Background updateProject error:", err)
+      );
       setUpdateSuccess(true);
       setTimeout(() => setUpdateSuccess(false), 3000);
     } catch (err) {
@@ -128,7 +133,7 @@ function ProjectSettingsContent() {
     }
   };
 
-  // Add Member by Email
+  // Add Member by Email (Instant optimistic update)
   const handleAddMember = async (e) => {
     e.preventDefault();
     setMemberError("");
@@ -142,24 +147,50 @@ function ProjectSettingsContent() {
     setIsAddingMember(true);
     try {
       const addedUser = await addProjectMemberByEmail(projectId, newMemberEmail);
-      setMemberSuccess(`${t("settings.memberAddedSuccess") || "Added:"} ${addedUser.displayName || addedUser.email}`);
+      const cleanAddedName = (
+        addedUser.displayName ||
+        addedUser.email?.split("@")[0] ||
+        "عضو"
+      )
+        .replace(/\s*\([^)]*\)/g, "")
+        .trim() || "عضو";
+
+      setMembers((prev) => [
+        ...prev,
+        { ...addedUser, displayName: cleanAddedName },
+      ]);
+      setProject((prev) =>
+        prev
+          ? { ...prev, memberIds: [...(prev.memberIds || []), addedUser.uid] }
+          : prev
+      );
       setNewMemberEmail("");
-      const updatedProj = await getProjectById(projectId);
-      setProject(updatedProj);
-      const details = await getProjectMembersDetails(updatedProj.memberIds);
-      setMembers(details);
+      setMemberSuccess(
+        `${t("settings.memberAddedSuccess") || "Added:"} ${cleanAddedName}`
+      );
+      setTimeout(() => setMemberSuccess(""), 3000);
     } catch (err) {
-      setMemberError("errAddMemberFailed");
+      setMemberError(err?.message || "errAddMemberFailed");
     } finally {
       setIsAddingMember(false);
     }
   };
 
-  // Remove Member
+  // Remove Member (Instant optimistic update)
   const handleRemoveMember = async (memberId) => {
     try {
-      await removeProjectMember(projectId, memberId, user?.uid || "");
       setMembers((prev) => prev.filter((m) => m.uid !== memberId));
+      setProject((prev) =>
+        prev
+          ? {
+              ...prev,
+              memberIds: (prev.memberIds || []).filter((id) => id !== memberId),
+            }
+          : prev
+      );
+      removeProjectMember(projectId, memberId, user?.uid || "").catch((err) =>
+        console.warn("Background removeProjectMember error:", err)
+      );
     } catch (err) {
       setMemberError("errRemoveMemberFailed");
     }
@@ -347,24 +378,21 @@ function ProjectSettingsContent() {
           <div className="mt-5 divide-y divide-[#E5EBE5] dark:divide-[#26372D] rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17]">
             {members.map((member) => {
               const isMemberOwner = member.uid === project.ownerId;
+              const cleanMemberName = (
+                member.displayName ||
+                member.name ||
+                member.email?.split("@")[0] ||
+                "عضو"
+              )
+                .replace(/\s*\([^)]*\)/g, "")
+                .trim() || "عضو";
+
               return (
                 <div key={member.uid} className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-3.5">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    {member.photoURL ? (
-                      <img
-                        src={member.photoURL}
-                        alt={member.displayName || "User"}
-                        referrerPolicy="no-referrer"
-                        className="h-8 w-8 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D] shrink-0"
-                      />
-                    ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] text-xs font-bold text-[#166534] dark:text-[#86A789] shrink-0">
-                        {member.displayName?.charAt(0)?.toUpperCase() || "U"}
-                      </div>
-                    )}
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] flex flex-wrap items-center gap-1.5">
-                        <span className="truncate">{member.displayName || "User"}</span>
+                        <span className="truncate">{cleanMemberName}</span>
                         {isMemberOwner && (
                           <span className="badge-owner inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold shrink-0">
                             <ShieldCheck className="h-3 w-3" /> {t("project.owner")}
