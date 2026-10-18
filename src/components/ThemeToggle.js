@@ -10,7 +10,7 @@ export default function ThemeToggle({ className = "" }) {
 
   if (!isMounted) {
     return (
-      <div className="h-9 w-9 rounded-xl border border-slate-200 dark:border-[#272732] bg-white dark:bg-[#16161B] opacity-0" />
+      <div className="h-9 w-9 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] opacity-0" />
     );
   }
 
@@ -29,16 +29,16 @@ export default function ThemeToggle({ className = "" }) {
       onClick={toggleTheme}
       title={title}
       aria-label={title}
-      className={`relative flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs ${
+      className={`relative flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#166534] shadow-2xs ${
         isDark
-          ? "border-[#2A2A36] bg-[#16161B] text-amber-400 hover:bg-[#202028] hover:text-amber-300"
-          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+          ? "border-[#26372D] bg-[#17221C] text-amber-400 hover:bg-[#1F2E26] hover:text-amber-300"
+          : "border-[#E5EBE5] bg-[#FFFFFF] text-[#26332B] hover:bg-[#FAF9F6] hover:text-[#166534]"
       } ${className}`}
     >
       {isDark ? (
         <Sun className="h-4 w-4 animate-in spin-in-180 duration-300" />
       ) : (
-        <Moon className="h-4 w-4 animate-in spin-in-180 duration-300 text-blue-600" />
+        <Moon className="h-4 w-4 animate-in spin-in-180 duration-300 text-[#166534]" />
       )}
     </button>
   );

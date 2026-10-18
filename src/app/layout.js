@@ -12,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" className="dark" suppressHydrationWarning>
-      <body className="min-h-full font-sans antialiased bg-slate-50 dark:bg-[#0C0C0E] text-slate-900 dark:text-white transition-colors">
+      <body className="min-h-full font-['Tajawal',sans-serif] antialiased bg-[#FAF9F6] dark:bg-[#0E1512] text-[#26332B] dark:text-[#FAF9F6] transition-colors">
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>

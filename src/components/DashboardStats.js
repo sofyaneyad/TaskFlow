@@ -12,52 +12,67 @@ export default function DashboardStats({ stats }) {
       label: t("dashboard.totalProjects") || "Total Projects",
       value: stats?.totalProjects ?? 0,
       icon: FolderKanban,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
     },
     {
       label: t("dashboard.totalTasks") || "Total Tasks",
       value: stats?.totalTasks ?? 0,
       icon: ListTodo,
-      color: "text-purple-500",
-      bg: "bg-purple-500/10",
     },
     {
       label: t("dashboard.inProgress") || "In Progress",
       value: stats?.inProgressTasks ?? 0,
       icon: Clock,
-      color: "text-amber-500",
-      bg: "bg-amber-500/10",
     },
     {
       label: t("dashboard.completed") || "Completed Tasks",
       value: stats?.doneTasks ?? 0,
       icon: CheckCircle2,
-      color: "text-emerald-500",
-      bg: "bg-emerald-500/10",
     },
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card) => {
+      {cards.map((card, idx) => {
+        const isFirst = idx === 0;
         return (
           <div
             key={card.label}
-            className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-5 shadow-xs transition hover:border-slate-300 dark:hover:border-[#353545]"
+            className={`relative overflow-hidden rounded-2xl p-5 shadow-xs transition duration-200 ${
+              isFirst
+                ? "bg-[#166534] text-white border border-[#14532D] shadow-sm"
+                : "bg-white dark:bg-[#17221C] border border-[#E5EBE5] dark:border-[#26372D] text-[#26332B] dark:text-[#FAF9F6] hover:border-[#86A789]/50"
+            }`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-[#8E8E9F]">
+                <p
+                  className={`text-xs font-semibold ${
+                    isFirst ? "text-emerald-100" : "text-[#5E7164] dark:text-[#8EA393]"
+                  }`}
+                >
                   {card.label}
                 </p>
-                <p className="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                <p
+                  className={`mt-2 text-3xl font-black tracking-tight ${
+                    isFirst ? "text-white" : "text-[#26332B] dark:text-[#FAF9F6]"
+                  }`}
+                >
                   {card.value}
                 </p>
               </div>
 
-              {/* Icon Emblem in sleek squircle matching design colors */}
-              <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${card.bg} ${card.color} shadow-xs shrink-0`}>
+              {/* Icon Emblem */}
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-2xl shrink-0 shadow-2xs ${
+                  isFirst
+                    ? "bg-white/15 text-white"
+                    : idx === 1
+                    ? "bg-[#E8EFE9] dark:bg-[#1E2E24] text-[#166534] dark:text-[#86A789]"
+                    : idx === 2
+                    ? "bg-[#FEF3C7] dark:bg-amber-950/30 text-[#B45309] dark:text-[#FCD34D]"
+                    : "bg-[#E8F0EC] dark:bg-emerald-950/30 text-[#166534] dark:text-[#4ADE80]"
+                }`}
+              >
                 <card.icon className="h-6 w-6" />
               </div>
             </div>

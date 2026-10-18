@@ -7,33 +7,28 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function ProjectCard({ project, currentUserId, index = 0 }) {
   const { lang, t } = useLanguage();
   const isOwner = project.ownerId === currentUserId;
-  const memberCount = project.memberIds?.length || 4;
-  const progressPercent = project.progressPercent || (index === 0 ? 65 : index === 1 ? 42 : 78);
-
-  // Cycle distinct vibrant colors from design system for project icons
-  const iconThemes = [
-    { bg: "bg-[#EFF6FF]", text: "text-[#2563EB]" },
-    { bg: "bg-[#EEF2FF]", text: "text-[#4F46E5]" },
-    { bg: "bg-[#ECFDF5]", text: "text-[#15803D]" },
-    { bg: "bg-[#FFFBEB]", text: "text-[#B45309]" },
-  ];
-  const theme = iconThemes[index % iconThemes.length];
+  const memberCount = project.memberIds?.length || 1;
+  const progressPercent = project.progressPercent || 0;
 
   const isRTL = lang === "ar";
 
+  const updatedDateText = project.updatedAt
+    ? new Date(project.updatedAt?.seconds ? project.updatedAt.seconds * 1000 : project.updatedAt).toLocaleDateString()
+    : null;
+
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-5 shadow-2xs hover:shadow-md hover:border-slate-300 dark:hover:border-[#383848] transition group">
+    <div className="flex flex-col justify-between rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-5 shadow-2xs hover:shadow-md hover:border-[#86A789]/50 transition duration-200 group">
       <div>
-        {/* Top Header: Icon + Title + Owner/Member Badge + Settings/Options */}
+        {/* Top Header: Icon + Title + Owner/Member Badge + Settings */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${theme.bg} ${theme.text} dark:bg-blue-500/10 dark:text-blue-400 shadow-2xs shrink-0`}>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8EFE9] text-[#166534] dark:bg-[#1E2E24] dark:text-[#86A789] shadow-2xs shrink-0">
               <Folder className="h-5 w-5" />
             </div>
             <div>
               <Link
                 href={`/projects/${project.id}`}
-                className="font-bold text-slate-900 dark:text-white text-sm hover:text-blue-500 dark:hover:text-blue-400 transition line-clamp-1"
+                className="font-bold text-[#26332B] dark:text-[#FAF9F6] text-sm hover:text-[#166534] dark:hover:text-[#86A789] transition line-clamp-1"
               >
                 {project.name}
               </Link>
@@ -55,7 +50,7 @@ export default function ProjectCard({ project, currentUserId, index = 0 }) {
             {isOwner && (
               <Link
                 href={`/projects/${project.id}/settings`}
-                className="rounded-lg p-1 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-[#22222E] hover:text-slate-900 dark:hover:text-white transition"
+                className="rounded-lg p-1 text-[#5E7164] dark:text-[#8EA393] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] hover:text-[#26332B] dark:hover:text-[#FAF9F6] transition"
                 title={t("project.settings")}
               >
                 <Settings className="h-4 w-4" />
@@ -64,40 +59,43 @@ export default function ProjectCard({ project, currentUserId, index = 0 }) {
           </div>
         </div>
 
-        {/* Description (if any) */}
+        {/* Description */}
         {project.description && (
-          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+          <p className="mt-3 text-xs text-[#5E7164] dark:text-[#8EA393] line-clamp-2 leading-relaxed">
             {project.description}
           </p>
         )}
 
-        {/* Progress Bar with Percentage - Matching Design System Card */}
+        {/* Progress Bar with Percentage */}
         <div className="mt-5 space-y-1.5">
           <div className="flex items-center justify-between text-[11px] font-bold">
-            <span className="text-slate-500 dark:text-slate-400">{t("dashboard.projectProgress")}</span>
-            <span className="text-blue-600 dark:text-blue-400">{progressPercent}%</span>
+            <span className="text-[#5E7164] dark:text-[#8EA393]">{t("dashboard.projectProgress")}</span>
+            <span className="text-[#166534] dark:text-[#86A789]">{progressPercent}%</span>
           </div>
-          <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-[#202028] overflow-hidden">
+          <div className="h-1.5 w-full rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] overflow-hidden">
             <div
-              className="h-full rounded-full bg-blue-600 dark:bg-blue-500 transition-all duration-500 ease-out"
+              className="h-full rounded-full bg-[#166534] dark:bg-[#86A789] transition-all duration-500 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
       </div>
 
-      {/* Footer Meta Row: 4 members | Updated 2h ago */}
-      <div className="mt-5 border-t border-slate-100 dark:border-[#22222E] pt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+      {/* Footer Meta Row: Members count & Link to project */}
+      <div className="mt-5 border-t border-[#E5EBE5] dark:border-[#26372D] pt-3 flex items-center justify-between text-xs text-[#5E7164] dark:text-[#8EA393]">
         <div className="flex items-center gap-1.5">
-          <Users className="h-3.5 w-3.5 text-blue-500" />
-          <span className="font-semibold text-slate-900 dark:text-white">{memberCount}</span>
+          <Users className="h-3.5 w-3.5 text-[#166534] dark:text-[#86A789]" />
+          <span className="font-semibold text-[#26332B] dark:text-[#FAF9F6]">{memberCount}</span>
           <span className="text-[11px]">{memberCount === 1 ? t("dashboard.member") : t("dashboard.members")}</span>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
-          <Clock className="h-3 w-3" />
-          <span>{isRTL ? "تم التحديث منذ ساعتين" : "Updated 2h ago"}</span>
-        </div>
+        <Link
+          href={`/projects/${project.id}`}
+          className="flex items-center gap-1 text-[11px] font-bold text-[#166534] dark:text-[#86A789] hover:underline"
+        >
+          <span>{updatedDateText || (isRTL ? "عرض المشروع" : "View Project")}</span>
+          <ArrowRight className="h-3 w-3 rtl:rotate-180" />
+        </Link>
       </div>
     </div>
   );

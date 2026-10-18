@@ -37,7 +37,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
 
   return (
     <header
-      className={`sticky top-0 z-20 w-full border-b border-slate-200 dark:border-[#22222B] bg-white/90 dark:bg-[#101014]/90 backdrop-blur-md transition-colors ${
+      className={`sticky top-0 z-20 w-full border-b border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF]/95 dark:bg-[#17221C]/95 backdrop-blur-md transition-colors ${
         isLoggedIn ? "lg:pl-60 rtl:lg:pl-0 rtl:lg:pr-60" : ""
       }`}
     >
@@ -50,7 +50,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
               <button
                 type="button"
                 onClick={onToggleSidebar}
-                className="lg:hidden rounded-xl p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1E1E26] focus:outline-none"
+                className="lg:hidden rounded-xl p-1.5 text-[#5E7164] dark:text-[#8EA393] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] focus:outline-none"
                 aria-label="Toggle navigation drawer"
               >
                 <Menu className="h-5 w-5" />
@@ -61,9 +61,9 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
                 <TaskFlowLogo size="sm" />
               </div>
 
-              {/* Desktop breadcrumb - Matching Mockup: [Icon] Dashboard */}
-              <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
-                <LayoutDashboard className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+              {/* Desktop breadcrumb */}
+              <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
+                <LayoutDashboard className="h-4 w-4 text-[#86A789]" />
                 <span>{pathname.includes("/projects/") ? t("dashboard.myProjects") : t("nav.dashboard")}</span>
               </div>
             </>
@@ -77,7 +77,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
           {isLoggedIn && (
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 text-xs font-bold transition shadow-xs"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] text-white px-3 py-1.5 text-xs font-bold transition shadow-xs"
             >
               <Plus className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{t("dashboard.newProject")}</span>
@@ -90,28 +90,18 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
           {/* Language Switcher */}
           <LanguageSwitcher />
 
-          {/* Authentication State Buttons */}
-          {isLoggedIn ? (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/projects/new"
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 text-xs font-bold transition shadow-xs"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span>{t("dashboard.newProject")}</span>
-              </Link>
-            </div>
-          ) : (
+          {/* Non-logged in action links */}
+          {!isLoggedIn && (
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-blue-500 transition px-2.5 py-1.5"
+                className="text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6] hover:text-[#166534] dark:hover:text-[#86A789] transition px-2.5 py-1.5"
               >
                 {t("nav.signIn")}
               </Link>
               <Link
                 href="/register"
-                className="rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 text-xs font-bold shadow-xs transition"
+                className="rounded-xl bg-[#166534] hover:bg-[#14532D] text-white px-3.5 py-1.5 text-xs font-bold shadow-xs transition"
               >
                 {t("nav.getStarted")}
               </Link>

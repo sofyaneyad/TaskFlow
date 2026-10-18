@@ -66,13 +66,13 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-8 shadow-sm">
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-8 shadow-xs">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 dark:bg-[#1E1E26] border border-slate-700 dark:border-[#2F2F3B] shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#166534] border border-[#14532D] shadow-xs">
             <svg
               viewBox="0 0 24 24"
-              className="h-6 w-6 text-blue-500"
+              className="h-6 w-6 text-white"
               fill="none"
               stroke="currentColor"
               strokeWidth="3"
@@ -82,10 +82,10 @@ export default function LoginPage() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+          <h2 className="mt-4 text-2xl font-black tracking-tight text-[#26332B] dark:text-[#FAF9F6]">
             {t("auth.signInTitle")}
           </h2>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393]">
             {t("auth.signInSub")}
           </p>
         </div>
@@ -102,10 +102,10 @@ export default function LoginPage() {
           type="button"
           onClick={handleGoogleLogin}
           disabled={googleLoading || loading}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#1C1C24] px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-[#22222E] focus:outline-none disabled:opacity-50 transition"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17] px-4 py-2.5 text-sm font-semibold text-[#26332B] dark:text-[#FAF9F6] shadow-2xs hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] focus:outline-none disabled:opacity-50 transition"
         >
           {googleLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-slate-500" />
+            <Loader2 className="h-4 w-4 animate-spin text-[#5E7164]" />
           ) : (
             <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -131,8 +131,8 @@ export default function LoginPage() {
 
         {/* Divider */}
         <div className="relative flex items-center justify-center">
-          <div className="w-full border-t border-slate-200 dark:border-[#262632]" />
-          <span className="bg-white dark:bg-[#16161C] px-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <div className="w-full border-t border-[#E5EBE5] dark:border-[#26372D]" />
+          <span className="bg-[#FFFFFF] dark:bg-[#17221C] px-3 text-[11px] font-medium uppercase tracking-wider text-[#5E7164] dark:text-[#8EA393]">
             {t("auth.orWithEmail")}
           </span>
         </div>
@@ -140,11 +140,11 @@ export default function LoginPage() {
         {/* Login Form */}
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
-            <label htmlFor="login-email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label htmlFor="login-email" className="block text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
               {t("auth.emailLabel")}
             </label>
             <div className="relative mt-1">
-              <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
               <input
                 id="login-email"
                 type="email"
@@ -153,17 +153,17 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="login-password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+            <label htmlFor="login-password" className="block text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
               {t("auth.passwordLabel")}
             </label>
             <div className="relative mt-1">
-              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
               <input
                 id="login-password"
                 type="password"
@@ -172,7 +172,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || googleLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50 transition"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] py-2.5 text-sm font-bold text-white shadow-xs disabled:opacity-50 transition"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -193,9 +193,9 @@ export default function LoginPage() {
         </form>
 
         {/* Switch to Register */}
-        <div className="text-center text-xs text-slate-500 dark:text-slate-400">
+        <div className="text-center text-xs text-[#5E7164] dark:text-[#8EA393]">
           {t("auth.noAccount")}{" "}
-          <Link href="/register" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+          <Link href="/register" className="font-semibold text-[#166534] dark:text-[#86A789] hover:underline">
             {t("auth.createAccountLink")}
           </Link>
         </div>

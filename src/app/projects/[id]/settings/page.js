@@ -168,8 +168,8 @@ function ProjectSettingsContent() {
     return (
       <ProtectedRoute>
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-2" />
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#166534] mb-2" />
+          <p className="text-xs text-[#5E7164] dark:text-[#8EA393] font-medium">Loading...</p>
         </div>
       </ProtectedRoute>
     );
@@ -180,14 +180,14 @@ function ProjectSettingsContent() {
       <ProtectedRoute>
         <div className="mx-auto max-w-lg px-4 py-16 text-center">
           <ShieldAlert className="mx-auto h-12 w-12 text-rose-500" />
-          <h2 className="mt-3 text-lg font-bold text-slate-900 dark:text-white">{t("project.accessDenied")}</h2>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <h2 className="mt-3 text-lg font-bold text-[#26332B] dark:text-[#FAF9F6]">{t("project.accessDenied")}</h2>
+          <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393]">
             {t("project.accessDeniedSub")}
           </p>
           <div className="mt-6">
             <Link
               href={`/projects/${projectId}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-semibold text-white shadow-sm transition"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2 text-xs font-semibold text-white shadow-xs transition"
             >
               <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> {t("settings.backToTasks")}
             </Link>
@@ -203,25 +203,25 @@ function ProjectSettingsContent() {
         {/* Navigation */}
         <Link
           href={`/projects/${projectId}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-500 transition"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393] hover:text-[#166534] dark:hover:text-[#86A789] transition"
         >
           <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" /> {t("settings.backToTasks")}
         </Link>
 
         {/* Page Header */}
-        <div className="border-b border-slate-200 dark:border-[#262632] pb-4">
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-            <Settings className="h-6 w-6 text-blue-500" /> {t("settings.title")}
+        <div className="border-b border-[#E5EBE5] dark:border-[#26372D] pb-4">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#26332B] dark:text-[#FAF9F6] flex items-center gap-2.5">
+            <Settings className="h-6 w-6 text-[#166534] dark:text-[#86A789]" /> {t("settings.title")}
           </h1>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393]">
             {t("settings.subtitle")}
           </p>
         </div>
 
         {/* 1. General Settings Form */}
-        <div className="rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-6 shadow-xs">
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">{t("settings.generalInfo")}</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{t("settings.generalInfoSub")}</p>
+        <div className="rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-6 shadow-xs">
+          <h2 className="text-base font-bold text-[#26332B] dark:text-[#FAF9F6]">{t("settings.generalInfo")}</h2>
+          <p className="text-xs text-[#5E7164] dark:text-[#8EA393]">{t("settings.generalInfoSub")}</p>
 
           {updateError && (
             <div className="mt-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/50">
@@ -236,7 +236,7 @@ function ProjectSettingsContent() {
 
           <form onSubmit={handleUpdateProject} className="mt-4 space-y-4">
             <div>
-              <label htmlFor="settings-name" className="block text-xs font-bold text-slate-900 dark:text-slate-200">
+              <label htmlFor="settings-name" className="block text-xs font-bold text-[#26332B] dark:text-[#FAF9F6]">
                 {t("settings.nameLabel")} *
               </label>
               <input
@@ -247,12 +247,12 @@ function ProjectSettingsContent() {
                 maxLength={80}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
+                className="mt-1.5 w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] px-3.5 py-2.5 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
               />
             </div>
 
             <div>
-              <label htmlFor="settings-desc" className="block text-xs font-bold text-slate-900 dark:text-slate-200">
+              <label htmlFor="settings-desc" className="block text-xs font-bold text-[#26332B] dark:text-[#FAF9F6]">
                 {t("settings.descLabel")}
               </label>
               <textarea
@@ -261,7 +261,7 @@ function ProjectSettingsContent() {
                 maxLength={1000}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
+                className="mt-1.5 w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] px-3.5 py-2.5 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
               />
             </div>
 
@@ -269,7 +269,7 @@ function ProjectSettingsContent() {
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
               >
                 {isUpdating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {t("settings.saveChanges")}
@@ -279,12 +279,12 @@ function ProjectSettingsContent() {
         </div>
 
         {/* 2. Team Membership Management */}
-        <div className="rounded-2xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#16161C] p-6 shadow-xs">
+        <div className="rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-6 shadow-xs">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-500" /> {t("settings.teamMembers")} ({members.length})
+            <h2 className="text-base font-bold text-[#26332B] dark:text-[#FAF9F6] flex items-center gap-2">
+              <Users className="h-5 w-5 text-[#166534] dark:text-[#86A789]" /> {t("settings.teamMembers")} ({members.length})
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-[#5E7164] dark:text-[#8EA393]">
               {t("settings.teamMembersSub")}
             </p>
           </div>
@@ -296,13 +296,13 @@ function ProjectSettingsContent() {
                 placeholder={t("settings.addEmailPlaceholder")}
                 value={newMemberEmail}
                 onChange={(e) => setNewMemberEmail(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 dark:border-[#262632] bg-slate-50 dark:bg-[#121217] px-3.5 py-2 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-[#16161C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] px-3.5 py-2 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
               />
             </div>
             <button
               type="submit"
               disabled={isAddingMember}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
             >
               {isAddingMember ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
               {t("settings.addMember")}
@@ -320,18 +320,18 @@ function ProjectSettingsContent() {
             </div>
           )}
 
-          {/* Members List with Design System badges */}
-          <div className="mt-5 divide-y divide-slate-100 dark:divide-[#22222E] rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#121217]">
+          {/* Members List */}
+          <div className="mt-5 divide-y divide-[#E5EBE5] dark:divide-[#26372D] rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17]">
             {members.map((member) => {
               const isMemberOwner = member.uid === project.ownerId;
               return (
                 <div key={member.uid} className="flex items-center justify-between p-3.5">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-500">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] text-xs font-bold text-[#166534] dark:text-[#86A789]">
                       {member.displayName?.charAt(0)?.toUpperCase() || "U"}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] flex items-center gap-2">
                         <span>{member.displayName || "User"}</span>
                         {isMemberOwner && (
                           <span className="badge-owner inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold">
@@ -339,7 +339,7 @@ function ProjectSettingsContent() {
                           </span>
                         )}
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{member.email}</p>
+                      <p className="text-[11px] text-[#5E7164] dark:text-[#8EA393]">{member.email}</p>
                     </div>
                   </div>
 
@@ -369,7 +369,7 @@ function ProjectSettingsContent() {
             <button
               type="button"
               onClick={() => setShowDeleteModal(true)}
-              className="flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-sm transition"
+              className="flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-xs transition"
             >
               <Trash2 className="h-4 w-4" /> {t("settings.deleteProject")}
             </button>
@@ -378,18 +378,18 @@ function ProjectSettingsContent() {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-            <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#16161C] p-6 shadow-2xl border border-slate-200 dark:border-[#262632] text-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-2xs">
+            <div className="w-full max-w-md rounded-2xl bg-[#FFFFFF] dark:bg-[#17221C] p-6 shadow-2xl border border-[#E5EBE5] dark:border-[#26372D] text-center">
               <Trash2 className="mx-auto h-10 w-10 text-rose-500 mb-2" />
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t("settings.deleteModalTitle")} &quot;{project.name}&quot;?</h3>
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              <h3 className="text-lg font-bold text-[#26332B] dark:text-[#FAF9F6]">{t("settings.deleteModalTitle")} &quot;{project.name}&quot;?</h3>
+              <p className="mt-2 text-xs text-[#5E7164] dark:text-[#8EA393]">
                 {t("settings.deleteModalSub")}
               </p>
               <div className="mt-6 flex items-center justify-center gap-3">
                 <button
                   type="button"
                   onClick={() => setShowDeleteModal(false)}
-                  className="rounded-xl border border-slate-200 dark:border-[#262632] bg-white dark:bg-[#1F1F28] px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#282836] transition"
+                  className="rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17] px-4 py-2 text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] transition"
                 >
                   {t("taskModal.cancel")}
                 </button>
@@ -397,7 +397,7 @@ function ProjectSettingsContent() {
                   type="button"
                   disabled={isDeletingProject}
                   onClick={handleDeleteProject}
-                  className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50 transition"
+                  className="flex items-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
                 >
                   {isDeletingProject && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   {t("settings.confirmDelete")}

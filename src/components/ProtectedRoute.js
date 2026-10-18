@@ -18,8 +18,8 @@ export default function ProtectedRoute({ children }) {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 text-center">
-        <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mb-4" />
-        <p className="text-sm font-medium text-slate-500">Loading your workspace...</p>
+        <Loader2 className="h-10 w-10 animate-spin text-[#166534] dark:text-[#86A789] mb-4" />
+        <p className="text-sm font-medium text-[#5E7164] dark:text-[#8EA393]">Loading your workspace...</p>
       </div>
     );
   }

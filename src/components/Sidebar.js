@@ -56,16 +56,16 @@ export default function Sidebar({ isOpen, onClose }) {
     <div className="flex h-full flex-col justify-between p-4 overflow-y-auto">
       {/* Top Header: Logo + User Avatar */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#22222B]">
+        <div className="flex items-center justify-between pb-3 border-b border-[#E5EBE5] dark:border-[#26372D]">
           <TaskFlowLogo size="sm" />
           <div className="flex items-center gap-1.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white ring-1 ring-white dark:ring-[#2A2A36]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#166534] text-[10px] font-bold text-white ring-1 ring-white dark:ring-[#26372D]">
               {userInitials}
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="lg:hidden p-1 text-slate-400 hover:text-white"
+              className="lg:hidden p-1 text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
               aria-label="Close"
             >
               <X className="h-5 w-5" />
@@ -84,18 +84,18 @@ export default function Sidebar({ isOpen, onClose }) {
                 onClick={onClose}
                 className={`relative flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold transition group ${
                   item.active
-                    ? "bg-slate-100 dark:bg-[#191922] text-blue-600 dark:text-blue-400 shadow-2xs font-bold"
-                    : "text-slate-600 dark:text-[#8E8E9F] hover:bg-slate-50 dark:hover:bg-[#15151C] hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-[#E8EFE9] dark:bg-[#1E2E24] text-[#166534] dark:text-[#86A789] shadow-2xs font-bold"
+                    : "text-[#5E7164] dark:text-[#8EA393] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
                 }`}
               >
                 {/* Active indicator bar on side */}
                 {item.active && (
-                  <span className="absolute left-0 rtl:left-auto rtl:right-0 top-2 bottom-2 w-1 rounded-r-full rtl:rounded-r-none rtl:rounded-l-full bg-blue-500" />
+                  <span className="absolute left-0 rtl:left-auto rtl:right-0 top-2 bottom-2 w-1 rounded-r-full rtl:rounded-r-none rtl:rounded-l-full bg-[#166534] dark:bg-[#86A789]" />
                 )}
                 <div className="flex items-center gap-3">
                   <Icon
                     className={`h-4 w-4 shrink-0 ${
-                      item.active ? "text-blue-500" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300"
+                      item.active ? "text-[#166534] dark:text-[#86A789]" : "text-[#5E7164] dark:text-[#8EA393] group-hover:text-[#26332B] dark:group-hover:text-[#FAF9F6]"
                     }`}
                   />
                   <span className="truncate">{item.label}</span>
@@ -107,17 +107,17 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       {/* Bottom User Profile + Quick Logout */}
-      <div className="pt-4 border-t border-slate-200 dark:border-[#22222B]">
-        <div className="flex items-center justify-between rounded-xl p-2 bg-slate-50 dark:bg-[#15151C] border border-slate-100 dark:border-[#22222C]">
+      <div className="pt-4 border-t border-[#E5EBE5] dark:border-[#26372D]">
+        <div className="flex items-center justify-between rounded-xl p-2 bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#166534] text-xs font-bold text-white">
               {userInitials}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+              <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] truncate">
                 {displayName}
               </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+              <p className="text-[10px] text-[#5E7164] dark:text-[#8EA393] truncate">
                 {user.email}
               </p>
             </div>
@@ -125,7 +125,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <button
             type="button"
             onClick={logout}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition shrink-0"
+            className="p-1.5 rounded-lg text-[#5E7164] dark:text-[#8EA393] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition shrink-0"
             title={t("nav.signOut")}
           >
             <LogOut className="h-4 w-4" />
@@ -138,7 +138,7 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <>
       {/* 1. Desktop Persistent Sidebar */}
-      <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0 lg:z-30 bg-white dark:bg-[#101014] border-r rtl:border-r-0 rtl:border-l border-slate-200 dark:border-[#22222B] transition-colors">
+      <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0 lg:z-30 bg-[#FFFFFF] dark:bg-[#17221C] border-r rtl:border-r-0 rtl:border-l border-[#E5EBE5] dark:border-[#26372D] transition-colors">
         {sidebarBody}
       </aside>
 
@@ -149,7 +149,7 @@ export default function Sidebar({ isOpen, onClose }) {
             className="fixed inset-0 bg-black/60 backdrop-blur-2xs transition-opacity"
             onClick={onClose}
           />
-          <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white dark:bg-[#101014] shadow-2xl animate-in slide-in-from-left rtl:slide-in-from-right duration-200">
+          <div className="relative flex w-full max-w-xs flex-1 flex-col bg-[#FFFFFF] dark:bg-[#17221C] shadow-2xl animate-in slide-in-from-left rtl:slide-in-from-right duration-200">
             {sidebarBody}
           </div>
         </div>
