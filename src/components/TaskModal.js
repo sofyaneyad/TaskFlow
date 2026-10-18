@@ -152,6 +152,7 @@ export default function TaskModal({
               >
                 <option value="todo">{t("dashboard.todo")}</option>
                 <option value="in_progress">{t("dashboard.inProgress")}</option>
+                <option value="review">{t("dashboard.review") || "In Review"}</option>
                 <option value="done">{t("dashboard.completed")}</option>
               </select>
             </div>

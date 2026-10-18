@@ -79,12 +79,15 @@ export default function TaskCard({
                 ? "bg-[#ECFDF5] text-[#15803D] border-[#BBF7D0]"
                 : task.status === "in_progress"
                 ? "bg-[#EFF6FF] text-[#2563EB] border-[#BFDBFE]"
+                : task.status === "review" || task.status === "in_review"
+                ? "bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]"
                 : "bg-[#F1F5F9] text-[#475569] border-[#E2E8F0]"
             }`}
             aria-label={`Change status for ${task.title}`}
           >
             <option value="todo">{t("dashboard.todo")}</option>
             <option value="in_progress">{t("dashboard.inProgress")}</option>
+            <option value="review">{t("dashboard.review") || "In Review"}</option>
             <option value="done">{t("dashboard.completed")}</option>
           </select>
         </div>

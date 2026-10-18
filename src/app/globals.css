@@ -5,8 +5,7 @@
   --primary-hover: #4338CA;
   --accent: #818CF8;
   --success: #15803D;
-  --in-progress: #2563EB;
-  --warning: #F59E0B;
+  --warning: #B45309;
   --error: #DC2626;
   --background: #FBFAFC;
   --surface: #FFFFFF;
@@ -75,6 +74,11 @@ body {
   background-color: #ECFDF5;
   color: #15803D;
   border: 1px solid #BBF7D0;
+}
+.badge-review {
+  background-color: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FDE68A;
 }
 .badge-overdue {
   background-color: #FEF2F2;

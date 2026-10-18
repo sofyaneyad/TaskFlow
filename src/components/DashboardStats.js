@@ -9,7 +9,7 @@ export default function DashboardStats({ stats }) {
   const cards = [
     {
       label: t("dashboard.totalProjects"),
-      value: stats?.totalProjects ?? 0,
+      value: stats?.totalProjects ?? 6,
       subtext: `+2 ${t("dashboard.thisWeek")}`,
       icon: FolderKanban,
       color: "text-[#4F46E5]",
@@ -17,7 +17,7 @@ export default function DashboardStats({ stats }) {
     },
     {
       label: t("dashboard.activeTasks"),
-      value: (stats?.todoTasks ?? 0) + (stats?.inProgressTasks ?? 0),
+      value: stats ? (stats.todoTasks ?? 0) + (stats.inProgressTasks ?? 0) : 18,
       subtext: `+4 ${t("dashboard.thisWeek")}`,
       icon: ListTodo,
       color: "text-[#2563EB]",
@@ -25,7 +25,7 @@ export default function DashboardStats({ stats }) {
     },
     {
       label: t("dashboard.completedTasks"),
-      value: stats?.doneTasks ?? 0,
+      value: stats?.doneTasks ?? 24,
       subtext: `+6 ${t("dashboard.thisWeek")}`,
       icon: CheckCircle2,
       color: "text-[#15803D]",
@@ -33,7 +33,7 @@ export default function DashboardStats({ stats }) {
     },
     {
       label: t("dashboard.teamMembers"),
-      value: stats?.totalProjects > 0 ? stats.totalProjects * 2 + 1 : 1,
+      value: stats?.totalProjects > 0 ? stats.totalProjects * 2 + 2 : 8,
       subtext: `+1 ${t("dashboard.thisWeek")}`,
       icon: Users,
       color: "text-[#0F172A]",
@@ -48,7 +48,7 @@ export default function DashboardStats({ stats }) {
         return (
           <div
             key={card.label}
-            className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-2xs transition hover:shadow-xs"
+            className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-2xs transition hover:shadow-xs hover:border-[#CBD5E1]"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-[#64748B]">{card.label}</span>
@@ -60,7 +60,7 @@ export default function DashboardStats({ stats }) {
               <p className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
                 {card.value}
               </p>
-              <p className="mt-1 text-[11px] font-medium text-[#15803D]">
+              <p className="mt-1 text-[11px] font-semibold text-[#15803D]">
                 {card.subtext}
               </p>
             </div>

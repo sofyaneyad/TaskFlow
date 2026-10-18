@@ -181,6 +181,7 @@ function ProjectDetailsContent() {
 
   const todoTasks = useMemo(() => filteredTasks.filter((t) => t.status === "todo"), [filteredTasks]);
   const inProgressTasks = useMemo(() => filteredTasks.filter((t) => t.status === "in_progress"), [filteredTasks]);
+  const reviewTasks = useMemo(() => filteredTasks.filter((t) => t.status === "review" || t.status === "in_review"), [filteredTasks]);
   const doneTasks = useMemo(() => filteredTasks.filter((t) => t.status === "done"), [filteredTasks]);
 
   const isOwner = project?.ownerId === user?.uid;
@@ -385,8 +386,8 @@ function ProjectDetailsContent() {
 
         {/* Task Board Rendering */}
         {viewMode === "kanban" ? (
-          /* Kanban Board View */
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+          /* Kanban Board View - 4 Columns matching Design System v1.0 */
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
             {/* 1. To Do Column */}
             <div className="rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] p-4 flex flex-col min-h-[500px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
@@ -481,7 +482,56 @@ function ProjectDetailsContent() {
               </button>
             </div>
 
-            {/* 3. Done Column */}
+            {/* 3. Review Column - From Design System v1.0 Mockup */}
+            <div className="rounded-2xl bg-[#FFFDF5] border border-[#FDE68A] p-4 flex flex-col min-h-[500px]">
+              <div className="flex items-center justify-between pb-3 border-b border-[#FDE68A]">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#B45309]" />
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-[#0F172A]">
+                    {t("dashboard.review") || "Review"}
+                  </h3>
+                </div>
+                <span className="bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A] rounded-full px-2.5 py-0.5 text-xs font-bold">
+                  {reviewTasks.length}
+                </span>
+              </div>
+
+              <div className="mt-3.5 space-y-3 flex-1">
+                {reviewTasks.length === 0 ? (
+                  <p className="text-center text-xs text-[#94A3B8] py-8">{t("project.noTasksInCol")}</p>
+                ) : (
+                  reviewTasks.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      members={members}
+                      currentUserId={user.uid}
+                      isProjectOwner={isOwner}
+                      onStatusChange={handleStatusChange}
+                      onEdit={(t) => {
+                        setEditingTask(t);
+                        setIsModalOpen(true);
+                      }}
+                      onDelete={handleDeleteTask}
+                    />
+                  ))
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingTask(null);
+                  setModalDefaultStatus("review");
+                  setIsModalOpen(true);
+                }}
+                className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#FDE68A] bg-white py-2 text-xs font-semibold text-[#B45309] hover:bg-[#FFFBEB] transition"
+              >
+                <Plus className="h-3.5 w-3.5" /> {t("project.addTask")}
+              </button>
+            </div>
+
+            {/* 4. Done Column */}
             <div className="rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] p-4 flex flex-col min-h-[500px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
                 <div className="flex items-center gap-2">
@@ -522,7 +572,7 @@ function ProjectDetailsContent() {
                   setModalDefaultStatus("done");
                   setIsModalOpen(true);
                 }}
-                className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#CBD5E1] bg-white py-2 text-xs font-semibold text-[#64748B] hover:text-[#15803D] hover:border-[#15803D] transition"
+                className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#CBD5E1] bg-white py-2 text-xs font-semibold text-[#15803D] hover:border-[#15803D] transition"
               >
                 <Plus className="h-3.5 w-3.5" /> {t("project.addTask")}
               </button>
