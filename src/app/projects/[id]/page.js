@@ -440,6 +440,7 @@ function ProjectDetailsContent() {
             overdueOnly={overdueOnly}
             setOverdueOnly={setOverdueOnly}
             members={members}
+            ownerId={project?.ownerId}
             onReset={handleResetFilters}
           />
         </div>
@@ -468,6 +469,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
+                      ownerId={project?.ownerId}
                       currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
@@ -515,6 +517,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
+                      ownerId={project?.ownerId}
                       currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
@@ -564,6 +567,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
+                      ownerId={project?.ownerId}
                       currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
@@ -611,6 +615,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
+                      ownerId={project?.ownerId}
                       currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
@@ -652,6 +657,7 @@ function ProjectDetailsContent() {
                   key={task.id}
                   task={task}
                   members={members}
+                  ownerId={project?.ownerId}
                   currentUserId={user?.uid || ""}
                   isProjectOwner={isOwner}
                   onStatusChange={handleStatusChange}
@@ -679,6 +685,7 @@ function ProjectDetailsContent() {
           initialData={editingTask ? editingTask : { status: modalDefaultStatus }}
           defaultStatus={modalDefaultStatus}
           members={members}
+          ownerId={project?.ownerId}
         />
       </div>
     </ProtectedRoute>

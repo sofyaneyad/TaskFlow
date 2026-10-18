@@ -7,6 +7,7 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function TaskCard({
   task,
   members = [],
+  ownerId = null,
   currentUserId,
   isProjectOwner,
   onStatusChange,
@@ -18,8 +19,11 @@ export default function TaskCard({
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const assignee = members.find((m) => m.uid === task.assigneeId);
-  const rawAssigneeName = assignee?.displayName || assignee?.email?.split("@")[0] || (task.assigneeId ? "عضو" : t("task.unassigned"));
-  const cleanAssigneeName = rawAssigneeName.replace(/\s*\([^)]*\)/g, "").trim() || (task.assigneeId ? "عضو" : t("task.unassigned"));
+  const isAssigneeOwner =
+    task.assigneeId === ownerId ||
+    (ownerId && assignee?.uid === ownerId) ||
+    (!task.assigneeId && isProjectOwner);
+  const cleanAssigneeName = isAssigneeOwner ? "عضو (مالك)" : "عضو";
 
   const getPriorityStyle = (priority) => {
     switch (priority) {
@@ -85,12 +89,9 @@ export default function TaskCard({
             )}
           </div>
 
-          {/* Status Quick Switcher */}
-          <select
-            value={task.status}
-            disabled={!canChangeStatus}
-            onChange={(e) => onStatusChange(task.id, e.target.value)}
-            className={`rounded-md border text-[10px] font-bold py-0.5 px-2 focus:outline-none cursor-pointer transition shrink-0 ${
+          {/* Static Status Badge (Editing only allowed via Edit button) */}
+          <span
+            className={`rounded-md border text-[10px] font-bold py-0.5 px-2 shrink-0 ${
               task.status === "done"
                 ? "bg-[#166534] text-white border-[#14532D]"
                 : task.status === "in_progress"
@@ -99,13 +100,15 @@ export default function TaskCard({
                 ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50"
                 : "bg-[#FAF9F6] dark:bg-[#131D17] text-[#5E7164] dark:text-[#8EA393] border-[#E5EBE5] dark:border-[#26372D]"
             }`}
-            aria-label={`Change status for ${task.title}`}
           >
-            <option value="todo">{t("dashboard.todo")}</option>
-            <option value="in_progress">{t("dashboard.inProgress")}</option>
-            <option value="review">{t("dashboard.review") || "In Review"}</option>
-            <option value="done">{t("dashboard.completed")}</option>
-          </select>
+            {task.status === "done"
+              ? t("dashboard.completed")
+              : task.status === "in_progress"
+              ? t("dashboard.inProgress")
+              : task.status === "review" || task.status === "in_review"
+              ? (t("dashboard.review") || "In Review")
+              : t("dashboard.todo")}
+          </span>
         </div>
 
         {/* Task Title */}

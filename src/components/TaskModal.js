@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { X, Calendar, User, Tag, AlertCircle, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -12,6 +12,7 @@ export default function TaskModal({
   task = null,
   initialData = null,
   members = [],
+  ownerId = null,
   defaultStatus = "todo",
 }) {
   const { t } = useLanguage();
@@ -27,24 +28,40 @@ export default function TaskModal({
   const activeTask = task || (initialData?.id ? initialData : null);
   const fallbackStatus = initialData?.status || defaultStatus || "todo";
 
+  const memberList = useMemo(() => {
+    let list = [...members];
+    if (ownerId && !list.some((m) => m.uid === ownerId)) {
+      list.unshift({ uid: ownerId, isOwner: true });
+    }
+    if (list.length === 0) {
+      list.push({ uid: ownerId || "owner", isOwner: true });
+    }
+    return list;
+  }, [members, ownerId]);
+
+  const defaultAssignee = useMemo(() => {
+    const ownerMember = memberList.find((m) => m.uid === ownerId);
+    return ownerMember ? ownerMember.uid : (memberList[0]?.uid || "");
+  }, [memberList, ownerId]);
+
   useEffect(() => {
     if (activeTask) {
       setTitle(activeTask.title || "");
       setDescription(activeTask.description || "");
       setStatus(activeTask.status || fallbackStatus);
       setPriority(activeTask.priority || "medium");
-      setAssigneeId(activeTask.assigneeId || "");
+      setAssigneeId(activeTask.assigneeId || defaultAssignee);
       setDueDate(activeTask.dueDate ? activeTask.dueDate.split("T")[0] : "");
     } else {
       setTitle("");
       setDescription("");
       setStatus(fallbackStatus);
       setPriority("medium");
-      setAssigneeId("");
+      setAssigneeId(defaultAssignee);
       setDueDate("");
     }
     setError("");
-  }, [task, initialData, defaultStatus, isOpen]);
+  }, [task, initialData, defaultStatus, isOpen, defaultAssignee]);
 
   if (!isOpen) return null;
 
@@ -71,7 +88,7 @@ export default function TaskModal({
           description: description ? description.trim() : "",
           status,
           priority,
-          assigneeId: assigneeId || null,
+          assigneeId: assigneeId || defaultAssignee,
           dueDate: dueDate || null,
         });
       }
@@ -206,18 +223,16 @@ export default function TaskModal({
               </label>
               <select
                 id="task-assignee"
-                value={assigneeId}
+                value={assigneeId || defaultAssignee}
                 onChange={(e) => setAssigneeId(e.target.value)}
                 className="mt-1.5 w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] px-3 py-2 text-xs text-[#26332B] dark:text-[#FAF9F6] focus:border-[#166534] dark:focus:border-[#86A789] focus:outline-none"
               >
-                <option value="">{t("taskModal.unassigned")}</option>
-                {members.map((m) => {
-                  const cleanName = (m.displayName || m.email?.split("@")[0] || "عضو")
-                    .replace(/\s*\([^)]*\)/g, "")
-                    .trim() || "عضو";
+                {memberList.map((m) => {
+                  const isMemberOwner = m.uid === ownerId || m.isOwner;
+                  const label = isMemberOwner ? "عضو (مالك)" : "عضو";
                   return (
                     <option key={m.uid} value={m.uid}>
-                      {cleanName}
+                      {label}
                     </option>
                   );
                 })}

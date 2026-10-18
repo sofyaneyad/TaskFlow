@@ -15,6 +15,7 @@ export default function FilterBar({
   overdueOnly,
   setOverdueOnly,
   members = [],
+  ownerId = null,
   onReset,
 }) {
   const { t } = useLanguage();
@@ -91,12 +92,15 @@ export default function FilterBar({
           aria-label="Filter by assignee"
         >
           <option value="all">{t("filter.assigneeAll")}</option>
-          <option value="unassigned">{t("filter.unassigned")}</option>
-          {members.map((m) => (
-            <option key={m.uid} value={m.uid}>
-              {m.displayName || m.email}
-            </option>
-          ))}
+          {members.map((m) => {
+            const isMemberOwner = m.uid === ownerId;
+            const label = isMemberOwner ? "عضو (مالك)" : "عضو";
+            return (
+              <option key={m.uid} value={m.uid}>
+                {label}
+              </option>
+            );
+          })}
         </select>
 
         {/* Reset button */}
