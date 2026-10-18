@@ -37,10 +37,29 @@ function ProjectDetailsContent() {
   const { t } = useLanguage();
   const router = useRouter();
 
-  const [project, setProject] = useState(null);
+  const [project, setProject] = useState(() => {
+    if (typeof window !== "undefined" && projectId) {
+      try {
+        const raw = localStorage.getItem("taskflow_local_projects");
+        if (raw) {
+          const list = JSON.parse(raw);
+          return list.find((p) => p.id === projectId) || null;
+        }
+      } catch {}
+    }
+    return null;
+  });
   const [members, setMembers] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState(() => {
+    if (typeof window !== "undefined" && projectId) {
+      try {
+        const raw = localStorage.getItem("taskflow_tasks_" + projectId);
+        return raw ? JSON.parse(raw) : [];
+      } catch {}
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [accessDenied, setAccessDenied] = useState(false);
   const [notFound, setNotFound] = useState(false);

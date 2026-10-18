@@ -24,14 +24,24 @@ import {
 export default function DashboardPage() {
   const { user, userProfile } = useAuth();
   const { lang, t } = useLanguage();
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("taskflow_local_projects");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        }
+      } catch {}
+    }
+    return [];
+  });
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [projectSearch, setProjectSearch] = useState("");
 
   const loadData = useCallback(async () => {
     if (!user) return;
-    setLoading(true);
     try {
       const userProjects = await getUserProjects(user.uid);
       setProjects(userProjects);
@@ -171,7 +181,26 @@ export default function DashboardPage() {
           </div>
 
           {/* Projects Rendering */}
-          {filteredProjects.length === 0 ? (
+          {loading && filteredProjects.length === 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  className="rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-5 shadow-2xs animate-pulse space-y-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-11 w-11 rounded-xl bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                    <div className="space-y-2 flex-1">
+                      <div className="h-4 w-3/4 rounded bg-[#E5EBE5] dark:border-[#26372D] bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                      <div className="h-3 w-1/3 rounded bg-[#E5EBE5] dark:border-[#26372D] bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                    </div>
+                  </div>
+                  <div className="h-3 w-full rounded bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                  <div className="h-2 w-full rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24]" />
+                </div>
+              ))}
+            </div>
+          ) : filteredProjects.length === 0 ? (
             <div className="rounded-2xl border-2 border-dashed border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-12 text-center">
               <FolderKanban className="mx-auto h-12 w-12 text-[#86A789]/60" />
               <h3 className="mt-3 text-sm font-bold text-[#26332B] dark:text-[#FAF9F6]">

@@ -133,19 +133,11 @@ export async function createTask(
   return taskData;
 }
 
-// Get all tasks for a specific project
-export async function getProjectTasks(projectId) {
-  if (!projectId) return [];
-
-  // Read local cache first for instant speed
-  const cachedTasks = getCachedTasks(projectId).map((t) => ({
-    ...t,
-    isOverdue: isTaskOverdue(t.dueDate, t.status),
-  }));
-
+// Helper to sync remote tasks in background
+async function syncRemoteTasks(projectId) {
   try {
     const tasksCollectionRef = collection(db, "projects", projectId, "tasks");
-    const querySnapshot = await withTimeout(getDocs(tasksCollectionRef), 2000);
+    const querySnapshot = await withTimeout(getDocs(tasksCollectionRef), 1500);
 
     const remoteTasks = [];
     querySnapshot.forEach((docSnap) => {
@@ -158,7 +150,7 @@ export async function getProjectTasks(projectId) {
     });
 
     if (remoteTasks.length > 0) {
-      // Merge remote with local
+      const cachedTasks = getCachedTasks(projectId);
       const mergedMap = new Map();
       cachedTasks.forEach((t) => mergedMap.set(t.id, t));
       remoteTasks.forEach((t) => mergedMap.set(t.id, t));
@@ -166,11 +158,29 @@ export async function getProjectTasks(projectId) {
       saveCachedTasks(projectId, merged);
       return merged;
     }
-  } catch {
-    // Return cache if remote is slow or offline
+  } catch {}
+  return [];
+}
+
+// Get all tasks for a specific project
+export async function getProjectTasks(projectId) {
+  if (!projectId) return [];
+
+  // Read local cache first for instant 0ms speed
+  const cachedTasks = getCachedTasks(projectId).map((t) => ({
+    ...t,
+    isOverdue: isTaskOverdue(t.dueDate, t.status),
+  }));
+
+  // If cache exists, return immediately and sync in background!
+  if (cachedTasks.length > 0) {
+    syncRemoteTasks(projectId).catch(() => {});
+    return cachedTasks;
   }
 
-  return cachedTasks;
+  // If no cache, perform remote fetch
+  const remote = await syncRemoteTasks(projectId);
+  return remote.length > 0 ? remote : cachedTasks;
 }
 
 // FR-09 & FR-11: Update task fields
@@ -235,15 +245,21 @@ export async function getUserDashboardStats(accessibleProjects) {
   let overdueTasks = [];
   let allTasks = [];
 
-  for (const project of accessibleProjects) {
-    const tasks = await getProjectTasks(project.id);
+  const tasksPerProject = await Promise.all(
+    accessibleProjects.map(async (project) => {
+      const tasks = await getProjectTasks(project.id);
+      return { project, tasks };
+    })
+  );
+
+  for (const { project, tasks } of tasksPerProject) {
     let projectCompleted = 0;
 
     for (const task of tasks) {
       totalTasks += 1;
       if (task.status === "todo") todoTasks += 1;
       else if (task.status === "in_progress") inProgressTasks += 1;
-      else if (task.status === "review") reviewTasks += 1;
+      else if (task.status === "review" || task.status === "in_review") reviewTasks += 1;
       else if (task.status === "done") {
         doneTasks += 1;
         projectCompleted += 1;

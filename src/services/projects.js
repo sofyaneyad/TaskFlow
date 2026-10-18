@@ -95,57 +95,82 @@ export async function createProject({ name, description = "", ownerId }) {
   return projectData;
 }
 
-// Get all projects accessible by user (Owner or Member)
-export async function getUserProjects(userId) {
-  if (!userId) return [];
-
-  // Read local cache first for instant UI response
-  const localProjects = getCachedProjects().filter(
-    (p) => p.memberIds && p.memberIds.includes(userId)
-  );
-
+// Helper to sync remote projects in background
+async function syncRemoteProjects(userId) {
   try {
     const q = query(
       collection(db, "projects"),
       where("memberIds", "array-contains", userId)
     );
-
-    const querySnapshot = await withTimeout(getDocs(q), 2000);
+    const querySnapshot = await withTimeout(getDocs(q), 1500);
     const remoteProjects = [];
     querySnapshot.forEach((docSnap) => {
       remoteProjects.push({ id: docSnap.id, ...docSnap.data() });
     });
 
     if (remoteProjects.length > 0) {
-      // Merge remote with local
+      const local = getCachedProjects();
       const mergedMap = new Map();
-      localProjects.forEach((p) => mergedMap.set(p.id, p));
+      local.forEach((p) => mergedMap.set(p.id, p));
       remoteProjects.forEach((p) => mergedMap.set(p.id, p));
       const merged = Array.from(mergedMap.values());
       saveCachedProjects(merged);
       return merged;
     }
-  } catch {
-    // If Firestore is offline or taking time, return cached projects instantly
+  } catch (err) {
+    // Firestore offline or not configured
+  }
+  return [];
+}
+
+// Get all projects accessible by user (Owner or Member)
+export async function getUserProjects(userId) {
+  if (!userId) return [];
+
+  // 1. Read local cache first for instant 0ms UI response
+  const localProjects = getCachedProjects().filter(
+    (p) => p.memberIds && p.memberIds.includes(userId)
+  );
+
+  // If we already have cached projects, return them IMMEDIATELY and sync in background!
+  if (localProjects.length > 0) {
+    syncRemoteProjects(userId).catch(() => {});
+    return localProjects;
   }
 
-  return localProjects;
+  // If no cache, perform remote fetch
+  const remote = await syncRemoteProjects(userId);
+  return remote.length > 0 ? remote : localProjects;
 }
 
 // Get single project by ID
 export async function getProjectById(projectId) {
   if (!projectId) return null;
 
-  // Check cache first
+  // Check cache first for instant 0ms access
   const cached = getCachedProjects().find((p) => p.id === projectId);
+  if (cached) {
+    // Background refresh
+    (async () => {
+      try {
+        const docRef = doc(db, "projects", projectId);
+        const docSnap = await withTimeout(getDoc(docRef), 1500);
+        if (docSnap && docSnap.exists()) {
+          const data = { id: docSnap.id, ...docSnap.data() };
+          const list = getCachedProjects().filter((p) => p.id !== projectId);
+          saveCachedProjects([data, ...list]);
+        }
+      } catch {}
+    })().catch(() => {});
+    return cached;
+  }
 
   try {
     const docRef = doc(db, "projects", projectId);
-    const docSnap = await withTimeout(getDoc(docRef), 2000);
+    const docSnap = await withTimeout(getDoc(docRef), 1500);
 
     if (docSnap && docSnap.exists()) {
       const data = { id: docSnap.id, ...docSnap.data() };
-      // Update cache
       const list = getCachedProjects().filter((p) => p.id !== projectId);
       saveCachedProjects([data, ...list]);
       return data;
@@ -308,16 +333,15 @@ export async function removeProjectMember(projectId, memberId, ownerId) {
 export async function getProjectMembersDetails(memberIds = []) {
   if (!memberIds || memberIds.length === 0) return [];
 
-  const members = [];
-  for (const uid of memberIds) {
-    try {
-      const userDoc = await withTimeout(getDoc(doc(db, "users", uid)), 1000);
-      if (userDoc && userDoc.exists()) {
-        members.push({ uid: userDoc.id, ...userDoc.data() });
-        continue;
-      }
-    } catch {}
-    members.push({ uid, displayName: "Member (" + uid.slice(0, 5) + ")", email: "" });
-  }
-  return members;
+  return await Promise.all(
+    memberIds.map(async (uid) => {
+      try {
+        const userDoc = await withTimeout(getDoc(doc(db, "users", uid)), 800);
+        if (userDoc && userDoc.exists()) {
+          return { uid: userDoc.id, ...userDoc.data() };
+        }
+      } catch {}
+      return { uid, displayName: "Member (" + uid.slice(0, 5) + ")", email: "" };
+    })
+  );
 }
