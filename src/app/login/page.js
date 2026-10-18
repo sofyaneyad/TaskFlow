@@ -5,17 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { Lock, Mail, Loader2, ArrowRight, CheckSquare } from "lucide-react";
+import { Lock, Mail, Loader2, ArrowRight, CheckSquare, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { user, loading: authLoading, login, loginWithGoogle } = useAuth();
   const { t } = useLanguage();
   const router = useRouter();
+
+  // Reset fields on mount to prevent any residual email/password display
+  useEffect(() => {
+    setEmail("");
+    setPassword("");
+  }, []);
 
   // If already logged in, redirect directly to dashboard
   useEffect(() => {
@@ -145,7 +152,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <form className="space-y-4" onSubmit={handleLogin}>
+        <form className="space-y-4" onSubmit={handleLogin} autoComplete="off">
           <div>
             <label htmlFor="login-email" className="block text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6]">
               {t("auth.emailLabel")}
@@ -156,7 +163,7 @@ export default function LoginPage() {
                 id="login-email"
                 type="email"
                 required
-                autoComplete="email"
+                autoComplete="off"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
@@ -173,14 +180,23 @@ export default function LoginPage() {
               <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393]" />
               <input
                 id="login-password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 required
-                autoComplete="current-password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
+                className="w-full rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FAF9F6] dark:bg-[#131D17] py-2.5 pl-9 pr-10 rtl:pl-10 rtl:pr-9 text-sm text-[#26332B] dark:text-[#FAF9F6] placeholder-[#5E7164]/60 dark:placeholder-[#8EA393]/60 focus:border-[#166534] dark:focus:border-[#86A789] focus:bg-[#FFFFFF] dark:focus:bg-[#17221C] focus:outline-none transition"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 rtl:right-auto rtl:left-3 top-1/2 -translate-y-1/2 text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6] focus:outline-none transition p-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
             </div>
           </div>
 

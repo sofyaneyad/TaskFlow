@@ -77,7 +77,7 @@ export default function TaskModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-2xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-6 shadow-2xl">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E5EBE5] dark:border-[#26372D] pb-4">
           <h3 className="text-base font-extrabold text-[#26332B] dark:text-[#FAF9F6]">

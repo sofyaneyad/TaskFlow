@@ -165,13 +165,13 @@ export default function Sidebar({ isOpen, onClose }) {
   return (
     <>
       {/* 1. Desktop Persistent Sidebar */}
-      <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0 lg:z-30 bg-[#FFFFFF] dark:bg-[#17221C] border-r rtl:border-r-0 rtl:border-l border-[#E5EBE5] dark:border-[#26372D] transition-colors">
+      <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 rtl:lg:left-auto rtl:lg:right-0 lg:z-30 bg-[#FFFFFF] dark:bg-[#17221C] border-r rtl:border-r-0 rtl:border-l border-[#E5EBE5] dark:border-[#26372D] transition-colors">
         {sidebarBody}
       </aside>
 
       {/* 2. Mobile Drawer */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="lg:hidden fixed inset-0 z-50 flex rtl:flex-row-reverse">
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-2xs transition-opacity"
             onClick={onClose}
