@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isProjectMember(projectId) {
+      return isAuthenticated() && 
+        request.auth.uid in get(/databases/$(database)/documents/projects/$(projectId)).data.memberIds;
+    }
+
+    function isProjectOwner(projectId) {
+      return isAuthenticated() && 
+        request.auth.uid == get(/databases/$(database)/documents/projects/$(projectId)).data.ownerId;
+    }
+
+    // Users Collection
+    match /users/{uid} {
+      // Authenticated users can view user profiles to look up members by email or display names
+      allow read: if isAuthenticated();
+      // Only the user themselves can create or update their own profile
+      allow create, update: if isAuthenticated() && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // Projects Collection
+    match /projects/{projectId} {
+      // Project read: owner or member only
+      allow read: if isAuthenticated() && (request.auth.uid in resource.data.memberIds);
+      
+      // Project creation: Must be authenticated, creator is owner, owner is included in memberIds
+      allow create: if isAuthenticated() 
+        && request.resource.data.ownerId == request.auth.uid
+        && request.auth.uid in request.resource.data.memberIds
+        && request.resource.data.name.size() >= 3 
+        && request.resource.data.name.size() <= 80;
+
+      // Project update & delete: Owner only
+      allow update: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+
+      // Tasks Subcollection
+      match /tasks/{taskId} {
+        // Task reads: Project members only
+        allow read: if isProjectMember(projectId);
+
+        // Task create: Project members only, with valid title (3-120), valid status & priority, createdBy == user
+        allow create: if isProjectMember(projectId)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.title.size() >= 3
+          && request.resource.data.title.size() <= 120
+          && request.resource.data.status in ['todo', 'in_progress', 'done']
+          && request.resource.data.priority in ['low', 'medium', 'high']
+          && (request.resource.data.assigneeId == null || request.resource.data.assigneeId in get(/databases/$(database)/documents/projects/$(projectId)).data.memberIds);
+
+        // Task update: Project owner, task creator, or assigned member (e.g. updating status)
+        allow update: if isProjectMember(projectId)
+          && (
+            isProjectOwner(projectId) || 
+            resource.data.createdBy == request.auth.uid || 
+            resource.data.assigneeId == request.auth.uid
+          )
+          && request.resource.data.status in ['todo', 'in_progress', 'done']
+          && request.resource.data.priority in ['low', 'medium', 'high'];
+
+        // Task delete: Project owner or task creator only
+        allow delete: if isAuthenticated() && (
+          isProjectOwner(projectId) || 
+          resource.data.createdBy == request.auth.uid
+        );
+      }
+    }
+  }
+}
