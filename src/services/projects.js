@@ -36,21 +36,43 @@ export async function createProject({ name, description = "", ownerId }) {
   return { id: docRef.id, ...projectData };
 }
 
+const withTimeout = (promise, ms = 4000) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(
+        () =>
+          reject(
+            new Error(
+              "Firestore timeout. Please ensure Cloud Firestore database is created in your Firebase Console."
+            )
+          ),
+        ms
+      )
+    ),
+  ]);
+};
+
 // Get all projects accessible by user (Owner or Member)
 export async function getUserProjects(userId) {
   if (!userId) return [];
-  const q = query(
-    collection(db, "projects"),
-    where("memberIds", "array-contains", userId)
-  );
+  try {
+    const q = query(
+      collection(db, "projects"),
+      where("memberIds", "array-contains", userId)
+    );
 
-  const querySnapshot = await getDocs(q);
-  const projects = [];
-  querySnapshot.forEach((docSnap) => {
-    projects.push({ id: docSnap.id, ...docSnap.data() });
-  });
+    const querySnapshot = await withTimeout(getDocs(q), 3500);
+    const projects = [];
+    querySnapshot.forEach((docSnap) => {
+      projects.push({ id: docSnap.id, ...docSnap.data() });
+    });
 
-  return projects;
+    return projects;
+  } catch (err) {
+    console.error("getUserProjects error:", err);
+    return [];
+  }
 }
 
 // Get single project by ID

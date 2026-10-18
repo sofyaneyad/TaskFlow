@@ -39,12 +39,15 @@ export function AuthProvider({ children }) {
 
     try {
       const userRef = doc(db, "users", firebaseUser.uid);
-      const userSnap = await getDoc(userRef);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 3000)
+      );
+      const userSnap = await Promise.race([getDoc(userRef), timeoutPromise]);
 
-      if (userSnap.exists()) {
+      if (userSnap && userSnap.exists()) {
         setUserProfile(userSnap.data());
-      } else {
-        // Fallback create user profile document if missing
+      } else if (userSnap) {
+        // Create user profile document if missing
         const newProfile = {
           displayName: firebaseUser.displayName || firebaseUser.email.split("@")[0],
           email: firebaseUser.email.toLowerCase(),
@@ -53,10 +56,9 @@ export function AuthProvider({ children }) {
         await setDoc(userRef, newProfile);
         setUserProfile(newProfile);
       }
-    } catch (err) {
-      console.error("Error fetching user profile from Firestore:", err);
-      // Fallback local representation
-      setUserProfile({
+    } catch {
+      // Fallback local representation immediately without blocking
+      setUserProfile((prev) => prev || {
         displayName: firebaseUser.displayName || firebaseUser.email.split("@")[0],
         email: firebaseUser.email.toLowerCase(),
       });
@@ -64,14 +66,22 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        await syncUserProfile(currentUser);
+        // 1. Immediately provide profile from Auth to unblock UI instantly
+        setUserProfile({
+          displayName: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
+          email: currentUser.email?.toLowerCase() || "",
+        });
+        setLoading(false); // Immediate unblock!
+
+        // 2. Fetch full Firestore profile in background
+        syncUserProfile(currentUser);
       } else {
         setUserProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();

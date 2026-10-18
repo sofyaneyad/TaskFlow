@@ -76,23 +76,37 @@ export async function createTask(
   return { id: docRef.id, ...taskData };
 }
 
+const withTimeout = (promise, ms = 3500) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Firestore task fetch timeout")), ms)
+    ),
+  ]);
+};
+
 // Get all tasks for a specific project
 export async function getProjectTasks(projectId) {
   if (!projectId) return [];
-  const tasksCollectionRef = collection(db, "projects", projectId, "tasks");
-  const querySnapshot = await getDocs(tasksCollectionRef);
+  try {
+    const tasksCollectionRef = collection(db, "projects", projectId, "tasks");
+    const querySnapshot = await withTimeout(getDocs(tasksCollectionRef), 3500);
 
-  const tasks = [];
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    tasks.push({
-      id: docSnap.id,
-      ...data,
-      isOverdue: isTaskOverdue(data.dueDate, data.status),
+    const tasks = [];
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      tasks.push({
+        id: docSnap.id,
+        ...data,
+        isOverdue: isTaskOverdue(data.dueDate, data.status),
+      });
     });
-  });
 
-  return tasks;
+    return tasks;
+  } catch (err) {
+    console.error("getProjectTasks error:", err);
+    return [];
+  }
 }
 
 // FR-09 & FR-11: Update task fields
