@@ -25,10 +25,55 @@ const AuthContext = createContext({
 
 export const useAuth = () => useContext(AuthContext);
 
+const AUTH_CACHE_KEY = "taskflow_auth_session";
+const PROFILE_CACHE_KEY = "taskflow_auth_profile";
+
+function getCachedAuthUser() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(AUTH_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getCachedUserProfile() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(PROFILE_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveAuthCache(user, profile) {
+  if (typeof window === "undefined") return;
+  try {
+    if (user) {
+      const sessionData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || profile?.displayName || user.email?.split("@")[0] || "User",
+        photoURL: user.photoURL || profile?.photoURL || null,
+      };
+      localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(sessionData));
+      if (profile) {
+        localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profile));
+      }
+    } else {
+      localStorage.removeItem(AUTH_CACHE_KEY);
+      localStorage.removeItem(PROFILE_CACHE_KEY);
+    }
+  } catch {}
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // 1. Immediately read cached session to eliminate refresh lag and page flicker (0ms)
+  const [user, setUser] = useState(() => getCachedAuthUser());
+  const [userProfile, setUserProfile] = useState(() => getCachedUserProfile());
+  const [loading, setLoading] = useState(() => !getCachedAuthUser());
 
   // Sync user profile from Firestore users/{uid}
   const syncUserProfile = async (firebaseUser) => {
@@ -40,58 +85,61 @@ export function AuthProvider({ children }) {
     try {
       const userRef = doc(db, "users", firebaseUser.uid);
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("timeout")), 2000)
+        setTimeout(() => reject(new Error("timeout")), 1500)
       );
       const userSnap = await Promise.race([getDoc(userRef), timeoutPromise]);
 
       if (userSnap && userSnap.exists()) {
         const data = userSnap.data();
-        if (firebaseUser.photoURL && data.photoURL !== firebaseUser.photoURL) {
-          setDoc(userRef, { photoURL: firebaseUser.photoURL }, { merge: true }).catch(() => {});
-          setUserProfile({ ...data, photoURL: firebaseUser.photoURL });
-        } else {
-          setUserProfile({
-            ...data,
-            photoURL: data.photoURL || firebaseUser.photoURL || null,
-          });
-        }
+        const updatedProfile = {
+          ...data,
+          photoURL: firebaseUser.photoURL || data.photoURL || null,
+        };
+        setUserProfile(updatedProfile);
+        saveAuthCache(firebaseUser, updatedProfile);
       } else if (userSnap) {
-        // Create user profile document if missing
         const newProfile = {
           displayName: firebaseUser.displayName || firebaseUser.email.split("@")[0],
           email: firebaseUser.email.toLowerCase(),
           photoURL: firebaseUser.photoURL || null,
           createdAt: serverTimestamp(),
         };
-        await setDoc(userRef, newProfile);
+        setDoc(userRef, newProfile).catch(() => {});
         setUserProfile(newProfile);
+        saveAuthCache(firebaseUser, newProfile);
       }
     } catch {
-      // Fallback local representation immediately without blocking
-      setUserProfile((prev) => ({
-        displayName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
-        email: firebaseUser.email?.toLowerCase() || "",
-        photoURL: firebaseUser.photoURL || prev?.photoURL || null,
-        ...(prev || {}),
-      }));
+      setUserProfile((prev) => {
+        const fallback = {
+          displayName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
+          email: firebaseUser.email?.toLowerCase() || "",
+          photoURL: firebaseUser.photoURL || prev?.photoURL || null,
+          ...(prev || {}),
+        };
+        saveAuthCache(firebaseUser, fallback);
+        return fallback;
+      });
     }
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
       if (currentUser) {
-        // 1. Immediately provide profile from Auth to unblock UI instantly with photoURL
-        setUserProfile({
+        const profile = {
           displayName: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
           email: currentUser.email?.toLowerCase() || "",
           photoURL: currentUser.photoURL || null,
-        });
-        setLoading(false); // Immediate unblock!
+        };
+        setUser(currentUser);
+        setUserProfile(profile);
+        setLoading(false);
+        saveAuthCache(currentUser, profile);
 
-        // 2. Fetch full Firestore profile in background
+        // Background profile sync
         syncUserProfile(currentUser);
       } else {
+        saveAuthCache(null, null);
+        setUser(null);
         setUserProfile(null);
         setLoading(false);
       }
@@ -201,9 +249,12 @@ export function AuthProvider({ children }) {
 
   // FR-02 & US-02: Sign out user
   const logout = async () => {
-    await signOut(auth);
+    saveAuthCache(null, null);
     setUser(null);
     setUserProfile(null);
+    try {
+      await signOut(auth);
+    } catch {}
   };
 
   return (

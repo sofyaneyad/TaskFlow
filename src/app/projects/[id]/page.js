@@ -82,7 +82,7 @@ function ProjectDetailsContent() {
   // Load project, members, and tasks
   const loadProjectData = useCallback(async () => {
     if (!projectId || !user) return;
-    setLoading(true);
+    if (!project) setLoading(true);
     setError("");
     setAccessDenied(false);
     setNotFound(false);
@@ -213,7 +213,7 @@ function ProjectDetailsContent() {
     );
   }
 
-  if (loading) {
+  if (loading && !project) {
     return (
       <ProtectedRoute>
         <div className="flex min-h-[60vh] flex-col items-center justify-center">

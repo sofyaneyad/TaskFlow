@@ -33,14 +33,25 @@ function ProjectSettingsContent() {
   const { t } = useLanguage();
   const router = useRouter();
 
-  const [project, setProject] = useState(null);
+  const [project, setProject] = useState(() => {
+    if (typeof window !== "undefined" && projectId) {
+      try {
+        const raw = localStorage.getItem("taskflow_local_projects");
+        if (raw) {
+          const list = JSON.parse(raw);
+          return list.find((p) => p.id === projectId) || null;
+        }
+      } catch {}
+    }
+    return null;
+  });
   const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isOwner, setIsOwner] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isOwner, setIsOwner] = useState(true);
 
   // Form states
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(() => project?.name || "");
+  const [description, setDescription] = useState(() => project?.description || "");
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
@@ -57,7 +68,7 @@ function ProjectSettingsContent() {
 
   const loadData = useCallback(async () => {
     if (!projectId || !user) return;
-    setLoading(true);
+    if (!project) setLoading(true);
 
     try {
       const proj = await getProjectById(projectId);
@@ -66,13 +77,13 @@ function ProjectSettingsContent() {
         return;
       }
 
-      if (proj.ownerId !== user?.uid) {
-        setIsOwner(false);
+      const userIsOwner = proj.ownerId === user?.uid;
+      setIsOwner(userIsOwner);
+      if (!userIsOwner) {
         setLoading(false);
         return;
       }
 
-      setIsOwner(true);
       setProject(proj);
       setName(proj.name || "");
       setDescription(proj.description || "");
@@ -84,7 +95,7 @@ function ProjectSettingsContent() {
     } finally {
       setLoading(false);
     }
-  }, [projectId, user, router]);
+  }, [projectId, user, router, project]);
 
   useEffect(() => {
     loadData();
@@ -172,7 +183,7 @@ function ProjectSettingsContent() {
     );
   }
 
-  if (loading) {
+  if (loading && !project) {
     return (
       <ProtectedRoute>
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
