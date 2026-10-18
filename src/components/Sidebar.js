@@ -55,37 +55,23 @@ export default function Sidebar({ isOpen, onClose }) {
   ];
 
   const sidebarBody = (
-    <div className="flex h-full flex-col justify-between p-4 overflow-y-auto">
-      {/* Top Header: Logo + User Avatar */}
-      <div className="space-y-4">
+    <div className="flex h-full flex-col justify-between p-3.5 sm:p-4 overflow-y-auto">
+      {/* Top Header: Logo + Close Button */}
+      <div className="space-y-3">
         <div className="flex items-center justify-between pb-3 border-b border-[#E5EBE5] dark:border-[#26372D]">
           <TaskFlowLogo size="sm" />
-          <div className="flex items-center gap-1.5">
-            {photoURL ? (
-              <img
-                src={photoURL}
-                alt={displayName}
-                referrerPolicy="no-referrer"
-                className="h-7 w-7 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
-              />
-            ) : (
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#166534] text-[10px] font-bold text-white ring-1 ring-white dark:ring-[#26372D]">
-                {userInitials}
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={onClose}
-              className="lg:hidden p-1 text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="lg:hidden rounded-lg p-1 text-[#5E7164] dark:text-[#8EA393] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] hover:text-[#26332B] dark:hover:text-[#FAF9F6] transition cursor-pointer"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {/* Navigation Links */}
-        <nav className="space-y-1.5 pt-1">
+        <nav className="space-y-1 pt-1">
           {mainNavItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -93,7 +79,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`relative flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-semibold transition group ${
+                className={`relative flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition group cursor-pointer ${
                   item.active
                     ? "bg-[#E8EFE9] dark:bg-[#1E2E24] text-[#166534] dark:text-[#86A789] shadow-2xs font-bold"
                     : "text-[#5E7164] dark:text-[#8EA393] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
@@ -101,9 +87,9 @@ export default function Sidebar({ isOpen, onClose }) {
               >
                 {/* Active indicator bar on side */}
                 {item.active && (
-                  <span className="absolute left-0 rtl:left-auto rtl:right-0 top-2 bottom-2 w-1 rounded-r-full rtl:rounded-r-none rtl:rounded-l-full bg-[#166534] dark:bg-[#86A789]" />
+                  <span className="absolute left-0 rtl:left-auto rtl:right-0 top-1.5 bottom-1.5 w-1 rounded-r-full rtl:rounded-r-none rtl:rounded-l-full bg-[#166534] dark:bg-[#86A789]" />
                 )}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <Icon
                     className={`h-4 w-4 shrink-0 ${
                       item.active ? "text-[#166534] dark:text-[#86A789]" : "text-[#5E7164] dark:text-[#8EA393] group-hover:text-[#26332B] dark:group-hover:text-[#FAF9F6]"
@@ -118,18 +104,18 @@ export default function Sidebar({ isOpen, onClose }) {
       </div>
 
       {/* Bottom User Profile + Quick Logout */}
-      <div className="pt-4 border-t border-[#E5EBE5] dark:border-[#26372D]">
+      <div className="pt-3 pb-2 sm:pb-0 border-t border-[#E5EBE5] dark:border-[#26372D]">
         <div className="flex items-center justify-between rounded-xl p-2 bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D]">
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-2 min-w-0 flex-1 mr-1 rtl:mr-0 rtl:ml-1">
             {photoURL ? (
               <img
                 src={photoURL}
                 alt={displayName}
                 referrerPolicy="no-referrer"
-                className="h-8 w-8 shrink-0 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
+                className="h-7 w-7 sm:h-8 sm:w-8 shrink-0 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
               />
             ) : (
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#166534] text-xs font-bold text-white">
+              <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full bg-[#166534] text-xs font-bold text-white">
                 {userInitials}
               </div>
             )}
@@ -152,7 +138,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 console.error("Logout error:", e);
               }
             }}
-            className="p-1.5 rounded-lg text-[#5E7164] dark:text-[#8EA393] hover:text-[#CA8A04] dark:hover:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition shrink-0"
+            className="p-1.5 rounded-lg text-[#5E7164] dark:text-[#8EA393] hover:text-[#CA8A04] dark:hover:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition shrink-0 cursor-pointer"
             title={t("nav.signOut")}
           >
             <LogOut className="h-4 w-4" />
@@ -173,10 +159,10 @@ export default function Sidebar({ isOpen, onClose }) {
       {isOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex rtl:flex-row-reverse">
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-2xs transition-opacity"
+            className="fixed inset-0 bg-black/60 backdrop-blur-2xs transition-opacity cursor-pointer"
             onClick={onClose}
           />
-          <div className="relative flex w-full max-w-xs flex-1 flex-col bg-[#FFFFFF] dark:bg-[#17221C] shadow-2xl animate-in slide-in-from-left rtl:slide-in-from-right duration-200">
+          <div className="relative flex w-60 max-w-[75vw] flex-col bg-[#FFFFFF] dark:bg-[#17221C] shadow-2xl animate-in slide-in-from-left rtl:slide-in-from-right duration-200">
             {sidebarBody}
           </div>
         </div>

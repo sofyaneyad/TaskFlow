@@ -67,6 +67,26 @@ body {
   font-family: var(--font-family);
 }
 
+/* Ensure cursor pointer for all interactive and clickable elements */
+button,
+a,
+select,
+summary,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+label[for],
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
 /* Custom scrollbar matching Forest Green & Sage theme */
 ::-webkit-scrollbar {
   width: 6px;
