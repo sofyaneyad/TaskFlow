@@ -24,22 +24,22 @@ export default function RegisterPage() {
     setError("");
 
     if (!name || name.trim().length < 2) {
-      setError("Please enter your name (at least 2 characters).");
+      setError("errNameRequired");
       return;
     }
 
     if (!email || !email.includes("@")) {
-      setError("Please enter a valid email address.");
+      setError("errValidEmailRequired");
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      setError("errPasswordLength");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("errPasswordsDontMatch");
       return;
     }
 
@@ -50,13 +50,13 @@ export default function RegisterPage() {
     } catch (err) {
       console.error("Registration error:", err);
       if (err.code === "auth/email-already-in-use") {
-        setError("This email address is already in use. Please sign in or use a different email.");
+        setError("errEmailInUse");
       } else if (err.code === "auth/weak-password") {
-        setError("Password is too weak. Please use a stronger password.");
+        setError("errWeakPassword");
       } else if (err.code === "auth/invalid-email") {
-        setError("Invalid email format.");
+        setError("errInvalidEmail");
       } else {
-        setError(err.message || "Failed to create account.");
+        setError("errRegisterFailed");
       }
     } finally {
       setLoading(false);
@@ -74,9 +74,9 @@ export default function RegisterPage() {
       if (err.code === "auth/popup-closed-by-user") {
         // User cancelled popup
       } else if (err.code === "auth/unauthorized-domain") {
-        setError("This domain is not authorized in Firebase. Please add localhost to Authorized Domains in Firebase Auth settings.");
+        setError("errUnauthorizedDomain");
       } else {
-        setError(err.message || "Failed to sign up with Google.");
+        setError("errGoogleFailed");
       }
     } finally {
       setGoogleLoading(false);
@@ -112,7 +112,7 @@ export default function RegisterPage() {
         {/* Error Alert (Earth Gold Palette) */}
         {error && (
           <div className="rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3.5 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]" role="alert">
-            {error}
+            {t(`auth.${error}`) || error}
           </div>
         )}
 

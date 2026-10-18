@@ -97,7 +97,7 @@ function ProjectSettingsContent() {
     setUpdateSuccess(false);
 
     if (!name || name.trim().length < 3 || name.trim().length > 80) {
-      setUpdateError("Project name must be between 3 and 80 characters.");
+      setUpdateError("errNameRequired");
       return;
     }
 
@@ -107,7 +107,7 @@ function ProjectSettingsContent() {
       setUpdateSuccess(true);
       setTimeout(() => setUpdateSuccess(false), 3000);
     } catch (err) {
-      setUpdateError(err.message || "Failed to update project.");
+      setUpdateError("errUpdateFailed");
     } finally {
       setIsUpdating(false);
     }
@@ -120,21 +120,21 @@ function ProjectSettingsContent() {
     setMemberSuccess("");
 
     if (!newMemberEmail.trim()) {
-      setMemberError("Please enter an email address.");
+      setMemberError("errEnterEmail");
       return;
     }
 
     setIsAddingMember(true);
     try {
       const addedUser = await addProjectMemberByEmail(projectId, newMemberEmail);
-      setMemberSuccess(`Successfully added ${addedUser.displayName || addedUser.email} to the project.`);
+      setMemberSuccess(`${t("settings.memberAddedSuccess") || "Added:"} ${addedUser.displayName || addedUser.email}`);
       setNewMemberEmail("");
       const updatedProj = await getProjectById(projectId);
       setProject(updatedProj);
       const details = await getProjectMembersDetails(updatedProj.memberIds);
       setMembers(details);
     } catch (err) {
-      setMemberError(err.message || "Failed to add member.");
+      setMemberError("errAddMemberFailed");
     } finally {
       setIsAddingMember(false);
     }
@@ -146,7 +146,7 @@ function ProjectSettingsContent() {
       await removeProjectMember(projectId, memberId, user?.uid || "");
       setMembers((prev) => prev.filter((m) => m.uid !== memberId));
     } catch (err) {
-      setMemberError(err.message || "Failed to remove member.");
+      setMemberError("errRemoveMemberFailed");
     }
   };
 
@@ -233,7 +233,7 @@ function ProjectSettingsContent() {
 
           {updateError && (
             <div className="mt-3 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
-              {updateError}
+              {t(`settings.${updateError}`) || updateError}
             </div>
           )}
           {updateSuccess && (
@@ -319,7 +319,7 @@ function ProjectSettingsContent() {
 
           {memberError && (
             <div className="mt-3 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
-              {memberError}
+              {t(`settings.${memberError}`) || memberError}
             </div>
           )}
           {memberSuccess && (

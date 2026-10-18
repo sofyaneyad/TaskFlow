@@ -48,12 +48,12 @@ export default function TaskModal({
     setError("");
 
     if (!title || title.trim().length < 3 || title.trim().length > 120) {
-      setError("Task title is required and must be between 3 and 120 characters.");
+      setError("errTitleRequired");
       return;
     }
 
     if (description && description.length > 1000) {
-      setError("Description cannot exceed 1000 characters.");
+      setError("errDescTooLong");
       return;
     }
 
@@ -69,7 +69,7 @@ export default function TaskModal({
       });
       onClose();
     } catch (err) {
-      setError(err.message || "Failed to save task.");
+      setError("errSaveFailed");
     } finally {
       setIsSubmitting(false);
     }
@@ -97,7 +97,7 @@ export default function TaskModal({
         {error && (
           <div className="mt-4 flex items-center gap-2 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
             <AlertCircle className="h-4 w-4 shrink-0 text-[#CA8A04]" />
-            <span>{error}</span>
+            <span>{t(`taskModal.${error}`) || error}</span>
           </div>
         )}
 

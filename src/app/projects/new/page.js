@@ -23,12 +23,12 @@ export default function NewProjectPage() {
     setError("");
 
     if (!name || name.trim().length < 3 || name.trim().length > 80) {
-      setError("Project name is required and must be between 3 and 80 characters.");
+      setError("errNameRequired");
       return;
     }
 
     if (description && description.length > 1000) {
-      setError("Description cannot exceed 1000 characters.");
+      setError("errDescTooLong");
       return;
     }
 
@@ -42,7 +42,7 @@ export default function NewProjectPage() {
       router.push(`/projects/${created.id}`);
     } catch (err) {
       console.error("Create project error:", err);
-      setError(err.message || "Failed to create project. Please try again.");
+      setError("errCreateFailed");
       setLoading(false);
     }
   };
@@ -73,7 +73,7 @@ export default function NewProjectPage() {
 
           {error && (
             <div className="mt-4 rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]" role="alert">
-              {error}
+              {t(`newProject.${error}`) || error}
             </div>
           )}
 

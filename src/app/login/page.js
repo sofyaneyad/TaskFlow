@@ -22,7 +22,7 @@ export default function LoginPage() {
     setError("");
 
     if (!email || !password) {
-      setError("Please provide both email and password.");
+      setError("errEmailPasswordRequired");
       return;
     }
 
@@ -33,11 +33,11 @@ export default function LoginPage() {
     } catch (err) {
       console.error("Sign in error:", err);
       if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
-        setError("Invalid email or password. Please check your credentials.");
+        setError("errInvalidCredentials");
       } else if (err.code === "auth/too-many-requests") {
-        setError("Too many failed login attempts. Please try again later.");
+        setError("errTooManyRequests");
       } else {
-        setError(err.message || "Failed to sign in. Please check your credentials.");
+        setError("errLoginFailed");
       }
     } finally {
       setLoading(false);
@@ -55,9 +55,9 @@ export default function LoginPage() {
       if (err.code === "auth/popup-closed-by-user") {
         // User just cancelled popup, no error needed
       } else if (err.code === "auth/unauthorized-domain") {
-        setError("This domain is not authorized in Firebase. Please add localhost to Authorized Domains in Firebase Auth settings.");
+        setError("errUnauthorizedDomain");
       } else {
-        setError(err.message || "Failed to sign in with Google.");
+        setError("errGoogleFailed");
       }
     } finally {
       setGoogleLoading(false);
@@ -93,7 +93,7 @@ export default function LoginPage() {
         {/* Error Alert (Earth Gold Palette) */}
         {error && (
           <div className="rounded-xl bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-3.5 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]" role="alert">
-            {error}
+            {t(`auth.${error}`) || error}
           </div>
         )}
 

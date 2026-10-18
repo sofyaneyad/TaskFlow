@@ -89,7 +89,7 @@ function ProjectDetailsContent() {
       setTasks(projectTasks);
     } catch (err) {
       console.error("Error loading project:", err);
-      setError("Failed to load project details.");
+      setError("errLoadProject");
     } finally {
       setLoading(false);
     }
@@ -123,7 +123,7 @@ function ProjectDetailsContent() {
       );
     } catch (err) {
       console.error("Status update error:", err);
-      setError("Failed to update status.");
+      setError("errUpdateStatus");
     }
   };
 
@@ -134,7 +134,7 @@ function ProjectDetailsContent() {
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
     } catch (err) {
       console.error("Delete task error:", err);
-      setError("Failed to delete task.");
+      setError("errDeleteTask");
     }
   };
 
@@ -336,7 +336,7 @@ function ProjectDetailsContent() {
         {/* Global Error Notice */}
         {error && (
           <div className="rounded-xl border border-[#CA8A04]/40 dark:border-[#6B5424] bg-[#FAF5E8] dark:bg-[#6B5424]/30 p-4 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15]">
-            {error}
+            {t(`project.${error}`) || error}
           </div>
         )}
 
