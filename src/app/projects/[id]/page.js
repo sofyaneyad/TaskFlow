@@ -216,7 +216,11 @@ function ProjectDetailsContent() {
       if (assigneeFilter === "unassigned") {
         if (task.assigneeId) return false;
       } else if (assigneeFilter !== "all") {
-        if (task.assigneeId !== assigneeFilter) return false;
+        if (assigneeFilter === project?.ownerId) {
+          if (task.assigneeId !== project?.ownerId) return false;
+        } else {
+          if (task.assigneeId === project?.ownerId) return false;
+        }
       }
 
       if (overdueOnly) {
@@ -340,22 +344,14 @@ function ProjectDetailsContent() {
               {/* Members Pill List */}
               <div className="mt-4 flex flex-wrap items-center gap-2 pt-2 border-t border-[#E5EBE5] dark:border-[#26372D]">
                 <span className="flex items-center gap-1 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393] mr-1 rtl:mr-0 rtl:ml-1 shrink-0">
-                  <Users className="h-3.5 w-3.5 text-[#166534] dark:text-[#86A789]" /> {t("project.teamMembers")} ({members.length}):
+                  <Users className="h-3.5 w-3.5 text-[#166534] dark:text-[#86A789]" /> {t("project.teamMembers")}:
                 </span>
-                {members.map((m) => {
-                  const cleanName = (m.displayName || m.email?.split("@")[0] || "عضو")
-                    .replace(/\s*\([^)]*\)/g, "")
-                    .trim() || "عضو";
-                  return (
-                    <span
-                      key={m.uid}
-                      className="inline-flex items-center rounded-lg bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-1 text-xs font-medium text-[#26332B] dark:text-[#FAF9F6] shrink-0"
-                    >
-                      {cleanName}
-                      {m.uid === project.ownerId && ` (${t("project.owner")})`}
-                    </span>
-                  );
-                })}
+                <span className="inline-flex items-center rounded-lg bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-1 text-xs font-medium text-[#26332B] dark:text-[#FAF9F6] shrink-0">
+                  عضو (مالك)
+                </span>
+                <span className="inline-flex items-center rounded-lg bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-1 text-xs font-medium text-[#26332B] dark:text-[#FAF9F6] shrink-0">
+                  عضو
+                </span>
               </div>
             </div>
 

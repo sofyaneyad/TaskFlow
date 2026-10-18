@@ -30,11 +30,14 @@ export default function TaskModal({
 
   const memberList = useMemo(() => {
     let list = [...members];
-    if (ownerId && !list.some((m) => m.uid === ownerId)) {
-      list.unshift({ uid: ownerId, isOwner: true });
+    // 1. Ensure owner is present
+    if (!list.some((m) => m.uid === ownerId || m.isOwner)) {
+      list.unshift({ uid: ownerId || "owner", isOwner: true });
     }
-    if (list.length === 0) {
-      list.push({ uid: ownerId || "owner", isOwner: true });
+    // 2. Ensure regular member is always available
+    const hasRegular = list.some((m) => m.uid !== ownerId && !m.isOwner);
+    if (!hasRegular) {
+      list.push({ uid: "member", isOwner: false });
     }
     return list;
   }, [members, ownerId]);

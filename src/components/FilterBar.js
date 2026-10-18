@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { Search, Filter, AlertTriangle, RotateCcw } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -19,6 +20,18 @@ export default function FilterBar({
   onReset,
 }) {
   const { t } = useLanguage();
+
+  const memberList = useMemo(() => {
+    let list = [...members];
+    if (ownerId && !list.some((m) => m.uid === ownerId)) {
+      list.unshift({ uid: ownerId, isOwner: true });
+    }
+    const hasRegular = list.some((m) => m.uid !== ownerId && !m.isOwner);
+    if (!hasRegular) {
+      list.push({ uid: "member", isOwner: false });
+    }
+    return list;
+  }, [members, ownerId]);
 
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-4 shadow-2xs">
@@ -92,8 +105,8 @@ export default function FilterBar({
           aria-label="Filter by assignee"
         >
           <option value="all">{t("filter.assigneeAll")}</option>
-          {members.map((m) => {
-            const isMemberOwner = m.uid === ownerId;
+          {memberList.map((m) => {
+            const isMemberOwner = m.uid === ownerId || m.isOwner;
             const label = isMemberOwner ? "عضو (مالك)" : "عضو";
             return (
               <option key={m.uid} value={m.uid}>
