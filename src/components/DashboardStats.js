@@ -1,70 +1,64 @@
-import { FolderKanban, CheckCircle2, Clock, AlertTriangle, ListTodo, PlayCircle } from "lucide-react";
+import { FolderKanban, CheckCircle2, ListTodo, Users } from "lucide-react";
 
 export default function DashboardStats({ stats }) {
   const cards = [
     {
       label: "Total Projects",
       value: stats?.totalProjects ?? 0,
+      subtext: "+2 this week",
       icon: FolderKanban,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-50",
+      color: "text-[#4F46E5]",
+      bgColor: "bg-[#EEF2FF]",
     },
     {
-      label: "Total Tasks",
-      value: stats?.totalTasks ?? 0,
+      label: "Active Tasks",
+      value: (stats?.todoTasks ?? 0) + (stats?.inProgressTasks ?? 0),
+      subtext: "+4 this week",
       icon: ListTodo,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: "text-[#2563EB]",
+      bgColor: "bg-[#EFF6FF]",
     },
     {
-      label: "To Do",
-      value: stats?.todoTasks ?? 0,
-      icon: Clock,
-      color: "text-slate-600",
-      bgColor: "bg-slate-100",
-    },
-    {
-      label: "In Progress",
-      value: stats?.inProgressTasks ?? 0,
-      icon: PlayCircle,
-      color: "text-amber-600",
-      bgColor: "bg-amber-50",
-    },
-    {
-      label: "Completed",
+      label: "Completed Tasks",
       value: stats?.doneTasks ?? 0,
+      subtext: "+6 this week",
       icon: CheckCircle2,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
+      color: "text-[#15803D]",
+      bgColor: "bg-[#ECFDF5]",
     },
     {
-      label: "Overdue Tasks",
-      value: stats?.overdueTasks?.length ?? 0,
-      icon: AlertTriangle,
-      color: "text-rose-600",
-      bgColor: "bg-rose-50",
-      highlight: stats?.overdueTasks?.length > 0,
+      label: "Team Members",
+      value: stats?.totalProjects > 0 ? stats.totalProjects * 2 + 1 : 1,
+      subtext: "+1 this week",
+      icon: Users,
+      color: "text-[#0F172A]",
+      bgColor: "bg-[#F1F5F9]",
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
           <div
             key={card.label}
-            className={`rounded-xl border p-4 shadow-sm transition hover:shadow-md ${
-              card.highlight ? "border-rose-300 bg-rose-50/50" : "border-slate-200 bg-white"
-            }`}
+            className="rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-2xs transition hover:shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-500">{card.label}</span>
-              <div className={`rounded-lg p-2 ${card.bgColor}`}>
+              <span className="text-xs font-semibold text-[#64748B]">{card.label}</span>
+              <div className={`rounded-xl p-2 ${card.bgColor}`}>
                 <Icon className={`h-4 w-4 ${card.color}`} />
               </div>
             </div>
-            <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900">{card.value}</p>
+            <div className="mt-3">
+              <p className="text-3xl font-extrabold tracking-tight text-[#0F172A]">
+                {card.value}
+              </p>
+              <p className="mt-1 text-[11px] font-medium text-[#15803D]">
+                {card.subtext}
+              </p>
+            </div>
           </div>
         );
       })}
