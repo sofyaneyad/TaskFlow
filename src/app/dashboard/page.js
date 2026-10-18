@@ -48,6 +48,14 @@ export default function DashboardPage() {
     loadData();
   }, [loadData]);
 
+  if (!user) {
+    return (
+      <ProtectedRoute>
+        <div />
+      </ProtectedRoute>
+    );
+  }
+
   const userName =
     userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
   const isRTL = lang === "ar";
@@ -192,7 +200,7 @@ export default function DashboardPage() {
                 <ProjectCard
                   key={project.id}
                   project={project}
-                  currentUserId={user.uid}
+                  currentUserId={user?.uid || ""}
                   index={idx}
                 />
               ))}

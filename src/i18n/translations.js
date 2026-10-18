@@ -62,6 +62,7 @@ export const translations = {
       loadingWorkspace: "Loading your workspace...",
       loadingSettings: "Loading project settings...",
       footerCopyright: "TaskFlow • Modern Task & Project Management",
+      footerTagline: "Modern Task & Project Management",
     },
     project: {
       backToDashboard: "Back to Dashboard",
@@ -243,6 +244,7 @@ export const translations = {
       loadingWorkspace: "جاري تحميل مساحة العمل...",
       loadingSettings: "جاري تحميل إعدادات المشروع...",
       footerCopyright: "TaskFlow • منصة إدارة المهام والمشاريع",
+      footerTagline: "منصة إدارة المهام والمشاريع",
     },
     project: {
       backToDashboard: "العودة للوحة التحكم",
@@ -424,6 +426,7 @@ export const translations = {
       loadingWorkspace: "Cargando su espacio de trabajo...",
       loadingSettings: "Cargando configuración del proyecto...",
       footerCopyright: "TaskFlow • Gestión moderna de tareas y proyectos",
+      footerTagline: "Gestión moderna de tareas y proyectos",
     },
     project: {
       backToDashboard: "Volver al Panel",
@@ -605,6 +608,7 @@ export const translations = {
       loadingWorkspace: "Chargement de votre espace de travail...",
       loadingSettings: "Chargement des paramètres du projet...",
       footerCopyright: "TaskFlow • Gestion moderne des tâches et des projets",
+      footerTagline: "Gestion moderne des tâches et des projets",
     },
     project: {
       backToDashboard: "Retour au tableau de bord",
@@ -786,6 +790,7 @@ export const translations = {
       loadingWorkspace: "Arbeitsbereich wird geladen...",
       loadingSettings: "Projekteinstellungen werden geladen...",
       footerCopyright: "TaskFlow • Modernes Aufgaben- und Projektmanagement",
+      footerTagline: "Modernes Aufgaben- und Projektmanagement",
     },
     project: {
       backToDashboard: "Zurück zum Dashboard",

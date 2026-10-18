@@ -186,12 +186,20 @@ function ProjectDetailsContent() {
 
   const isOwner = project?.ownerId === user?.uid;
 
+  if (!user) {
+    return (
+      <ProtectedRoute>
+        <div />
+      </ProtectedRoute>
+    );
+  }
+
   if (loading) {
     return (
       <ProtectedRoute>
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-[#166534] dark:text-[#86A789] mb-2" />
-          <p className="text-xs text-[#5E7164] dark:text-[#8EA393] font-medium">Loading project workspace...</p>
+          <p className="text-xs text-[#5E7164] dark:text-[#8EA393] font-medium">{t("common.loadingWorkspace") || "Loading project workspace..."}</p>
         </div>
       </ProtectedRoute>
     );
@@ -408,7 +416,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
-                      currentUserId={user.uid}
+                      currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
                       onEdit={(t) => {
@@ -455,7 +463,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
-                      currentUserId={user.uid}
+                      currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
                       onEdit={(t) => {
@@ -504,7 +512,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
-                      currentUserId={user.uid}
+                      currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
                       onEdit={(t) => {
@@ -551,7 +559,7 @@ function ProjectDetailsContent() {
                       key={task.id}
                       task={task}
                       members={members}
-                      currentUserId={user.uid}
+                      currentUserId={user?.uid || ""}
                       isProjectOwner={isOwner}
                       onStatusChange={handleStatusChange}
                       onEdit={(t) => {
@@ -592,7 +600,7 @@ function ProjectDetailsContent() {
                   key={task.id}
                   task={task}
                   members={members}
-                  currentUserId={user.uid}
+                  currentUserId={user?.uid || ""}
                   isProjectOwner={isOwner}
                   onStatusChange={handleStatusChange}
                   onEdit={(t) => {

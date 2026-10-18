@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import TaskFlowLogo from "@/components/TaskFlowLogo";
@@ -15,6 +15,7 @@ import {
 
 export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, userProfile, logout } = useAuth();
   const { lang, t } = useLanguage();
 
@@ -143,7 +144,14 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
           <button
             type="button"
-            onClick={logout}
+            onClick={async () => {
+              try {
+                router.push("/login");
+                await logout();
+              } catch (e) {
+                console.error("Logout error:", e);
+              }
+            }}
             className="p-1.5 rounded-lg text-[#5E7164] dark:text-[#8EA393] hover:text-[#CA8A04] dark:hover:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition shrink-0"
             title={t("nav.signOut")}
           >

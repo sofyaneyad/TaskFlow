@@ -66,7 +66,7 @@ function ProjectSettingsContent() {
         return;
       }
 
-      if (proj.ownerId !== user.uid) {
+      if (proj.ownerId !== user?.uid) {
         setIsOwner(false);
         setLoading(false);
         return;
@@ -143,7 +143,7 @@ function ProjectSettingsContent() {
   // Remove Member
   const handleRemoveMember = async (memberId) => {
     try {
-      await removeProjectMember(projectId, memberId, user.uid);
+      await removeProjectMember(projectId, memberId, user?.uid || "");
       setMembers((prev) => prev.filter((m) => m.uid !== memberId));
     } catch (err) {
       setMemberError(err.message || "Failed to remove member.");
@@ -164,12 +164,20 @@ function ProjectSettingsContent() {
     }
   };
 
+  if (!user) {
+    return (
+      <ProtectedRoute>
+        <div />
+      </ProtectedRoute>
+    );
+  }
+
   if (loading) {
     return (
       <ProtectedRoute>
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-[#166534] mb-2" />
-          <p className="text-xs text-[#5E7164] dark:text-[#8EA393] font-medium">Loading...</p>
+          <p className="text-xs text-[#5E7164] dark:text-[#8EA393] font-medium">{t("common.loadingSettings") || "Loading..."}</p>
         </div>
       </ProtectedRoute>
     );
