@@ -33,19 +33,19 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
     .toUpperCase();
 
   const isRTL = lang === "ar";
-
-
+  const isAuthPage = pathname === "/login" || pathname === "/register";
+  const userLoggedIn = isLoggedIn && !isAuthPage;
 
   return (
     <header
       className={`sticky top-0 z-20 w-full border-b border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF]/95 dark:bg-[#17221C]/95 backdrop-blur-md transition-colors ${
-        isLoggedIn ? "lg:pl-60 rtl:lg:pl-0 rtl:lg:pr-60" : ""
+        userLoggedIn ? "lg:pl-60 rtl:lg:pl-0 rtl:lg:pr-60" : ""
       }`}
     >
       <div className="mx-auto flex h-14 w-full items-center justify-between px-4 sm:px-6">
         {/* Left Side: Mobile toggle or Breadcrumb Title */}
         <div className="flex items-center gap-3">
-          {isLoggedIn ? (
+          {userLoggedIn ? (
             <>
               {/* Mobile hamburger button */}
               <button
@@ -75,7 +75,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
 
         {/* Right Side Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {isLoggedIn && (
+          {userLoggedIn && (
             <div className="flex items-center gap-2">
               <Link
                 href="/projects/new"
@@ -106,7 +106,7 @@ export default function Navbar({ onToggleSidebar, isLoggedIn }) {
           <LanguageSwitcher />
 
           {/* Non-logged in action links */}
-          {!isLoggedIn && (
+          {!userLoggedIn && (
             <div className="flex items-center gap-2">
               <Link
                 href="/login"

@@ -13,7 +13,7 @@ export default function AppLayoutWrapper({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F6] dark:bg-[#0E1512] text-[#26332B] dark:text-[#FAF9F6] transition-colors">
-      {/* 1. Sidebar (Visible when logged in) */}
+      {/* 1. Sidebar (Visible only when logged in) */}
       {user && (
         <Suspense fallback={null}>
           <Sidebar

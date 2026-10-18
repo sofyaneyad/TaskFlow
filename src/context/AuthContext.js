@@ -120,19 +120,32 @@ export function AuthProvider({ children }) {
     const createdUser = userCredential.user;
 
     // 2. Update display name in Firebase Auth
-    await updateProfile(createdUser, { displayName: trimmedName });
+    try {
+      await updateProfile(createdUser, { displayName: trimmedName });
+    } catch (e) {
+      console.warn("updateProfile note:", e?.message);
+    }
 
-    // 3. Store in Firestore users/{uid} (FR-04)
-    const userDocRef = doc(db, "users", createdUser.uid);
     const profileData = {
       displayName: trimmedName,
       email: trimmedEmail,
-      createdAt: serverTimestamp(),
+      photoURL: null,
     };
-    await setDoc(userDocRef, profileData);
 
+    // Set state immediately so UI updates and router unblocks instantly
     setUser(createdUser);
     setUserProfile(profileData);
+    setLoading(false);
+
+    // 3. Store in Firestore users/{uid} in background without delaying user
+    const userDocRef = doc(db, "users", createdUser.uid);
+    setDoc(userDocRef, {
+      ...profileData,
+      createdAt: serverTimestamp(),
+    }).catch((err) => {
+      console.warn("Firestore user sync deferred:", err?.message);
+    });
+
     return createdUser;
   };
 
@@ -144,7 +157,21 @@ export function AuthProvider({ children }) {
     const trimmedEmail = email.trim().toLowerCase();
     const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, password);
     const loggedUser = userCredential.user;
-    await syncUserProfile(loggedUser);
+
+    // Set state immediately
+    setUser(loggedUser);
+    setUserProfile({
+      displayName: loggedUser.displayName || loggedUser.email?.split("@")[0] || "User",
+      email: loggedUser.email?.toLowerCase() || "",
+      photoURL: loggedUser.photoURL || null,
+    });
+    setLoading(false);
+
+    // Sync in background without blocking login
+    syncUserProfile(loggedUser).catch((err) =>
+      console.warn("Background user sync note:", err?.message)
+    );
+
     return loggedUser;
   };
 

@@ -19,7 +19,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const { user, userProfile, logout } = useAuth();
   const { lang, t } = useLanguage();
 
-  if (!user) return null;
+  if (!user || pathname === "/login" || pathname === "/register") return null;
 
   const displayName =
     userProfile?.displayName || user?.displayName || user?.email?.split("@")[0] || "User";
