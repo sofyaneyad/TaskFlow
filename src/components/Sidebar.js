@@ -42,7 +42,7 @@ export default function Sidebar({ isOpen, onClose }) {
     },
     {
       label: t("dashboard.myProjects") || "Projects",
-      href: "/dashboard#projects",
+      href: "/projects",
       icon: FolderKanban,
       active: pathname.startsWith("/projects") && pathname !== "/projects/new",
     },

@@ -239,6 +239,13 @@ export default function DashboardPage() {
               <span className="rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-0.5 text-xs font-bold text-[#166534] dark:text-[#86A789]">
                 {projects.length}
               </span>
+              <Link
+                href="/projects"
+                className="text-xs font-bold text-[#166534] dark:text-[#86A789] hover:underline flex items-center gap-0.5 ml-2 rtl:ml-0 rtl:mr-2"
+              >
+                <span>{t("dashboard.viewAll") || "عرض الكل"}</span>
+                <ArrowRight className="h-3 w-3 rtl:rotate-180" />
+              </Link>
             </div>
 
             {/* Projects Search Bar */}
