@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const VALID_STATUSES = ["todo", "in_progress", "done"];
+const VALID_STATUSES = ["todo", "in_progress", "review", "done"];
 const VALID_PRIORITIES = ["low", "medium", "high"];
 
 // Local storage key prefix

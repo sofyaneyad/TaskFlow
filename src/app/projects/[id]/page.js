@@ -640,8 +640,11 @@ function ProjectDetailsContent() {
             setIsModalOpen(false);
             setEditingTask(null);
           }}
+          onSave={handleSaveTask}
           onSubmit={handleSaveTask}
+          task={editingTask}
           initialData={editingTask ? editingTask : { status: modalDefaultStatus }}
+          defaultStatus={modalDefaultStatus}
           members={members}
         />
       </div>

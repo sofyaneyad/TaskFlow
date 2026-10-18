@@ -8,7 +8,9 @@ export default function TaskModal({
   isOpen,
   onClose,
   onSave,
+  onSubmit,
   task = null,
+  initialData = null,
   members = [],
   defaultStatus = "todo",
 }) {
@@ -22,24 +24,27 @@ export default function TaskModal({
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const activeTask = task || (initialData?.id ? initialData : null);
+  const fallbackStatus = initialData?.status || defaultStatus || "todo";
+
   useEffect(() => {
-    if (task) {
-      setTitle(task.title || "");
-      setDescription(task.description || "");
-      setStatus(task.status || "todo");
-      setPriority(task.priority || "medium");
-      setAssigneeId(task.assigneeId || "");
-      setDueDate(task.dueDate ? task.dueDate.split("T")[0] : "");
+    if (activeTask) {
+      setTitle(activeTask.title || "");
+      setDescription(activeTask.description || "");
+      setStatus(activeTask.status || fallbackStatus);
+      setPriority(activeTask.priority || "medium");
+      setAssigneeId(activeTask.assigneeId || "");
+      setDueDate(activeTask.dueDate ? activeTask.dueDate.split("T")[0] : "");
     } else {
       setTitle("");
       setDescription("");
-      setStatus(defaultStatus);
+      setStatus(fallbackStatus);
       setPriority("medium");
       setAssigneeId("");
       setDueDate("");
     }
     setError("");
-  }, [task, defaultStatus, isOpen]);
+  }, [task, initialData, defaultStatus, isOpen]);
 
   if (!isOpen) return null;
 
@@ -59,16 +64,20 @@ export default function TaskModal({
 
     setIsSubmitting(true);
     try {
-      await onSave({
-        title: title.trim(),
-        description: description.trim(),
-        status,
-        priority,
-        assigneeId: assigneeId || null,
-        dueDate: dueDate || null,
-      });
+      const saveHandler = onSave || onSubmit;
+      if (typeof saveHandler === "function") {
+        await saveHandler({
+          title: title.trim(),
+          description: description ? description.trim() : "",
+          status,
+          priority,
+          assigneeId: assigneeId || null,
+          dueDate: dueDate || null,
+        });
+      }
       onClose();
     } catch (err) {
+      console.error("Task modal save error:", err);
       setError("errSaveFailed");
     } finally {
       setIsSubmitting(false);
