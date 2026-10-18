@@ -12,6 +12,18 @@ export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState("dark");
   const [mounted, setMounted] = useState(false);
 
+  const applyTheme = (t) => {
+    if (typeof document === "undefined") return;
+    const root = document.documentElement;
+    if (t === "dark") {
+      root.classList.add("dark");
+      root.style.colorScheme = "dark";
+    } else {
+      root.classList.remove("dark");
+      root.style.colorScheme = "light";
+    }
+  };
+
   useEffect(() => {
     // Check saved theme or system preference
     const saved = localStorage.getItem("taskflow_theme");
@@ -25,17 +37,6 @@ export function ThemeProvider({ children }) {
     }
     setMounted(true);
   }, []);
-
-  const applyTheme = (t) => {
-    const root = document.documentElement;
-    if (t === "dark") {
-      root.classList.add("dark");
-      root.style.colorScheme = "dark";
-    } else {
-      root.classList.remove("dark");
-      root.style.colorScheme = "light";
-    }
-  };
 
   const setTheme = (newTheme) => {
     setThemeState(newTheme);
