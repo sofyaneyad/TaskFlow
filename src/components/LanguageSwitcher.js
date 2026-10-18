@@ -26,14 +26,14 @@ export default function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] px-2.5 py-1.5 text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] focus:outline-none transition shadow-2xs"
+        className="flex items-center gap-1 sm:gap-1.5 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] px-2 py-1.5 sm:px-2.5 sm:py-1.5 text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] focus:outline-none transition shadow-2xs shrink-0 whitespace-nowrap"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Select Language"
       >
-        <span className="text-sm">{currentLang.flag}</span>
-        <span className="hidden sm:inline-block font-medium">{currentLang.name}</span>
-        <ChevronDown className="h-3 w-3 text-[#5E7164] dark:text-[#8EA393]" />
+        <span className="text-sm shrink-0">{currentLang.flag}</span>
+        <span className="hidden sm:inline-block font-medium shrink-0">{currentLang.name}</span>
+        <ChevronDown className="h-3 w-3 text-[#5E7164] dark:text-[#8EA393] shrink-0" />
       </button>
 
       {isOpen && (

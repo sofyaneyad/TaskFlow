@@ -50,6 +50,11 @@
   --earth-gold-dark: #6B5424;
 }
 
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 body {
   background-color: var(--app-bg);
   color: var(--text-main);

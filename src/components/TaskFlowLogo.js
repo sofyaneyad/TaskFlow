@@ -3,14 +3,19 @@
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
-export default function TaskFlowLogo({ showTagline = false, className = "", size = "md" }) {
+export default function TaskFlowLogo({
+  showTagline = false,
+  hideTextOnMobile = false,
+  className = "",
+  size = "md",
+}) {
   const { t } = useLanguage();
   const isSmall = size === "sm";
 
   return (
     <Link
       href="/"
-      className={`inline-flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-[#166534] rounded-xl transition group ${className}`}
+      className={`inline-flex items-center gap-2 sm:gap-2.5 focus:outline-none focus:ring-2 focus:ring-[#166534] rounded-xl transition group shrink-0 ${className}`}
       aria-label="TaskFlow Home"
     >
       {/* Brand Icon: Forest Green emblem with crisp white checkmark */}
@@ -33,16 +38,16 @@ export default function TaskFlowLogo({ showTagline = false, className = "", size
       </div>
 
       {/* Brand Name: TaskFlow */}
-      <div className="flex flex-col">
+      <div className={`flex flex-col ${hideTextOnMobile ? "hidden sm:flex" : "flex"}`}>
         <span
-          className={`font-black tracking-tight text-[#26332B] dark:text-[#FAF9F6] leading-none ${
+          className={`font-black tracking-tight text-[#26332B] dark:text-[#FAF9F6] leading-none whitespace-nowrap ${
             isSmall ? "text-base" : "text-lg"
           }`}
         >
           Task<span className="text-[#166534] dark:text-[#86A789]">Flow</span>
         </span>
         {showTagline && (
-          <span className="text-[10px] font-medium tracking-wide text-slate-400 dark:text-slate-400 mt-0.5">
+          <span className="text-[10px] font-medium tracking-wide text-[#5E7164] dark:text-[#8EA393] mt-0.5 whitespace-nowrap">
             {t("nav.tagline")}
           </span>
         )}

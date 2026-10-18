@@ -141,7 +141,7 @@ export default function TaskModal({
           </div>
 
           {/* Status & Priority Row */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="task-status" className="block text-xs font-bold text-[#26332B] dark:text-[#FAF9F6]">
                 {t("taskModal.status")}
@@ -177,7 +177,7 @@ export default function TaskModal({
           </div>
 
           {/* Due Date & Assignee Row */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="task-due" className="block text-xs font-bold text-[#26332B] dark:text-[#FAF9F6]">
                 {t("taskModal.dueDate")}

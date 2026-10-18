@@ -29,7 +29,7 @@ export default function ThemeToggle({ className = "" }) {
       onClick={toggleTheme}
       title={title}
       aria-label={title}
-      className={`relative flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#166534] shadow-2xs ${
+      className={`relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#166534] shadow-2xs shrink-0 ${
         isDark
           ? "border-[#26372D] bg-[#17221C] text-amber-400 hover:bg-[#1F2E26] hover:text-amber-300"
           : "border-[#E5EBE5] bg-[#FFFFFF] text-[#26332B] hover:bg-[#FAF9F6] hover:text-[#166534]"

@@ -333,30 +333,30 @@ function ProjectSettingsContent() {
             {members.map((member) => {
               const isMemberOwner = member.uid === project.ownerId;
               return (
-                <div key={member.uid} className="flex items-center justify-between p-3.5">
-                  <div className="flex items-center gap-3">
+                <div key={member.uid} className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-3.5">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     {member.photoURL ? (
                       <img
                         src={member.photoURL}
                         alt={member.displayName || "User"}
                         referrerPolicy="no-referrer"
-                        className="h-8 w-8 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D]"
+                        className="h-8 w-8 rounded-full object-cover ring-1 ring-[#C8DAC9] dark:ring-[#26372D] shrink-0"
                       />
                     ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] text-xs font-bold text-[#166534] dark:text-[#86A789]">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] text-xs font-bold text-[#166534] dark:text-[#86A789] shrink-0">
                         {member.displayName?.charAt(0)?.toUpperCase() || "U"}
                       </div>
                     )}
-                    <div>
-                      <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] flex items-center gap-2">
-                        <span>{member.displayName || "User"}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] flex flex-wrap items-center gap-1.5">
+                        <span className="truncate">{member.displayName || "User"}</span>
                         {isMemberOwner && (
-                          <span className="badge-owner inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold">
+                          <span className="badge-owner inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold shrink-0">
                             <ShieldCheck className="h-3 w-3" /> {t("project.owner")}
                           </span>
                         )}
                       </p>
-                      <p className="text-[11px] text-[#5E7164] dark:text-[#8EA393]">{member.email}</p>
+                      <p className="text-[11px] text-[#5E7164] dark:text-[#8EA393] truncate">{member.email}</p>
                     </div>
                   </div>
 
@@ -364,7 +364,7 @@ function ProjectSettingsContent() {
                     <button
                       type="button"
                       onClick={() => handleRemoveMember(member.uid)}
-                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition"
+                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[#854D0E] dark:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition shrink-0 whitespace-nowrap"
                       title={t("settings.remove")}
                     >
                       <UserMinus className="h-3.5 w-3.5" /> {t("settings.remove")}

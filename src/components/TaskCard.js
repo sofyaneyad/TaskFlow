@@ -71,27 +71,29 @@ export default function TaskCard({
     >
       <div>
         {/* Top Badges */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Priority Badge */}
-          <span
-            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold ${priorityInfo.bg} ${priorityInfo.text} ${priorityInfo.border}`}
-          >
-            {priorityInfo.label}
-          </span>
-
-          {/* Overdue Badge */}
-          {task.isOverdue && (
-            <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#FAF5E8] dark:bg-[#6B5424]/30 text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]">
-              <AlertCircle className="h-3 w-3 text-[#CA8A04]" /> {t("task.overdue")}
+        <div className="flex flex-wrap items-center justify-between gap-1.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {/* Priority Badge */}
+            <span
+              className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap ${priorityInfo.bg} ${priorityInfo.text} ${priorityInfo.border}`}
+            >
+              {priorityInfo.label}
             </span>
-          )}
+
+            {/* Overdue Badge */}
+            {task.isOverdue && (
+              <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#FAF5E8] dark:bg-[#6B5424]/30 text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424] whitespace-nowrap">
+                <AlertCircle className="h-3 w-3 text-[#CA8A04]" /> {t("task.overdue")}
+              </span>
+            )}
+          </div>
 
           {/* Status Quick Switcher */}
           <select
             value={task.status}
             disabled={!canChangeStatus}
             onChange={(e) => onStatusChange(task.id, e.target.value)}
-            className={`rounded-md border text-[10px] font-bold py-0.5 px-2 focus:outline-none cursor-pointer transition ${
+            className={`rounded-md border text-[10px] font-bold py-0.5 px-2 focus:outline-none cursor-pointer transition shrink-0 ${
               task.status === "done"
                 ? "bg-[#166534] text-white border-[#14532D]"
                 : task.status === "in_progress"
@@ -111,7 +113,7 @@ export default function TaskCard({
 
         {/* Task Title */}
         <h4
-          className={`mt-3 font-bold text-xs sm:text-sm text-[#26332B] dark:text-[#FAF9F6] ${
+          className={`mt-2.5 font-bold text-xs sm:text-sm text-[#26332B] dark:text-[#FAF9F6] break-words ${
             task.status === "done" ? "line-through text-[#5E7164]/60 dark:text-[#8EA393]/60" : ""
           }`}
         >
@@ -130,9 +132,9 @@ export default function TaskCard({
       <div className="mt-4 border-t border-[#E5EBE5] dark:border-[#26372D] pt-3">
         <div className="flex flex-wrap items-center justify-between gap-2 text-[11px]">
           {/* Due date */}
-          <div className="flex items-center gap-1.5 text-[#5E7164] dark:text-[#8EA393]">
+          <div className="flex items-center gap-1.5 text-[#5E7164] dark:text-[#8EA393] shrink-0 whitespace-nowrap">
             <Calendar
-              className={`h-3.5 w-3.5 ${
+              className={`h-3.5 w-3.5 shrink-0 ${
                 task.isOverdue ? "text-[#CA8A04] dark:text-[#FACC15]" : "text-[#86A789]"
               }`}
             />
@@ -143,7 +145,7 @@ export default function TaskCard({
 
           {/* Assignee Avatar */}
           <div
-            className="flex items-center gap-1 text-[#26332B] dark:text-[#FAF9F6] max-w-[120px] truncate"
+            className="flex items-center gap-1 text-[#26332B] dark:text-[#FAF9F6] max-w-[130px] truncate shrink-0"
             title={assignee?.email || t("task.unassigned")}
           >
             {assignee?.photoURL ? (
@@ -170,7 +172,7 @@ export default function TaskCard({
             <button
               type="button"
               onClick={() => onEdit(task)}
-              className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393] hover:text-[#166534] dark:hover:text-[#86A789] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] transition"
+              className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393] hover:text-[#166534] dark:hover:text-[#86A789] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] transition whitespace-nowrap"
             >
               <Edit2 className="h-3 w-3" /> {t("task.edit")}
             </button>
@@ -180,7 +182,7 @@ export default function TaskCard({
             <button
               type="button"
               onClick={() => setShowConfirmDelete(true)}
-              className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393] hover:text-[#CA8A04] dark:hover:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition"
+              className="flex items-center gap-1 rounded p-1 text-[11px] font-medium text-[#5E7164] dark:text-[#8EA393] hover:text-[#CA8A04] dark:hover:text-[#FACC15] hover:bg-[#FAF5E8] dark:hover:bg-[#6B5424]/30 transition whitespace-nowrap"
             >
               <Trash2 className="h-3 w-3" /> {t("task.delete")}
             </button>

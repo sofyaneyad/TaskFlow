@@ -77,7 +77,7 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 space-y-8">
         {/* 1. Header: Clean Greeting + Avatar + Action */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3.5">
+          <div className="flex items-center gap-3.5 min-w-0">
             {user?.photoURL || userProfile?.photoURL ? (
               <img
                 src={user?.photoURL || userProfile?.photoURL}
@@ -90,23 +90,23 @@ export default function DashboardPage() {
                 {userName.charAt(0).toUpperCase()}
               </div>
             )}
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#26332B] dark:text-[#FAF9F6]">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl sm:text-3xl font-extrabold tracking-tight text-[#26332B] dark:text-[#FAF9F6] truncate">
                 {t("dashboard.welcomeUser") || "Welcome back"}, {userName}
               </h1>
-              <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393]">
+              <p className="mt-1 text-xs text-[#5E7164] dark:text-[#8EA393] line-clamp-1">
                 {t("dashboard.dashboardSub") || "Centralized dashboard for tracking projects and task milestones."}
               </p>
             </div>
           </div>
 
           {/* Primary Action Button */}
-          <div>
+          <div className="shrink-0">
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition whitespace-nowrap"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4 shrink-0" />
               <span>{t("dashboard.newProject")}</span>
             </Link>
           </div>
@@ -229,7 +229,7 @@ export default function DashboardPage() {
                   key={task.id}
                   className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] rounded-xl px-2 transition"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <span
                       className={`h-2.5 w-2.5 rounded-full shrink-0 ${
                         task.status === "done"
@@ -241,28 +241,28 @@ export default function DashboardPage() {
                           : "bg-[#5E7164]/40"
                       }`}
                     />
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <Link
                         href={`/projects/${task.projectId}`}
-                        className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] hover:text-[#166534] dark:hover:text-[#86A789] transition line-clamp-1"
+                        className="text-xs font-bold text-[#26332B] dark:text-[#FAF9F6] hover:text-[#166534] dark:hover:text-[#86A789] transition truncate block"
                       >
                         {task.title}
                       </Link>
-                      <p className="text-[11px] text-[#5E7164] dark:text-[#8EA393]">
+                      <p className="text-[11px] text-[#5E7164] dark:text-[#8EA393] truncate">
                         {task.projectName}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 sm:gap-3 text-xs">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs shrink-0">
                     {task.dueDate && (
-                      <span className="inline-flex items-center gap-1 text-[11px] text-[#5E7164] dark:text-[#8EA393]">
+                      <span className="inline-flex items-center gap-1 text-[11px] text-[#5E7164] dark:text-[#8EA393] whitespace-nowrap shrink-0">
                         <Calendar className="h-3 w-3" />
                         {task.dueDate}
                       </span>
                     )}
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase whitespace-nowrap shrink-0 ${
                         task.priority === "high"
                           ? "bg-[#FAF5E8] dark:bg-[#6B5424]/30 text-[#854D0E] dark:text-[#FACC15] border border-[#CA8A04]/40 dark:border-[#6B5424]"
                           : task.priority === "medium"
@@ -274,7 +274,7 @@ export default function DashboardPage() {
                     </span>
                     <Link
                       href={`/projects/${task.projectId}`}
-                      className="text-xs font-bold text-[#166534] dark:text-[#86A789] hover:underline flex items-center gap-0.5"
+                      className="text-xs font-bold text-[#166534] dark:text-[#86A789] hover:underline flex items-center gap-0.5 whitespace-nowrap shrink-0"
                     >
                       <span>{t("dashboard.openAction") || "Open"}</span>
                       <ArrowRight className="h-3 w-3 rtl:rotate-180" />

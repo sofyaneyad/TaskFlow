@@ -261,24 +261,24 @@ function ProjectDetailsContent() {
         </Link>
 
         {/* Project Header Banner */}
-        <div className="rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-6 shadow-xs">
+        <div className="rounded-2xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#17221C] p-4 sm:p-6 shadow-xs">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8EFE9] text-[#166534] dark:bg-[#1E2E24] dark:text-[#86A789] shrink-0">
+            <div className="space-y-1 min-w-0 flex-1">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8EFE9] text-[#166534] dark:bg-[#1E2E24] dark:text-[#86A789] shrink-0 mt-0.5">
                   <Folder className="h-6 w-6" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#26332B] dark:text-[#FAF9F6]">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#26332B] dark:text-[#FAF9F6] break-words">
                       {project.name}
                     </h1>
                     {isOwner ? (
-                      <span className="badge-owner inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold">
+                      <span className="badge-owner inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold shrink-0">
                         <ShieldCheck className="h-3.5 w-3.5" /> {t("project.owner")}
                       </span>
                     ) : (
-                      <span className="badge-member inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold">
+                      <span className="badge-member inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold shrink-0">
                         {t("project.member")}
                       </span>
                     )}
@@ -291,13 +291,13 @@ function ProjectDetailsContent() {
 
               {/* Members Pill List */}
               <div className="mt-4 flex flex-wrap items-center gap-2 pt-2 border-t border-[#E5EBE5] dark:border-[#26372D]">
-                <span className="flex items-center gap-1 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393] mr-1 rtl:mr-0 rtl:ml-1">
+                <span className="flex items-center gap-1 text-xs font-semibold text-[#5E7164] dark:text-[#8EA393] mr-1 rtl:mr-0 rtl:ml-1 shrink-0">
                   <Users className="h-3.5 w-3.5 text-[#166534] dark:text-[#86A789]" /> {t("project.teamMembers")} ({members.length}):
                 </span>
                 {members.map((m) => (
                   <span
                     key={m.uid}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-0.5 text-xs font-medium text-[#26332B] dark:text-[#FAF9F6]"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[#E8EFE9] dark:bg-[#1E2E24] px-2.5 py-0.5 text-xs font-medium text-[#26332B] dark:text-[#FAF9F6] shrink-0"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-[#166534] dark:bg-[#86A789]" />
                     {m.displayName || m.email}
@@ -308,11 +308,11 @@ function ProjectDetailsContent() {
             </div>
 
             {/* Header Actions */}
-            <div className="flex items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0">
               {isOwner && (
                 <Link
                   href={`/projects/${project.id}/settings`}
-                  className="flex items-center gap-1.5 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17] px-3.5 py-2 text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] transition shadow-2xs"
+                  className="flex items-center gap-1.5 rounded-xl border border-[#E5EBE5] dark:border-[#26372D] bg-[#FFFFFF] dark:bg-[#131D17] px-3.5 py-2 text-xs font-semibold text-[#26332B] dark:text-[#FAF9F6] hover:bg-[#FAF9F6] dark:hover:bg-[#1F2E26] transition shadow-2xs whitespace-nowrap"
                 >
                   <Settings className="h-3.5 w-3.5 text-[#5E7164] dark:text-[#8EA393]" /> {t("project.settings")}
                 </Link>
@@ -325,7 +325,7 @@ function ProjectDetailsContent() {
                   setModalDefaultStatus("todo");
                   setIsModalOpen(true);
                 }}
-                className="flex items-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2 text-xs font-bold text-white shadow-xs transition"
+                className="flex items-center gap-1.5 rounded-xl bg-[#166534] hover:bg-[#14532D] px-4 py-2 text-xs font-bold text-white shadow-xs transition whitespace-nowrap"
               >
                 <Plus className="h-4 w-4" /> {t("project.createTask")}
               </button>
@@ -342,13 +342,13 @@ function ProjectDetailsContent() {
 
         {/* Filter Bar with Search and View Mode Switcher */}
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             {/* View Mode Toggle: Kanban Board vs Grid List */}
-            <div className="inline-flex items-center rounded-xl bg-[#FAF9F6] dark:bg-[#131D17] p-1 border border-[#E5EBE5] dark:border-[#26372D]">
+            <div className="inline-flex items-center rounded-xl bg-[#FAF9F6] dark:bg-[#131D17] p-1 border border-[#E5EBE5] dark:border-[#26372D] shrink-0">
               <button
                 type="button"
                 onClick={() => setViewMode("kanban")}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition whitespace-nowrap ${
                   viewMode === "kanban"
                     ? "bg-[#FFFFFF] dark:bg-[#17221C] text-[#166534] dark:text-[#86A789] shadow-2xs"
                     : "text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
@@ -360,7 +360,7 @@ function ProjectDetailsContent() {
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition whitespace-nowrap ${
                   viewMode === "grid"
                     ? "bg-[#FFFFFF] dark:bg-[#17221C] text-[#166534] dark:text-[#86A789] shadow-2xs"
                     : "text-[#5E7164] dark:text-[#8EA393] hover:text-[#26332B] dark:hover:text-[#FAF9F6]"
@@ -371,7 +371,7 @@ function ProjectDetailsContent() {
               </button>
             </div>
 
-            <span className="text-xs font-semibold text-[#5E7164] dark:text-[#8EA393]">
+            <span className="text-xs font-semibold text-[#5E7164] dark:text-[#8EA393] shrink-0">
               {t("project.total")}: {filteredTasks.length}
             </span>
           </div>
@@ -396,7 +396,7 @@ function ProjectDetailsContent() {
         {viewMode === "kanban" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start">
             {/* 1. To Do Column */}
-            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-4 flex flex-col min-h-[500px]">
+            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-3.5 sm:p-4 flex flex-col min-h-[350px] sm:min-h-[500px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#E5EBE5] dark:border-[#26372D]">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-[#5E7164]" />
@@ -443,7 +443,7 @@ function ProjectDetailsContent() {
             </div>
 
             {/* 2. In Progress Column */}
-            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-4 flex flex-col min-h-[500px]">
+            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-3.5 sm:p-4 flex flex-col min-h-[350px] sm:min-h-[500px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#E5EBE5] dark:border-[#26372D]">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-[#166534] dark:bg-[#86A789]" />
@@ -490,7 +490,7 @@ function ProjectDetailsContent() {
             </div>
 
             {/* 3. Review Column */}
-            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-4 flex flex-col min-h-[500px]">
+            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-3.5 sm:p-4 flex flex-col min-h-[350px] sm:min-h-[500px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#E5EBE5] dark:border-[#26372D]">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
@@ -539,7 +539,7 @@ function ProjectDetailsContent() {
             </div>
 
             {/* 4. Done Column */}
-            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-4 flex flex-col min-h-[500px]">
+            <div className="rounded-2xl bg-[#FAF9F6] dark:bg-[#131D17] border border-[#E5EBE5] dark:border-[#26372D] p-3.5 sm:p-4 flex flex-col min-h-[350px] sm:min-h-[500px]">
               <div className="flex items-center justify-between pb-3 border-b border-[#E5EBE5] dark:border-[#26372D]">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-[#166534]" />
