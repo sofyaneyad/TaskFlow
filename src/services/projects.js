@@ -227,14 +227,14 @@ export async function createProject({ name, description = "", ownerId }) {
 }
 
 const lastProjectSyncMap = new Map();
-const PROJECT_SYNC_THROTTLE_MS = 30000;
+const PROJECT_SYNC_THROTTLE_MS = 5000;
 
 // Helper to sync remote projects in background
-export async function syncRemoteProjects(userId) {
+export async function syncRemoteProjects(userId, force = false) {
   if (!userId) return [];
   const now = Date.now();
   const lastSync = lastProjectSyncMap.get(userId) || 0;
-  if (now - lastSync < PROJECT_SYNC_THROTTLE_MS) {
+  if (!force && now - lastSync < PROJECT_SYNC_THROTTLE_MS) {
     return getCachedProjects(userId);
   }
   lastProjectSyncMap.set(userId, now);
@@ -284,7 +284,7 @@ export async function syncRemoteProjects(userId) {
 }
 
 // Get all projects accessible by user (Owner or Member)
-export async function getUserProjects(userId) {
+export async function getUserProjects(userId, forceSync = false) {
   const currentUid = userId || auth.currentUser?.uid;
   if (!currentUid) return [];
 
@@ -294,8 +294,15 @@ export async function getUserProjects(userId) {
     (p) => p.ownerId === currentUid || (Array.isArray(p.memberIds) && p.memberIds.includes(currentUid))
   );
 
-  if (userId) {
-    syncRemoteProjects(userId).catch(() => {});
+  // If cache is empty or forceSync is true, await remote sync so newly invited projects appear immediately
+  if (userCached.length === 0 || forceSync) {
+    const remote = await syncRemoteProjects(currentUid, true);
+    if (Array.isArray(remote) && remote.length > 0) {
+      return attachProjectProgress(remote);
+    }
+  } else {
+    // If cache already has projects, return instantly (0ms) and sync in background
+    syncRemoteProjects(currentUid, false).catch(() => {});
   }
 
   return attachProjectProgress(userCached);
@@ -516,13 +523,26 @@ export async function addProjectMemberByEmail(projectId, email) {
   });
   saveCachedProjects(list, currentUid);
 
-  // Sync to Firestore in background without blocking
+  // Sync to Firestore
   try {
     const projectRef = doc(db, "projects", projectId);
-    updateDoc(projectRef, {
+    await updateDoc(projectRef, {
       memberIds: arrayUnion(targetUserId),
       updatedAt: serverTimestamp(),
-    }).catch(() => {});
+    });
+  } catch (err) {
+    console.warn("Firestore updateDoc memberIds note:", err?.message);
+  }
+
+  // Pre-seed the target user's local cache if on this machine for instant 0ms access upon login
+  try {
+    const memberCacheKey = `taskflow_projects_${targetUserId}`;
+    const raw = localStorage.getItem(memberCacheKey);
+    const memberList = raw ? JSON.parse(raw) : [];
+    const updatedProj = list.find((p) => p.id === projectId);
+    if (updatedProj && !memberList.some((p) => p.id === projectId)) {
+      localStorage.setItem(memberCacheKey, JSON.stringify([updatedProj, ...memberList]));
+    }
   } catch {}
 
   return { uid: targetUserId, ...targetUserData };
@@ -544,13 +564,23 @@ export async function removeProjectMember(projectId, memberId, ownerId) {
   });
   saveCachedProjects(list, currentUid);
 
-  // Sync to Firestore in background without blocking
+  // Sync to Firestore
   try {
     const projectRef = doc(db, "projects", projectId);
-    updateDoc(projectRef, {
+    await updateDoc(projectRef, {
       memberIds: arrayRemove(memberId),
       updatedAt: serverTimestamp(),
-    }).catch(() => {});
+    });
+  } catch {}
+
+  // Also remove from target member's cache if on this machine
+  try {
+    const memberCacheKey = `taskflow_projects_${memberId}`;
+    const raw = localStorage.getItem(memberCacheKey);
+    if (raw) {
+      const memberList = JSON.parse(raw);
+      localStorage.setItem(memberCacheKey, JSON.stringify(memberList.filter((p) => p.id !== projectId)));
+    }
   } catch {}
 }
 
