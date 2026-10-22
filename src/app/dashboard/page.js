@@ -29,9 +29,15 @@ export default function DashboardPage() {
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
+        const authRaw = localStorage.getItem("taskflow_auth_cache");
+        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
+        if (raw && cachedUid) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.filter(
+              (p) => p.ownerId === cachedUid || (Array.isArray(p.memberIds) && p.memberIds.includes(cachedUid))
+            );
+          }
         }
       } catch {}
     }
@@ -51,9 +57,13 @@ export default function DashboardPage() {
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
+        const authRaw = localStorage.getItem("taskflow_auth_cache");
+        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
+        if (raw && cachedUid) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return false;
+          if (Array.isArray(parsed) && parsed.some((p) => p.ownerId === cachedUid || (Array.isArray(p.memberIds) && p.memberIds.includes(cachedUid)))) {
+            return false;
+          }
         }
       } catch {}
     }
@@ -110,16 +120,14 @@ export default function DashboardPage() {
         .then((latest) => {
           if (latest && latest.length > 0) {
             const userOnly = latest.filter(
-              (p) => (p.memberIds && p.memberIds.includes(user.uid)) || p.ownerId === user.uid || !p.ownerId
+              (p) => p.ownerId === user.uid || (Array.isArray(p.memberIds) && p.memberIds.includes(user.uid))
             );
-            if (userOnly.length > 0) {
-              setProjects(userOnly);
-              getUserDashboardStats(userOnly)
-                .then((updatedStats) => {
-                  setStats(updatedStats);
-                })
-                .catch(() => {});
-            }
+            setProjects(userOnly);
+            getUserDashboardStats(userOnly)
+              .then((updatedStats) => {
+                setStats(updatedStats);
+              })
+              .catch(() => {});
           }
         })
         .catch(() => {});

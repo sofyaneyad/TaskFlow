@@ -249,7 +249,12 @@ export async function syncRemoteProjects(userId) {
   const now = Date.now();
   const lastSync = lastProjectSyncMap.get(userId) || 0;
   if (now - lastSync < PROJECT_SYNC_THROTTLE_MS) {
-    return getCachedProjects();
+    const local = getCachedProjects();
+    return attachProjectProgress(
+      local.filter(
+        (p) => p.ownerId === userId || (Array.isArray(p.memberIds) && p.memberIds.includes(userId))
+      )
+    );
   }
   lastProjectSyncMap.set(userId, now);
 
@@ -258,91 +263,85 @@ export async function syncRemoteProjects(userId) {
       collection(db, "projects"),
       where("memberIds", "array-contains", userId)
     );
-    const querySnapshot = await withTimeout(getDocs(q), 1500);
+    const querySnapshot = await withTimeout(getDocs(q), 2500);
     const remoteProjects = [];
     querySnapshot.forEach((docSnap) => {
       remoteProjects.push({ id: docSnap.id, ...docSnap.data() });
     });
 
-    if (remoteProjects.length > 0) {
-      const local = getCachedProjects();
-      const mergedMap = new Map();
-      local.forEach((p) => mergedMap.set(p.id, p));
-      remoteProjects.forEach((p) => {
-        const existing = mergedMap.get(p.id) || {};
-        mergedMap.set(p.id, {
-          ...existing,
-          ...p,
-          taskCount: p.taskCount !== undefined ? p.taskCount : existing.taskCount,
-          completedCount: p.completedCount !== undefined ? p.completedCount : existing.completedCount,
-          progressPercent: p.progressPercent !== undefined ? p.progressPercent : existing.progressPercent,
-        });
+    // Also fetch projects where userId is ownerId
+    try {
+      const qOwner = query(
+        collection(db, "projects"),
+        where("ownerId", "==", userId)
+      );
+      const ownerSnapshot = await withTimeout(getDocs(qOwner), 2500);
+      ownerSnapshot.forEach((docSnap) => {
+        if (!remoteProjects.some((rp) => rp.id === docSnap.id)) {
+          remoteProjects.push({ id: docSnap.id, ...docSnap.data() });
+        }
       });
-      const merged = attachProjectProgress(Array.from(mergedMap.values()));
-      saveCachedProjects(merged);
-      return merged;
-    }
+    } catch {}
+
+    const local = getCachedProjects();
+    // Keep local projects of other users intact, but merge remote for this user
+    const otherProjects = local.filter(
+      (p) => p.ownerId !== userId && (!Array.isArray(p.memberIds) || !p.memberIds.includes(userId))
+    );
+
+    const mergedUserProjects = remoteProjects.map((p) => {
+      const existing = local.find((l) => l.id === p.id) || {};
+      return {
+        ...existing,
+        ...p,
+        taskCount: p.taskCount !== undefined ? p.taskCount : existing.taskCount,
+        completedCount: p.completedCount !== undefined ? p.completedCount : existing.completedCount,
+        progressPercent: p.progressPercent !== undefined ? p.progressPercent : existing.progressPercent,
+      };
+    });
+
+    saveCachedProjects([...mergedUserProjects, ...otherProjects]);
+    return attachProjectProgress(mergedUserProjects);
   } catch (err) {
     // Firestore offline or not configured
+    const local = getCachedProjects();
+    return attachProjectProgress(
+      local.filter(
+        (p) => p.ownerId === userId || (Array.isArray(p.memberIds) && p.memberIds.includes(userId))
+      )
+    );
   }
-  return [];
 }
 
 // Get all projects accessible by user (Owner or Member)
 export async function getUserProjects(userId) {
-  const currentUid = userId || auth.currentUser?.uid || "user_local";
+  const currentUid = userId || auth.currentUser?.uid;
+  if (!currentUid) return [];
+
   const allCached = getCachedProjects();
 
-  // If there are cached projects on this machine, ensure they are always preserved and accessible
-  if (allCached.length > 0) {
-    let cacheModified = false;
-    allCached.forEach((p) => {
-      if (!p.memberIds || !Array.isArray(p.memberIds)) {
-        p.memberIds = [currentUid];
-        cacheModified = true;
-      } else if (currentUid && !p.memberIds.includes(currentUid)) {
-        p.memberIds.push(currentUid);
-        cacheModified = true;
-      }
-      if (!p.ownerId || p.ownerId === "user_local") {
-        p.ownerId = currentUid;
-        cacheModified = true;
-      }
-    });
+  // Strictly filter cached projects belonging to the current user (Owner or Member)
+  const userCached = allCached.filter((p) => {
+    const isOwner = p.ownerId === currentUid;
+    const isMember = Array.isArray(p.memberIds) && p.memberIds.includes(currentUid);
+    return isOwner || isMember;
+  });
 
-    if (cacheModified) {
-      saveCachedProjects(allCached);
-    }
-
-    if (userId) {
-      syncRemoteProjects(userId).catch(() => {});
-    }
-    return attachProjectProgress(allCached);
-  }
-
-  // If no cache, perform remote fetch
   if (userId) {
-    const remote = await syncRemoteProjects(userId);
-    if (remote.length > 0) return attachProjectProgress(remote);
+    syncRemoteProjects(userId).catch(() => {});
   }
 
-  return [];
+  return attachProjectProgress(userCached);
 }
 
 // Get single project by ID
 export async function getProjectById(projectId) {
   if (!projectId) return null;
 
-  const currentUid = auth.currentUser?.uid;
-
   // Check cache first for instant 0ms access
   const allCached = getCachedProjects();
   const cached = allCached.find((p) => p.id === projectId);
   if (cached) {
-    if (currentUid && cached.memberIds && !cached.memberIds.includes(currentUid)) {
-      cached.memberIds.push(currentUid);
-      saveCachedProjects(allCached);
-    }
     // Background refresh
     (async () => {
       try {

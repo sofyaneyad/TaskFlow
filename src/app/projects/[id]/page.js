@@ -48,9 +48,16 @@ function ProjectDetailsContent() {
     if (typeof window !== "undefined" && projectId) {
       try {
         const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
+        const authRaw = localStorage.getItem("taskflow_auth_cache");
+        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
+        if (raw && cachedUid) {
           const list = JSON.parse(raw);
-          return list.find((p) => p.id === projectId) || null;
+          const found = list.find((p) => p.id === projectId);
+          if (found) {
+            const isOwner = found.ownerId === cachedUid;
+            const isMember = Array.isArray(found.memberIds) && found.memberIds.includes(cachedUid);
+            if (isOwner || isMember) return found;
+          }
         }
       } catch {}
     }
@@ -115,11 +122,13 @@ function ProjectDetailsContent() {
         return;
       }
 
-      if ((!proj.memberIds || !proj.memberIds.includes(user?.uid)) && proj.ownerId !== user?.uid) {
-        if (user?.uid) {
-          proj.memberIds = Array.from(new Set([...(proj.memberIds || []), user.uid]));
-          if (!proj.ownerId) proj.ownerId = user.uid;
-        }
+      // Strict access check: only owner or member can view this project
+      const isOwner = proj.ownerId === user?.uid;
+      const isMember = Array.isArray(proj.memberIds) && proj.memberIds.includes(user?.uid);
+      if (!isOwner && !isMember) {
+        setAccessDenied(true);
+        setLoading(false);
+        return;
       }
 
       setProject(proj);

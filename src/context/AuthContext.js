@@ -151,6 +151,15 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       clearTimeout(safetyTimer);
       if (currentUser) {
+        const previousAuth = getCachedAuth();
+        if (previousAuth && previousAuth.uid && previousAuth.uid !== currentUser.uid) {
+          try {
+            localStorage.removeItem("taskflow_local_projects");
+            localStorage.removeItem("taskflow_dashboard_stats");
+            localStorage.removeItem("taskflow_current_project");
+          } catch {}
+        }
+
         const profile = {
           displayName: currentUser.displayName || currentUser.email?.split("@")[0] || "",
           email: currentUser.email?.toLowerCase() || "",
@@ -168,6 +177,12 @@ export function AuthProvider({ children }) {
         setUser(null);
         setUserProfile(null);
         setLoading(false);
+        try {
+          localStorage.removeItem("taskflow_local_projects");
+          localStorage.removeItem("taskflow_dashboard_stats");
+          localStorage.removeItem("taskflow_current_project");
+          sessionStorage.clear();
+        } catch {}
       }
     });
 
@@ -209,6 +224,15 @@ export function AuthProvider({ children }) {
       photoURL: null,
     };
 
+    const previousAuth = getCachedAuth();
+    if (previousAuth && previousAuth.uid && previousAuth.uid !== loggedUser.uid) {
+      try {
+        localStorage.removeItem("taskflow_local_projects");
+        localStorage.removeItem("taskflow_dashboard_stats");
+        localStorage.removeItem("taskflow_current_project");
+      } catch {}
+    }
+
     // Set state immediately so UI updates and router unblocks instantly
     setUser(createdUser);
     setUserProfile(profileData);
@@ -243,6 +267,15 @@ export function AuthProvider({ children }) {
     const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, password);
     const loggedUser = userCredential.user;
 
+    const previousAuth = getCachedAuth();
+    if (previousAuth && previousAuth.uid && previousAuth.uid !== loggedUser.uid) {
+      try {
+        localStorage.removeItem("taskflow_local_projects");
+        localStorage.removeItem("taskflow_dashboard_stats");
+        localStorage.removeItem("taskflow_current_project");
+      } catch {}
+    }
+
     // Set state immediately
     setUser(loggedUser);
     setUserProfile({
@@ -267,6 +300,15 @@ export function AuthProvider({ children }) {
     const userCredential = await signInWithPopup(auth, provider);
     const loggedUser = userCredential.user;
 
+    const previousAuth = getCachedAuth();
+    if (previousAuth && previousAuth.uid && previousAuth.uid !== loggedUser.uid) {
+      try {
+        localStorage.removeItem("taskflow_local_projects");
+        localStorage.removeItem("taskflow_dashboard_stats");
+        localStorage.removeItem("taskflow_current_project");
+      } catch {}
+    }
+
     // Immediately set active user and profile with Google photo to unblock router redirect instantly
     setUser(loggedUser);
     setUserProfile({
@@ -289,6 +331,12 @@ export function AuthProvider({ children }) {
     saveAuthCache(null, null);
     setUser(null);
     setUserProfile(null);
+    try {
+      localStorage.removeItem("taskflow_local_projects");
+      localStorage.removeItem("taskflow_dashboard_stats");
+      localStorage.removeItem("taskflow_current_project");
+      sessionStorage.clear();
+    } catch {}
     try {
       await signOut(auth);
     } catch {}
