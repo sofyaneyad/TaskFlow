@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "using-frontend-noslop": {
+      "source": "AhmadJalhoom20/frontend-noslop",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "3bd3eceaa8e6a58034b965224d3f5fee0bb2829ab0e5b6ef533b8f521ff5d894"
+    }
+  }
+}

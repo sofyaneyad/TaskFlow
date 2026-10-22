@@ -14,17 +14,15 @@ const LanguageContext = createContext({
 export const useLanguage = () => useContext(LanguageContext);
 
 export function LanguageProvider({ children }) {
-  const [lang, setLangState] = useState("ar");
-
-  useEffect(() => {
-    // Check saved preference or default to Arabic
-    const saved = localStorage.getItem("taskflow_lang");
-    if (saved && translations[saved]) {
-      setLangState(saved);
-    } else {
-      setLangState("ar");
+  const [lang, setLangState] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("taskflow_lang");
+        if (saved && translations[saved]) return saved;
+      } catch {}
     }
-  }, []);
+    return "ar";
+  });
 
   const setLang = (newLang) => {
     if (!translations[newLang]) return;

@@ -26,18 +26,18 @@ export default function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 sm:gap-1.5 rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] px-2 py-1.5 sm:px-2.5 sm:py-1.5 text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF] hover:bg-[#F1F5F9] dark:hover:bg-[#133020] focus:outline-none transition shadow-xs shrink-0 whitespace-nowrap"
+        className="flex items-center gap-1 sm:gap-1.5 rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#141416] px-2 py-1.5 sm:px-2.5 sm:py-1.5 text-xs font-semibold text-[#09090B] dark:text-[#F4F4F5] hover:bg-[#F1F3F5] dark:hover:bg-[#27272A] focus:outline-none transition shadow-xs shrink-0 whitespace-nowrap"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Select Language"
       >
         <span className="text-sm shrink-0">{currentLang.flag}</span>
         <span className="hidden sm:inline-block font-medium shrink-0">{currentLang.name}</span>
-        <ChevronDown className="h-3 w-3 text-[#64748B] dark:text-[#7B9A89] shrink-0" />
+        <ChevronDown className={`h-3 w-3 text-[#64748B] dark:text-[#A1A1AA] shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 rtl:right-auto rtl:left-0 mt-1.5 w-38 rounded-2xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-1.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100 backdrop-blur-md">
+        <div className="absolute right-0 rtl:right-auto rtl:left-0 mt-1.5 w-38 rounded-2xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#141416] p-1.5 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100 backdrop-blur-md">
           {languages.map((item) => (
             <button
               key={item.code}
@@ -48,8 +48,8 @@ export default function LanguageSwitcher() {
               }}
               className={`w-full flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition text-left rtl:text-right ${
                 lang === item.code
-                  ? "bg-[#ECFDF5] dark:bg-[#0D281A] text-[#059669] dark:text-[#00D084] font-bold"
-                  : "text-[#0F172A] dark:text-[#FFFFFF] hover:bg-[#F1F5F9] dark:hover:bg-[#133020]"
+                  ? "bg-[#EFF6FF] dark:bg-[#18181B] text-[#2563EB] dark:text-[#60A5FA] font-bold"
+                  : "text-[#09090B] dark:text-[#F4F4F5] hover:bg-[#F1F3F5] dark:hover:bg-[#27272A]"
               }`}
             >
               <div className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export default function LanguageSwitcher() {
                 <span>{item.name}</span>
               </div>
               {lang === item.code && (
-                <span className="h-1.5 w-1.5 rounded-full bg-[#059669] dark:bg-[#00D084]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] dark:bg-[#3B82F6]" />
               )}
             </button>
           ))}

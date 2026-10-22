@@ -4,50 +4,50 @@
 @variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Fresh, crisp, high-contrast Light Theme */
-  --app-bg: #F8FAFC;
+  /* Unified Modern Precision Theme (Linear / Vercel Aesthetic) */
+  --app-bg: #F8F9FA;
   --surface: #FFFFFF;
-  --surface-hover: #F1F5F9;
+  --surface-hover: #F1F3F5;
   --surface-card: #FFFFFF;
-  --border: #E2E8F0;
-  --border-light: #F1F5F9;
-  --text-main: #0F172A;
+  --border: #E4E4E7;
+  --border-light: #F4F4F5;
+  --text-main: #09090B;
   --text-muted: #64748B;
-  --primary: #059669;
-  --primary-hover: #047857;
-  --accent: #10B981;
-  --accent-light: #ECFDF5;
-  --success: #059669;
-  --warning: #D97706;
-  --error: #DC2626;
-  --earth-gold: #D97706;
-  --earth-gold-light: #FEF3C7;
+  --primary: #2563EB;
+  --primary-hover: #1D4ED8;
+  --accent: #3B82F6;
+  --accent-light: #EFF6FF;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --earth-gold: #F59E0B;
+  --earth-gold-light: #FFFBEB;
   --earth-gold-text: #B45309;
   --earth-gold-dark: #78350F;
   --font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .dark {
-  /* Exact Emerald Night Dark Theme from Image 1 */
-  --app-bg: #06130B;
-  --surface: #0B1F14;
-  --surface-hover: #0E281A;
-  --surface-card: #0B1F14;
-  --border: #133020;
-  --border-light: #0D2417;
-  --text-main: #FFFFFF;
-  --text-muted: #7B9A89;
-  --primary: #00D084;
-  --primary-hover: #00B572;
-  --accent: #00D084;
-  --accent-light: #0E2E1D;
-  --success: #00D084;
+  /* Obsidian Jet Black Theme - Pure neutral dark, zero green tint (like Vercel & Apple) */
+  --app-bg: #09090B;
+  --surface: #141416;
+  --surface-hover: #1F1F23;
+  --surface-card: #141416;
+  --border: #27272A;
+  --border-light: #1F1F23;
+  --text-main: #F4F4F5;
+  --text-muted: #A1A1AA;
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
+  --accent: #60A5FA;
+  --accent-light: #1E293B;
+  --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
   --earth-gold: #F59E0B;
-  --earth-gold-light: #272210;
-  --earth-gold-text: #FBBF24;
-  --earth-gold-dark: #423612;
+  --earth-gold-light: #1F170D;
+  --earth-gold-text: #FDE047;
+  --earth-gold-dark: #452A12;
 }
 
 html, body {
@@ -87,7 +87,7 @@ label[for],
   cursor: pointer !important;
 }
 
-/* Custom scrollbar matching Forest Green & Sage theme */
+/* Custom scrollbar - Clean Precision Minimalist */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -96,76 +96,86 @@ label[for],
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(134, 167, 137, 0.3);
+  background: rgba(161, 161, 170, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(22, 101, 52, 0.5);
+  background: rgba(161, 161, 170, 0.6);
 }
 
-/* Status & Role Badges */
+/* Status & Role Badges - Clean Precision Style */
 .badge-todo {
-  background-color: #F1F5F9;
-  color: #475569;
-  border: 1px solid #E2E8F0;
+  background-color: #F4F4F5;
+  color: #52525B;
+  border: 1px solid #E4E4E7;
 }
 .dark .badge-todo {
-  background-color: #0E2518;
-  color: #7B9A89;
-  border: 1px solid #133020;
+  background-color: #18181B;
+  color: #A1A1AA;
+  border: 1px solid #27272A;
 }
 
 .badge-inprogress {
-  background-color: #FEF3C7;
+  background-color: #FFFBEB;
   color: #B45309;
   border: 1px solid #FDE68A;
 }
 .dark .badge-inprogress {
-  background-color: #272210;
-  color: #F59E0B;
-  border: 1px solid #423612;
+  background-color: #1F170D;
+  color: #FDE047;
+  border: 1px solid #452A12;
 }
 
 .badge-review {
-  background-color: #EEF2FF;
-  color: #4F46E5;
-  border: 1px solid #C7D2FE;
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
 }
 .dark .badge-review {
-  background-color: #1A1E36;
-  color: #818CF8;
-  border: 1px solid #2E365E;
+  background-color: #141C2E;
+  color: #93C5FD;
+  border: 1px solid #1E3A8A;
 }
 
 .badge-done {
   background-color: #ECFDF5;
-  color: #059669;
+  color: #047857;
   border: 1px solid #A7F3D0;
 }
 .dark .badge-done {
-  background-color: #0E2E1D;
-  color: #00D084;
-  border: 1px solid #15442A;
+  background-color: #102319;
+  color: #86EFAC;
+  border: 1px solid #1A432F;
 }
 
 .badge-owner {
-  background-color: #ECFDF5;
-  color: #059669;
-  border: 1px solid #A7F3D0;
+  background-color: #18181B;
+  color: #FFFFFF !important;
+  border: 1px solid #27272A;
 }
 .dark .badge-owner {
-  background-color: #0E2E1D;
-  color: #00D084;
-  border: 1px solid #15442A;
+  background-color: #18181B;
+  color: #FFFFFF !important;
+  border: 1px solid #27272A;
 }
 
 .badge-member {
-  background-color: #F1F5F9;
-  color: #475569;
-  border: 1px solid #CBD5E1;
+  background-color: #F4F4F5;
+  color: #52525B;
+  border: 1px solid #E4E4E7;
 }
 .dark .badge-member {
-  background-color: #0E2518;
-  color: #7B9A89;
-  border: 1px solid #1B3E28;
+  background-color: #18181B;
+  color: #A1A1AA;
+  border: 1px solid #27272A;
+}
+
+/* WCAG Accessible Motion: Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

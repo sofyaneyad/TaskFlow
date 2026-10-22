@@ -8,6 +8,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { calculateTasksProgress } from "./projects";
 
 const VALID_STATUSES = ["todo", "in_progress", "review", "done"];
 const VALID_PRIORITIES = ["low", "medium", "high"];
@@ -30,6 +31,37 @@ function saveCachedTasks(projectId, tasks) {
   try {
     localStorage.setItem(LOCAL_TASKS_PREFIX + projectId, JSON.stringify(tasks));
   } catch {}
+}
+
+export function updateProjectCacheProgress(projectId) {
+  if (typeof window === "undefined" || !projectId) return;
+  try {
+    const raw = localStorage.getItem("taskflow_local_projects");
+    if (!raw) return;
+    const projects = JSON.parse(raw);
+    const tasks = getCachedTasks(projectId);
+    const { taskCount, completedCount, progressPercent } = calculateTasksProgress(tasks);
+
+    let modified = false;
+    const updated = projects.map((p) => {
+      if (p.id === projectId) {
+        modified = true;
+        return {
+          ...p,
+          taskCount,
+          completedCount,
+          progressPercent,
+        };
+      }
+      return p;
+    });
+
+    if (modified) {
+      localStorage.setItem("taskflow_local_projects", JSON.stringify(updated));
+    }
+  } catch (err) {
+    console.error("Error updating project cache progress:", err);
+  }
 }
 
 let firestoreTasksReachable = true;
@@ -55,11 +87,11 @@ const withTimeout = (promise, ms = 500) => {
   ]);
 };
 
-// Helper to determine if a task is overdue
+// Helper to determine if a task is overdue (supports ISO string, Date, and Firestore Timestamp)
 export function isTaskOverdue(dueDate, status) {
   if (!dueDate || status === "done") return false;
 
-  const due = new Date(dueDate);
+  const due = dueDate?.seconds ? new Date(dueDate.seconds * 1000) : new Date(dueDate);
   if (isNaN(due.getTime())) return false;
 
   const today = new Date();
@@ -82,7 +114,8 @@ export async function createTask(
     dueDate = null,
     assigneeId = null,
   },
-  userId
+  userId,
+  customTaskId = null
 ) {
   if (!projectId) {
     throw new Error("Project ID is required.");
@@ -100,9 +133,9 @@ export async function createTask(
     throw new Error(`Invalid priority. Must be one of: ${VALID_PRIORITIES.join(", ")}`);
   }
 
-  // 1. Generate unique task document reference and ID
+  // 1. Generate or use consistent document reference and ID
   const tasksColRef = collection(db, "projects", projectId, "tasks");
-  const newTaskDocRef = doc(tasksColRef);
+  const newTaskDocRef = customTaskId ? doc(tasksColRef, customTaskId) : doc(tasksColRef);
   const taskId = newTaskDocRef.id;
 
   const nowIso = new Date().toISOString();
@@ -122,7 +155,10 @@ export async function createTask(
 
   // 2. Save to local cache immediately (instant feedback!)
   const cached = getCachedTasks(projectId);
-  saveCachedTasks(projectId, [taskData, ...cached]);
+  // Prevent duplicate if already added by optimistic UI
+  const filtered = cached.filter((t) => t.id !== taskId);
+  saveCachedTasks(projectId, [taskData, ...filtered]);
+  updateProjectCacheProgress(projectId);
 
   // 3. Sync to Firestore in background without blocking
   setDoc(newTaskDocRef, {
@@ -142,8 +178,19 @@ export async function createTask(
   return taskData;
 }
 
+const lastTaskSyncMap = new Map();
+const TASK_SYNC_THROTTLE_MS = 30000;
+
 // Helper to sync remote tasks in background
 async function syncRemoteTasks(projectId) {
+  if (!projectId) return [];
+  const now = Date.now();
+  const lastSync = lastTaskSyncMap.get(projectId) || 0;
+  if (now - lastSync < TASK_SYNC_THROTTLE_MS) {
+    return getCachedTasks(projectId);
+  }
+  lastTaskSyncMap.set(projectId, now);
+
   try {
     const tasksCollectionRef = collection(db, "projects", projectId, "tasks");
     const querySnapshot = await withTimeout(getDocs(tasksCollectionRef), 1500);
@@ -165,6 +212,7 @@ async function syncRemoteTasks(projectId) {
       remoteTasks.forEach((t) => mergedMap.set(t.id, t));
       const merged = Array.from(mergedMap.values());
       saveCachedTasks(projectId, merged);
+      updateProjectCacheProgress(projectId);
       return merged;
     }
   } catch {}
@@ -211,6 +259,7 @@ export async function updateTask(projectId, taskId, updates) {
     return t;
   });
   saveCachedTasks(projectId, updatedList);
+  updateProjectCacheProgress(projectId);
 
   // 2. Persist to Firestore in background without blocking
   try {
@@ -231,6 +280,7 @@ export async function deleteTask(projectId, taskId) {
   const cached = getCachedTasks(projectId);
   const filtered = cached.filter((t) => t.id !== taskId);
   saveCachedTasks(projectId, filtered);
+  updateProjectCacheProgress(projectId);
 
   // 2. Delete from Firestore in background without blocking
   try {
@@ -241,25 +291,35 @@ export async function deleteTask(projectId, taskId) {
   } catch (err) {}
 }
 
-// FR-14: Calculate User Dashboard Stats across all accessible projects
+// FR-14: Calculate User Dashboard Stats across all accessible projects (sub-millisecond computation from cache)
 export async function getUserDashboardStats(accessibleProjects) {
+  if (!Array.isArray(accessibleProjects) || accessibleProjects.length === 0) {
+    return {
+      totalProjects: 0,
+      totalTasks: 0,
+      todoTasks: 0,
+      inProgressTasks: 0,
+      reviewTasks: 0,
+      doneTasks: 0,
+      overdueTasks: [],
+      allTasks: [],
+    };
+  }
+
   let totalTasks = 0;
   let todoTasks = 0;
   let inProgressTasks = 0;
   let reviewTasks = 0;
   let doneTasks = 0;
-  let overdueTasks = [];
-  let allTasks = [];
+  const overdueTasks = [];
+  const allTasks = [];
 
-  const tasksPerProject = await Promise.all(
-    accessibleProjects.map(async (project) => {
-      const tasks = await getProjectTasks(project.id);
-      return { project, tasks };
-    })
-  );
-
-  for (const { project, tasks } of tasksPerProject) {
-    let projectCompleted = 0;
+  for (const project of accessibleProjects) {
+    if (!project || !project.id) continue;
+    const tasks = getCachedTasks(project.id).map((t) => ({
+      ...t,
+      isOverdue: isTaskOverdue(t.dueDate, t.status),
+    }));
 
     for (const task of tasks) {
       totalTasks += 1;
@@ -268,7 +328,6 @@ export async function getUserDashboardStats(accessibleProjects) {
       else if (task.status === "review" || task.status === "in_review") reviewTasks += 1;
       else if (task.status === "done") {
         doneTasks += 1;
-        projectCompleted += 1;
       }
 
       const taskWithProject = {
@@ -284,9 +343,10 @@ export async function getUserDashboardStats(accessibleProjects) {
       }
     }
 
-    project.taskCount = tasks.length;
-    project.completedCount = projectCompleted;
-    project.progressPercent = tasks.length > 0 ? Math.round((projectCompleted / tasks.length) * 100) : 0;
+    const progressInfo = calculateTasksProgress(tasks);
+    project.taskCount = progressInfo.taskCount;
+    project.completedCount = progressInfo.completedCount;
+    project.progressPercent = progressInfo.progressPercent;
   }
 
   return {

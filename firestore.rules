@@ -31,6 +31,13 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Registered Emails Collection (used for member lookup and validation)
+    match /registered_emails/{email} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
     // Projects Collection
     match /projects/{projectId} {
       // Project read: owner or member only

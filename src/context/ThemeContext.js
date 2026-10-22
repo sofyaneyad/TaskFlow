@@ -1,16 +1,27 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
 
 const ThemeContext = createContext({
   theme: "dark",
   toggleTheme: () => {},
   setTheme: () => {},
+  isMounted: false,
 });
 
 export function ThemeProvider({ children }) {
-  const [theme, setThemeState] = useState("dark");
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const [theme, setThemeState] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("taskflow_theme");
+        if (saved === "light" || saved === "dark") return saved;
+      } catch {}
+    }
+    return "dark";
+  });
 
   const applyTheme = (t) => {
     if (typeof document === "undefined") return;
@@ -25,22 +36,14 @@ export function ThemeProvider({ children }) {
   };
 
   useEffect(() => {
-    // Check saved theme or system preference
-    const saved = localStorage.getItem("taskflow_theme");
-    if (saved === "light" || saved === "dark") {
-      setThemeState(saved);
-      applyTheme(saved);
-    } else {
-      // Default to dark mode matching user's reference mockup
-      setThemeState("dark");
-      applyTheme("dark");
-    }
-    setMounted(true);
-  }, []);
+    applyTheme(theme);
+  }, [theme]);
 
   const setTheme = (newTheme) => {
     setThemeState(newTheme);
-    localStorage.setItem("taskflow_theme", newTheme);
+    try {
+      localStorage.setItem("taskflow_theme", newTheme);
+    } catch {}
     applyTheme(newTheme);
   };
 

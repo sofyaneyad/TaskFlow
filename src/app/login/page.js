@@ -5,7 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { Lock, Mail, Loader2, ArrowRight, CheckSquare, Eye, EyeOff } from "lucide-react";
+import {
+  Lock,
+  Mail,
+  Loader2,
+  ArrowRight,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,14 +22,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const { user, loading: authLoading, login, loginWithGoogle } = useAuth();
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const router = useRouter();
-
-  // Reset fields on mount to prevent any residual email/password display
-  useEffect(() => {
-    setEmail("");
-    setPassword("");
-  }, []);
+  const isRTL = lang === "ar";
 
   // If already logged in, redirect directly to dashboard
   useEffect(() => {
@@ -80,149 +82,149 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-8 shadow-xs">
-        {/* Header */}
-        <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#059669] dark:bg-[#00D084] text-white dark:text-[#06130B] shadow-xs">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h2 className="mt-4 text-2xl font-black tracking-tight text-[#0F172A] dark:text-[#FFFFFF]">
-            {t("auth.signInTitle")}
-          </h2>
-          <p className="mt-1 text-xs text-[#64748B] dark:text-[#7B9A89]">
-            {t("auth.signInSub")}
-          </p>
-        </div>
-
-        {/* Error Alert */}
-        {error && (
-          <div className="rounded-xl bg-[#FEF3C7] dark:bg-[#242211] p-3.5 text-xs font-semibold text-[#92400E] dark:text-[#F59E0B] border border-[#F59E0B]/30" role="alert">
-            {t(`auth.${error}`) || error}
-          </div>
-        )}
-
-        {/* Google Sign In Button */}
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={googleLoading || loading}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#06130B] px-4 py-2.5 text-sm font-semibold text-[#0F172A] dark:text-[#FFFFFF] shadow-xs hover:bg-[#F1F5F9] dark:hover:bg-[#133020] focus:outline-none disabled:opacity-50 transition"
-        >
-          {googleLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-[#64748B] dark:text-[#7B9A89]" />
-          ) : (
-            <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                fill="#EA4335"
-              />
-            </svg>
-          )}
-          <span>{t("auth.signInGoogle")}</span>
-        </button>
-
-        {/* Divider */}
-        <div className="relative flex items-center justify-center">
-          <div className="w-full border-t border-[#E2E8F0] dark:border-[#133020]" />
-          <span className="bg-[#FFFFFF] dark:bg-[#0B1F14] px-3 text-[11px] font-medium uppercase tracking-wider text-[#64748B] dark:text-[#7B9A89]">
-            {t("auth.orWithEmail")}
-          </span>
-        </div>
-
-        {/* Login Form */}
-        <form className="space-y-4" onSubmit={handleLogin} autoComplete="off">
-          <div>
-            <label htmlFor="login-email" className="block text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF]">
-              {t("auth.emailLabel")}
-            </label>
-            <div className="relative mt-1">
-              <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89]" />
-              <input
-                id="login-email"
-                type="email"
-                required
-                autoComplete="off"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
-                className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="login-password" className="block text-xs font-semibold text-[#0F172A] dark:text-[#FFFFFF]">
-              {t("auth.passwordLabel")}
-            </label>
-            <div className="relative mt-1">
-              <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89]" />
-              <input
-                id="login-password"
-                type={showPassword ? "text" : "password"}
-                required
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] py-2.5 pl-9 pr-10 rtl:pl-10 rtl:pr-9 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 rtl:right-auto rtl:left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-[#7B9A89] hover:text-[#0F172A] dark:hover:text-[#FFFFFF] focus:outline-none transition p-1"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                tabIndex={-1}
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#141416] p-8 shadow-xs">
+          {/* Header */}
+          <div className="text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2563EB] dark:bg-[#2563EB] text-white shadow-xs">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </div>
+            <h2 className="mt-4 text-2xl font-black tracking-tight text-[#09090B] dark:text-[#F4F4F5]">
+              {t("auth.signInTitle")}
+            </h2>
+            <p className="mt-1 text-xs text-[#64748B] dark:text-[#A1A1AA]">
+              {t("auth.signInSub")}
+            </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading || googleLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00D084] dark:hover:text-[#06130B] py-2.5 text-sm font-bold text-white shadow-xs disabled:opacity-50 transition"
-          >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <>
-                {t("auth.signInBtn")} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
-              </>
-            )}
-          </button>
-        </form>
+          {/* Error Alert */}
+          {error && (
+            <div className="rounded-xl bg-[#FEF3C7] dark:bg-[#1F170D] p-3.5 text-xs font-semibold text-[#92400E] dark:text-[#FDE047] border border-[#F59E0B]/30" role="alert">
+              {t(`auth.${error}`) || error}
+            </div>
+          )}
 
-        {/* Switch to Register */}
-        <div className="text-center text-xs text-[#64748B] dark:text-[#7B9A89]">
-          {t("auth.noAccount")}{" "}
-          <Link href="/register" className="font-semibold text-[#059669] dark:text-[#00D084] hover:underline">
-            {t("auth.createAccountLink")}
-          </Link>
+          {/* Google Sign In Button */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading || loading}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#09090B] px-4 py-2.5 text-sm font-semibold text-[#09090B] dark:text-[#F4F4F5] shadow-xs hover:bg-[#F1F3F5] dark:hover:bg-[#27272A] focus:outline-none disabled:opacity-50 transition cursor-pointer"
+          >
+            {googleLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-[#64748B] dark:text-[#A1A1AA]" />
+            ) : (
+              <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  fill="#EA4335"
+                />
+              </svg>
+            )}
+            <span>{t("auth.signInGoogle")}</span>
+          </button>
+
+          {/* Divider */}
+          <div className="relative flex items-center justify-center">
+            <div className="w-full border-t border-[#E4E4E7] dark:border-[#27272A]" />
+            <span className="bg-[#FFFFFF] dark:bg-[#141416] px-3 text-[11px] font-medium uppercase tracking-wider text-[#64748B] dark:text-[#A1A1AA]">
+              {t("auth.orWithEmail")}
+            </span>
+          </div>
+
+          {/* Login Form */}
+          <form className="space-y-4" onSubmit={handleLogin} autoComplete="off">
+            <div>
+              <label htmlFor="login-email" className="block text-xs font-semibold text-[#09090B] dark:text-[#F4F4F5]">
+                {t("auth.emailLabel")}
+              </label>
+              <div className="relative mt-1">
+                <Mail className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#A1A1AA]" />
+                <input
+                  id="login-email"
+                  type="email"
+                  required
+                  autoComplete="off"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="w-full rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#F8F9FA] dark:bg-[#09090B] py-2.5 pl-9 pr-3 rtl:pl-3 rtl:pr-9 text-sm text-[#09090B] dark:text-[#F4F4F5] placeholder-[#64748B]/60 dark:placeholder-[#A1A1AA]/60 focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:bg-[#FFFFFF] dark:focus:bg-[#121714] focus:outline-none transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="login-password" className="block text-xs font-semibold text-[#09090B] dark:text-[#F4F4F5]">
+                {t("auth.passwordLabel")}
+              </label>
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B] dark:text-[#A1A1AA]" />
+                <input
+                  id="login-password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#F8F9FA] dark:bg-[#09090B] py-2.5 pl-9 pr-10 rtl:pl-10 rtl:pr-9 text-sm text-[#09090B] dark:text-[#F4F4F5] placeholder-[#64748B]/60 dark:placeholder-[#A1A1AA]/60 focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:bg-[#FFFFFF] dark:focus:bg-[#121714] focus:outline-none transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 rtl:right-auto rtl:left-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-[#A1A1AA] hover:text-[#09090B] dark:hover:text-[#FFFFFF] focus:outline-none transition p-1"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || googleLoading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#2563EB] dark:hover:bg-[#1D4ED8] py-2.5 text-sm font-bold text-white shadow-xs disabled:opacity-50 transition cursor-pointer"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  {t("auth.signInBtn")} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Switch to Register */}
+          <div className="text-center text-xs text-[#64748B] dark:text-[#A1A1AA]">
+            {t("auth.noAccount")}{" "}
+            <Link href="/register" className="font-semibold text-[#2563EB] dark:text-[#60A5FA] hover:underline">
+              {t("auth.createAccountLink")}
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
   );
 }

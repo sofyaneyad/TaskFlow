@@ -10,7 +10,7 @@ export default function ThemeToggle({ className = "" }) {
 
   if (!isMounted) {
     return (
-      <div className="h-9 w-9 rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] opacity-0" />
+      <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#141416] opacity-0" />
     );
   }
 
@@ -23,22 +23,30 @@ export default function ThemeToggle({ className = "" }) {
     ? "التبديل إلى الوضع الداكن"
     : "Switch to Dark Mode";
 
+  const handleClick = (e) => {
+    toggleTheme();
+    // Blur button after click to prevent the focus ring from staying stuck
+    if (e?.currentTarget) {
+      e.currentTarget.blur();
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={toggleTheme}
+      onClick={handleClick}
       title={title}
       aria-label={title}
-      className={`relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#059669] dark:focus:ring-[#00D084] shadow-xs shrink-0 ${
+      className={`group relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-150 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] dark:focus-visible:ring-[#3B82F6] shadow-xs shrink-0 cursor-pointer ${
         isDark
-          ? "border-[#133020] bg-[#0B1F14] text-[#F59E0B] hover:bg-[#133020] hover:text-[#FBBF24]"
-          : "border-[#E2E8F0] bg-[#FFFFFF] text-[#0F172A] hover:bg-[#F1F5F9] hover:text-[#059669]"
+          ? "border-[#27272A] bg-[#141416] text-[#FBBF24] hover:bg-[#1F1F23]"
+          : "border-[#E4E4E7] bg-[#FFFFFF] text-[#2563EB] hover:bg-[#F1F3F5]"
       } ${className}`}
     >
       {isDark ? (
-        <Sun className="h-4 w-4 animate-in spin-in-180 duration-300" />
+        <Sun className="h-4 w-4 text-[#FBBF24] transition-transform duration-300 ease-out group-hover:rotate-45" />
       ) : (
-        <Moon className="h-4 w-4 animate-in spin-in-180 duration-300 text-[#059669]" />
+        <Moon className="h-4 w-4 text-[#2563EB] transition-transform duration-300 ease-out group-hover:-rotate-12" />
       )}
     </button>
   );

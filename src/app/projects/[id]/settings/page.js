@@ -5,7 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useToast } from "@/context/ToastContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   getProjectById,
   updateProject,
@@ -25,12 +27,15 @@ import {
   ShieldCheck,
   UserMinus,
   Check,
+  X,
 } from "lucide-react";
 
 function ProjectSettingsContent() {
   const { id: projectId } = useParams();
   const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { showToast } = useToast();
+  const [memberToRemove, setMemberToRemove] = useState(null);
   const router = useRouter();
   const initialLoadedRef = useRef(false);
 
@@ -63,13 +68,43 @@ function ProjectSettingsContent() {
   const [memberSuccess, setMemberSuccess] = useState("");
   const [isAddingMember, setIsAddingMember] = useState(false);
 
+  const projectRef = useRef(project);
+  useEffect(() => {
+    projectRef.current = project;
+  }, [project]);
+
   // Delete project modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeletingProject, setIsDeletingProject] = useState(false);
 
+  // Auto-dismiss notification alerts after 4 seconds
+  useEffect(() => {
+    if (!memberError) return;
+    const timer = setTimeout(() => setMemberError(""), 4000);
+    return () => clearTimeout(timer);
+  }, [memberError]);
+
+  useEffect(() => {
+    if (!memberSuccess) return;
+    const timer = setTimeout(() => setMemberSuccess(""), 4000);
+    return () => clearTimeout(timer);
+  }, [memberSuccess]);
+
+  useEffect(() => {
+    if (!updateError) return;
+    const timer = setTimeout(() => setUpdateError(""), 4000);
+    return () => clearTimeout(timer);
+  }, [updateError]);
+
+  useEffect(() => {
+    if (!updateSuccess) return;
+    const timer = setTimeout(() => setUpdateSuccess(false), 4000);
+    return () => clearTimeout(timer);
+  }, [updateSuccess]);
+
   const loadData = useCallback(async () => {
     if (!projectId || !user) return;
-    if (!project) setLoading(true);
+    if (!projectRef.current) setLoading(true);
 
     try {
       const proj = await getProjectById(projectId);
@@ -78,9 +113,9 @@ function ProjectSettingsContent() {
         return;
       }
 
-      const userIsOwner = proj.ownerId === user?.uid;
+      const userIsOwner = proj.ownerId === user?.uid || !proj.ownerId;
       setIsOwner(userIsOwner);
-      if (!userIsOwner) {
+      if (!userIsOwner && proj.ownerId && proj.ownerId !== user?.uid) {
         setLoading(false);
         return;
       }
@@ -92,17 +127,25 @@ function ProjectSettingsContent() {
         initialLoadedRef.current = true;
       }
 
-      const memberDetails = await getProjectMembersDetails(proj.memberIds || []);
+      const memberDetails = await getProjectMembersDetails(proj.memberIds || [], projectId);
       setMembers(memberDetails);
+      const cleanUids = memberDetails.map((m) => m.uid);
+      setProject((prev) => (prev ? { ...prev, memberIds: cleanUids } : prev));
     } catch (err) {
       console.error("Settings load error:", err);
     } finally {
       setLoading(false);
     }
-  }, [projectId, user?.uid, router]);
+  }, [projectId, user, router]);
 
   useEffect(() => {
-    loadData();
+    let isSubscribed = true;
+    (async () => {
+      if (isSubscribed) await loadData();
+    })();
+    return () => {
+      isSubscribed = false;
+    };
   }, [loadData]);
 
   // Update Project Info (Instant optimistic update)
@@ -150,10 +193,10 @@ function ProjectSettingsContent() {
       const cleanAddedName = (
         addedUser.displayName ||
         addedUser.email?.split("@")[0] ||
-        "عضو"
+        t("project.member")
       )
         .replace(/\s*\([^)]*\)/g, "")
-        .trim() || "عضو";
+        .trim() || t("project.member");
 
       setMembers((prev) => [
         ...prev,
@@ -166,7 +209,7 @@ function ProjectSettingsContent() {
       );
       setNewMemberEmail("");
       setMemberSuccess(
-        `${t("settings.memberAddedSuccess") || "Added:"} ${cleanAddedName}`
+        `${t("settings.memberAddedSuccess")} ${cleanAddedName}`
       );
       setTimeout(() => setMemberSuccess(""), 3000);
     } catch (err) {
@@ -201,10 +244,19 @@ function ProjectSettingsContent() {
     setIsDeletingProject(true);
     try {
       await deleteProject(projectId);
+      showToast({
+        type: "info",
+        title: t("settings.deleteModalTitle"),
+        message: project?.name || "",
+      });
       router.push("/dashboard");
     } catch (err) {
       console.error("Delete project error:", err);
-      alert("Failed to delete project. Please try again.");
+      showToast({
+        type: "error",
+        title: t("common.retry") || "Error",
+        message: t("settings.errDeleteProject"),
+      });
       setIsDeletingProject(false);
       setShowDeleteModal(false);
     }
@@ -222,8 +274,8 @@ function ProjectSettingsContent() {
     return (
       <ProtectedRoute>
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#059669] dark:text-[#00D084] mb-2" />
-          <p className="text-xs text-[#64748B] dark:text-[#7B9A89] font-medium">{t("common.loadingSettings") || "Loading..."}</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[#2563EB] dark:text-[#60A5FA] mb-2" />
+          <p className="text-xs text-[#64748B] dark:text-[#A1A1AA] font-medium">{t("common.loadingSettings")}</p>
         </div>
       </ProtectedRoute>
     );
@@ -233,15 +285,15 @@ function ProjectSettingsContent() {
     return (
       <ProtectedRoute>
         <div className="mx-auto max-w-lg px-4 py-16 text-center">
-          <ShieldAlert className="mx-auto h-12 w-12 text-[#D97706] dark:text-[#F59E0B]" />
-          <h2 className="mt-3 text-lg font-bold text-[#0F172A] dark:text-[#FFFFFF]">{t("project.accessDenied")}</h2>
-          <p className="mt-1 text-xs text-[#64748B] dark:text-[#7B9A89]">
+          <ShieldAlert className="mx-auto h-12 w-12 text-[#D97706] dark:text-[#FDE047]" />
+          <h2 className="mt-3 text-lg font-bold text-[#09090B] dark:text-[#F4F4F5]">{t("project.accessDenied")}</h2>
+          <p className="mt-1 text-xs text-[#64748B] dark:text-[#A1A1AA]">
             {t("project.accessDeniedSub")}
           </p>
           <div className="mt-6">
             <Link
               href={`/projects/${projectId}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00D084] dark:hover:text-[#06130B] px-4 py-2 text-xs font-semibold text-white shadow-xs transition"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#2563EB] dark:hover:bg-[#1D4ED8] px-4 py-2 text-xs font-semibold text-white shadow-xs transition"
             >
               <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> {t("settings.backToTasks")}
             </Link>
@@ -257,40 +309,56 @@ function ProjectSettingsContent() {
         {/* Navigation */}
         <Link
           href={`/projects/${projectId}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#64748B] dark:text-[#7B9A89] hover:text-[#059669] dark:hover:text-[#00D084] transition"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#64748B] dark:text-[#A1A1AA] hover:text-[#2563EB] dark:hover:text-[#93C5FD] transition"
         >
           <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" /> {t("settings.backToTasks")}
         </Link>
 
         {/* Page Header */}
-        <div className="border-b border-[#E2E8F0] dark:border-[#133020] pb-4">
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#0F172A] dark:text-[#FFFFFF] flex items-center gap-2.5">
-            <Settings className="h-6 w-6 text-[#059669] dark:text-[#00D084]" /> {t("settings.title")}
+        <div className="border-b border-[#E4E4E7] dark:border-[#27272A] pb-4">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#09090B] dark:text-[#F4F4F5] flex items-center gap-2.5">
+            <Settings className="h-6 w-6 text-[#2563EB] dark:text-[#60A5FA]" /> {t("settings.title")}
           </h1>
-          <p className="mt-1 text-xs text-[#64748B] dark:text-[#7B9A89]">
+          <p className="mt-1 text-xs text-[#64748B] dark:text-[#A1A1AA]">
             {t("settings.subtitle")}
           </p>
         </div>
 
         {/* 1. General Settings Form */}
-        <div className="rounded-2xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-6 shadow-xs">
-          <h2 className="text-base font-bold text-[#0F172A] dark:text-[#FFFFFF]">{t("settings.generalInfo")}</h2>
-          <p className="text-xs text-[#64748B] dark:text-[#7B9A89]">{t("settings.generalInfoSub")}</p>
+        <div className="rounded-2xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#141416] p-6 shadow-xs">
+          <h2 className="text-base font-bold text-[#09090B] dark:text-[#F4F4F5]">{t("settings.generalInfo")}</h2>
+          <p className="text-xs text-[#64748B] dark:text-[#A1A1AA]">{t("settings.generalInfoSub")}</p>
 
           {updateError && (
-            <div className="mt-3 rounded-xl bg-[#FEF3C7] dark:bg-[#242211] p-3 text-xs font-semibold text-[#92400E] dark:text-[#F59E0B] border border-[#F59E0B]/30">
-              {t(`settings.${updateError}`) || updateError}
+            <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-[#FEF2F2] dark:bg-[#1C0F0F] p-3 text-xs font-semibold text-[#DC2626] dark:text-[#F87171] border border-[#EF4444]/30 animate-in fade-in duration-200">
+              <span>{t(`settings.${updateError}`) || updateError}</span>
+              <button
+                type="button"
+                onClick={() => setUpdateError("")}
+                className="text-[#DC2626]/70 hover:text-[#DC2626] dark:text-[#F87171]/70 dark:hover:text-[#F87171] p-0.5 transition"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           )}
           {updateSuccess && (
-            <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-[#ECFDF5] dark:bg-[#0D281A] p-3 text-xs font-semibold text-[#059669] dark:text-[#00D084] border border-[#059669]/30">
-              <Check className="h-4 w-4" /> {t("settings.updatedSuccess")}
+            <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-[#EFF6FF] dark:bg-[#18181B] p-3 text-xs font-semibold text-[#2563EB] dark:text-[#60A5FA] border border-[#2563EB]/30 animate-in fade-in duration-200">
+              <div className="flex items-center gap-1.5">
+                <Check className="h-4 w-4" /> {t("settings.updatedSuccess")}
+              </div>
+              <button
+                type="button"
+                onClick={() => setUpdateSuccess(false)}
+                className="text-[#2563EB]/70 hover:text-[#2563EB] dark:text-[#60A5FA]/70 dark:hover:text-[#60A5FA] p-0.5 transition"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           )}
 
           <form onSubmit={handleUpdateProject} className="mt-4 space-y-4">
             <div>
-              <label htmlFor="settings-name" className="block text-xs font-bold text-[#0F172A] dark:text-[#FFFFFF]">
+              <label htmlFor="settings-name" className="block text-xs font-bold text-[#09090B] dark:text-[#F4F4F5]">
                 {t("settings.nameLabel")} *
               </label>
               <input
@@ -301,12 +369,12 @@ function ProjectSettingsContent() {
                 maxLength={80}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] px-3.5 py-2.5 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
+                className="mt-1.5 w-full rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#F8F9FA] dark:bg-[#09090B] px-3.5 py-2.5 text-sm text-[#09090B] dark:text-[#F4F4F5] placeholder-[#64748B]/60 dark:placeholder-[#A1A1AA]/60 focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:bg-[#FFFFFF] dark:focus:bg-[#121714] focus:outline-none transition"
               />
             </div>
 
             <div>
-              <label htmlFor="settings-desc" className="block text-xs font-bold text-[#0F172A] dark:text-[#FFFFFF]">
+              <label htmlFor="settings-desc" className="block text-xs font-bold text-[#09090B] dark:text-[#F4F4F5]">
                 {t("settings.descLabel")}
               </label>
               <textarea
@@ -315,7 +383,7 @@ function ProjectSettingsContent() {
                 maxLength={1000}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] px-3.5 py-2.5 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
+                className="mt-1.5 w-full rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#F8F9FA] dark:bg-[#09090B] px-3.5 py-2.5 text-sm text-[#09090B] dark:text-[#F4F4F5] placeholder-[#64748B]/60 dark:placeholder-[#A1A1AA]/60 focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:bg-[#FFFFFF] dark:focus:bg-[#121714] focus:outline-none transition"
               />
             </div>
 
@@ -323,7 +391,7 @@ function ProjectSettingsContent() {
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="flex items-center gap-2 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00D084] dark:hover:text-[#06130B] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#2563EB] dark:hover:bg-[#1D4ED8] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
               >
                 {isUpdating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {t("settings.saveChanges")}
@@ -333,12 +401,12 @@ function ProjectSettingsContent() {
         </div>
 
         {/* 2. Team Membership Management */}
-        <div className="rounded-2xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#0B1F14] p-6 shadow-xs">
+        <div className="rounded-2xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#141416] p-6 shadow-xs">
           <div>
-            <h2 className="text-base font-bold text-[#0F172A] dark:text-[#FFFFFF] flex items-center gap-2">
-              <Users className="h-5 w-5 text-[#059669] dark:text-[#00D084]" /> {t("settings.teamMembers")} ({members.length})
+            <h2 className="text-base font-bold text-[#09090B] dark:text-[#F4F4F5] flex items-center gap-2">
+              <Users className="h-5 w-5 text-[#2563EB] dark:text-[#60A5FA]" /> {t("settings.teamMembers")} ({members.length})
             </h2>
-            <p className="text-xs text-[#64748B] dark:text-[#7B9A89]">
+            <p className="text-xs text-[#64748B] dark:text-[#A1A1AA]">
               {t("settings.teamMembersSub")}
             </p>
           </div>
@@ -349,14 +417,18 @@ function ProjectSettingsContent() {
                 type="email"
                 placeholder={t("settings.addEmailPlaceholder")}
                 value={newMemberEmail}
-                onChange={(e) => setNewMemberEmail(e.target.value)}
-                className="w-full rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#F8FAFC] dark:bg-[#06130B] px-3.5 py-2 text-sm text-[#0F172A] dark:text-[#FFFFFF] placeholder-[#64748B]/60 dark:placeholder-[#7B9A89]/60 focus:border-[#059669] dark:focus:border-[#00D084] focus:bg-[#FFFFFF] dark:focus:bg-[#06130B] focus:outline-none transition"
+                onChange={(e) => {
+                  setNewMemberEmail(e.target.value);
+                  if (memberError) setMemberError("");
+                  if (memberSuccess) setMemberSuccess("");
+                }}
+                className="w-full rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#F8F9FA] dark:bg-[#09090B] px-3.5 py-2 text-sm text-[#09090B] dark:text-[#F4F4F5] placeholder-[#64748B]/60 dark:placeholder-[#A1A1AA]/60 focus:border-[#2563EB] dark:focus:border-[#3B82F6] focus:bg-[#FFFFFF] dark:focus:bg-[#121714] focus:outline-none transition"
               />
             </div>
             <button
               type="submit"
               disabled={isAddingMember}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-[#059669] hover:bg-[#047857] dark:bg-[#00A86B] dark:hover:bg-[#00D084] dark:hover:text-[#06130B] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] dark:bg-[#2563EB] dark:hover:bg-[#1D4ED8] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
             >
               {isAddingMember ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
               {t("settings.addMember")}
@@ -364,50 +436,67 @@ function ProjectSettingsContent() {
           </form>
 
           {memberError && (
-            <div className="mt-3 rounded-xl bg-[#FEF3C7] dark:bg-[#242211] p-3 text-xs font-semibold text-[#92400E] dark:text-[#F59E0B] border border-[#F59E0B]/30">
-              {t(`settings.${memberError}`) || memberError}
+            <div className="mt-3 flex items-start justify-between gap-2.5 rounded-xl bg-[#FEF2F2] dark:bg-[#1C0F0F] p-3 text-xs font-semibold text-[#DC2626] dark:text-[#F87171] border border-[#EF4444]/30 animate-in fade-in duration-200">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <ShieldAlert className="h-4 w-4 shrink-0 text-[#DC2626] dark:text-[#F87171] mt-0.5" />
+                <span>{t(`settings.${memberError}`) || memberError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMemberError("")}
+                className="shrink-0 text-[#DC2626]/70 hover:text-[#DC2626] dark:text-[#F87171]/70 dark:hover:text-[#F87171] p-0.5 transition"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           )}
           {memberSuccess && (
-            <div className="mt-3 rounded-xl bg-[#ECFDF5] dark:bg-[#0D281A] p-3 text-xs font-semibold text-[#059669] dark:text-[#00D084] border border-[#059669]/30">
-              {memberSuccess}
+            <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-[#EFF6FF] dark:bg-[#18181B] p-3 text-xs font-semibold text-[#2563EB] dark:text-[#60A5FA] border border-[#2563EB]/30 animate-in fade-in duration-200">
+              <span>{memberSuccess}</span>
+              <button
+                type="button"
+                onClick={() => setMemberSuccess("")}
+                className="shrink-0 text-[#2563EB]/70 hover:text-[#2563EB] dark:text-[#60A5FA]/70 dark:hover:text-[#60A5FA] p-0.5 transition"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           )}
 
           {/* Members List */}
-          <div className="mt-5 divide-y divide-[#E2E8F0] dark:divide-[#133020] rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#06130B]">
+          <div className="mt-5 divide-y divide-[#DCE3DC] dark:divide-[#28332D] rounded-xl border border-[#E4E4E7] dark:border-[#27272A] bg-[#FFFFFF] dark:bg-[#09090B]">
             {members.map((member) => {
               const isMemberOwner = member.uid === project.ownerId;
               const cleanMemberName = (
                 member.displayName ||
                 member.name ||
                 member.email?.split("@")[0] ||
-                "عضو"
+                t("project.member")
               )
                 .replace(/\s*\([^)]*\)/g, "")
-                .trim() || "عضو";
+                .trim() || t("project.member");
 
               return (
                 <div key={member.uid} className="flex flex-wrap items-center justify-between gap-2 p-3 sm:p-3.5">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-bold text-[#0F172A] dark:text-[#FFFFFF] flex flex-wrap items-center gap-1.5">
+                      <p className="text-xs font-bold text-[#09090B] dark:text-[#F4F4F5] flex flex-wrap items-center gap-1.5">
                         <span className="truncate">{cleanMemberName}</span>
                         {isMemberOwner && (
-                          <span className="badge-owner inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold shrink-0">
-                            <ShieldCheck className="h-3 w-3" /> {t("project.owner")}
+                          <span className="badge-owner inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold shrink-0 !text-white">
+                            <ShieldCheck className="h-3 w-3 text-white" /> {t("project.owner")}
                           </span>
                         )}
                       </p>
-                      <p className="text-[11px] text-[#64748B] dark:text-[#7B9A89] truncate">{member.email}</p>
+                      <p className="text-[11px] text-[#64748B] dark:text-[#A1A1AA] truncate">{member.email}</p>
                     </div>
                   </div>
 
                   {!isMemberOwner && (
                     <button
                       type="button"
-                      onClick={() => handleRemoveMember(member.uid)}
-                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[#D97706] dark:text-[#F59E0B] hover:bg-[#FEF3C7] dark:hover:bg-[#242211] transition shrink-0 whitespace-nowrap"
+                      onClick={() => setMemberToRemove(member)}
+                      className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[#D97706] dark:text-[#FDE047] hover:bg-[#FEF3C7] dark:hover:bg-[#1F170D] transition shrink-0 whitespace-nowrap cursor-pointer"
                       title={t("settings.remove")}
                     >
                       <UserMinus className="h-3.5 w-3.5" /> {t("settings.remove")}
@@ -436,50 +525,67 @@ function ProjectSettingsContent() {
           </div>
         </div>
 
-        {/* Delete Confirmation Modal */}
-        {showDeleteModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-2xs">
-            <div className="w-full max-w-md rounded-2xl bg-[#FFFFFF] dark:bg-[#0B1F14] p-6 shadow-2xl border border-[#E2E8F0] dark:border-[#133020] text-center">
-              <Trash2 className="mx-auto h-10 w-10 text-[#DC2626] dark:text-[#EF4444] mb-2" />
-              <h3 className="text-lg font-bold text-[#0F172A] dark:text-[#FFFFFF]">{t("settings.deleteModalTitle")} &quot;{project.name}&quot;?</h3>
-              <p className="mt-2 text-xs text-[#64748B] dark:text-[#7B9A89]">
-                {t("settings.deleteModalSub")}
-              </p>
-              <div className="mt-6 flex items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowDeleteModal(false)}
-                  className="rounded-xl border border-[#E2E8F0] dark:border-[#133020] bg-[#FFFFFF] dark:bg-[#06130B] px-4 py-2 text-xs font-bold text-[#0F172A] dark:text-[#FFFFFF] hover:bg-[#F1F5F9] dark:hover:bg-[#133020] transition"
-                >
-                  {t("taskModal.cancel")}
-                </button>
-                <button
-                  type="button"
-                  disabled={isDeletingProject}
-                  onClick={handleDeleteProject}
-                  className="flex items-center gap-1.5 rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] px-4 py-2 text-xs font-bold text-white shadow-xs disabled:opacity-50 transition"
-                >
-                  {isDeletingProject && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                  {t("settings.confirmDelete")}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Radix + Lucide Delete Project Confirmation Modal */}
+        <ConfirmDialog
+          open={showDeleteModal}
+          onOpenChange={setShowDeleteModal}
+          title={
+            lang === "ar"
+              ? `${t("settings.deleteModalTitle")} "${project?.name || ""}"؟`
+              : `${t("settings.deleteModalTitle")} "${project?.name || ""}"?`
+          }
+          description={t("settings.deleteModalSub")}
+          confirmText={t("settings.confirmDelete")}
+          cancelText={t("taskModal.cancel")}
+          variant="danger"
+          icon={Trash2}
+          isLoading={isDeletingProject}
+          onConfirm={handleDeleteProject}
+        />
+
+        {/* Radix + Lucide Remove Member Confirmation Modal */}
+        <ConfirmDialog
+          open={Boolean(memberToRemove)}
+          onOpenChange={(isOpen) => !isOpen && setMemberToRemove(null)}
+          title={t("settings.remove") || "إزالة العضو"}
+          description={
+            memberToRemove
+              ? lang === "ar"
+                ? `${memberToRemove.displayName || memberToRemove.email} - هل أنت متأكد من إزالة هذا العضو من المشروع؟`
+                : `${memberToRemove.displayName || memberToRemove.email} - Are you sure you want to remove this member from the project?`
+              : ""
+          }
+          confirmText={t("settings.remove") || "إزالة"}
+          cancelText={t("taskModal.cancel")}
+          variant="warning"
+          icon={UserMinus}
+          onConfirm={async () => {
+            if (memberToRemove) {
+              const mem = memberToRemove;
+              setMemberToRemove(null);
+              await handleRemoveMember(mem.uid);
+              showToast({
+                type: "info",
+                title: t("settings.remove"),
+                message: mem.displayName || mem.email,
+              });
+            }
+          }}
+        />
       </div>
     </ProtectedRoute>
   );
 }
 
 export default function ProjectSettingsPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   return (
     <Suspense
       fallback={
         <div className="flex min-h-[60vh] flex-col items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#059669] dark:text-[#00D084] mb-2" />
-          <p className="text-xs text-[#64748B] dark:text-[#7B9A89] font-medium">
-            {t("common.loadingSettings") || "Loading project settings..."}
+          <Loader2 className="h-8 w-8 animate-spin text-[#2563EB] dark:text-[#60A5FA] mb-2" />
+          <p className="text-xs text-[#64748B] dark:text-[#A1A1AA] font-medium">
+            {t("common.loadingSettings")}
           </p>
         </div>
       }

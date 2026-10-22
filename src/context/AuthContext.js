@@ -55,7 +55,7 @@ function saveAuthCache(user, profile) {
       const sessionData = {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName || profile?.displayName || user.email?.split("@")[0] || "User",
+        displayName: user.displayName || profile?.displayName || user.email?.split("@")[0] || "",
         photoURL: user.photoURL || profile?.photoURL || null,
       };
       localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(sessionData));
@@ -75,11 +75,31 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(() => getCachedUserProfile());
   const [loading, setLoading] = useState(() => !getCachedAuthUser());
 
-  // Sync user profile from Firestore users/{uid}
+  // Sync user profile from Firestore users/{uid} and registered_emails/{cleanEmail}
   const syncUserProfile = async (firebaseUser) => {
     if (!firebaseUser) {
       setUserProfile(null);
       return;
+    }
+
+    const cleanEmail = firebaseUser.email?.toLowerCase();
+    const cleanName = firebaseUser.displayName || cleanEmail?.split("@")[0] || "";
+
+    // Sync registered_emails point index for instant, permission-safe member lookups
+    if (cleanEmail) {
+      try {
+        const regEmailRef = doc(db, "registered_emails", cleanEmail);
+        setDoc(
+          regEmailRef,
+          {
+            uid: firebaseUser.uid,
+            email: cleanEmail,
+            displayName: cleanName,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        ).catch(() => {});
+      } catch {}
     }
 
     try {
@@ -99,8 +119,8 @@ export function AuthProvider({ children }) {
         saveAuthCache(firebaseUser, updatedProfile);
       } else if (userSnap) {
         const newProfile = {
-          displayName: firebaseUser.displayName || firebaseUser.email.split("@")[0],
-          email: firebaseUser.email.toLowerCase(),
+          displayName: cleanName,
+          email: cleanEmail,
           photoURL: firebaseUser.photoURL || null,
           createdAt: serverTimestamp(),
         };
@@ -111,8 +131,8 @@ export function AuthProvider({ children }) {
     } catch {
       setUserProfile((prev) => {
         const fallback = {
-          displayName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
-          email: firebaseUser.email?.toLowerCase() || "",
+          displayName: cleanName,
+          email: cleanEmail || "",
           photoURL: firebaseUser.photoURL || prev?.photoURL || null,
           ...(prev || {}),
         };
@@ -123,10 +143,16 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    // Safety fallback: Never leave loading stuck for more than 1500ms
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      clearTimeout(safetyTimer);
       if (currentUser) {
         const profile = {
-          displayName: currentUser.displayName || currentUser.email?.split("@")[0] || "User",
+          displayName: currentUser.displayName || currentUser.email?.split("@")[0] || "",
           email: currentUser.email?.toLowerCase() || "",
           photoURL: currentUser.photoURL || null,
         };
@@ -145,7 +171,10 @@ export function AuthProvider({ children }) {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(safetyTimer);
+      unsubscribe();
+    };
   }, []);
 
   // FR-01 & US-01: Register user
@@ -185,7 +214,7 @@ export function AuthProvider({ children }) {
     setUserProfile(profileData);
     setLoading(false);
 
-    // 3. Store in Firestore users/{uid} in background without delaying user
+    // 3. Store in Firestore users/{uid} and registered_emails in background without delaying user
     const userDocRef = doc(db, "users", createdUser.uid);
     setDoc(userDocRef, {
       ...profileData,
@@ -193,6 +222,14 @@ export function AuthProvider({ children }) {
     }).catch((err) => {
       console.warn("Firestore user sync deferred:", err?.message);
     });
+
+    const regEmailRef = doc(db, "registered_emails", trimmedEmail);
+    setDoc(regEmailRef, {
+      uid: createdUser.uid,
+      email: trimmedEmail,
+      displayName: trimmedName,
+      registeredAt: serverTimestamp(),
+    }).catch(() => {});
 
     return createdUser;
   };
@@ -209,7 +246,7 @@ export function AuthProvider({ children }) {
     // Set state immediately
     setUser(loggedUser);
     setUserProfile({
-      displayName: loggedUser.displayName || loggedUser.email?.split("@")[0] || "User",
+      displayName: loggedUser.displayName || loggedUser.email?.split("@")[0] || "",
       email: loggedUser.email?.toLowerCase() || "",
       photoURL: loggedUser.photoURL || null,
     });
@@ -233,7 +270,7 @@ export function AuthProvider({ children }) {
     // Immediately set active user and profile with Google photo to unblock router redirect instantly
     setUser(loggedUser);
     setUserProfile({
-      displayName: loggedUser.displayName || loggedUser.email?.split("@")[0] || "User",
+      displayName: loggedUser.displayName || loggedUser.email?.split("@")[0] || "",
       email: loggedUser.email?.toLowerCase() || "",
       photoURL: loggedUser.photoURL || null,
     });
