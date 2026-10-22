@@ -36,9 +36,13 @@ function saveCachedTasks(projectId, tasks) {
 export function updateProjectCacheProgress(projectId) {
   if (typeof window === "undefined" || !projectId) return;
   try {
-    const raw = localStorage.getItem("taskflow_local_projects");
+    const uid = localStorage.getItem("taskflow_auth_uid");
+    if (!uid) return;
+    const key = `taskflow_projects_${uid}`;
+    const raw = localStorage.getItem(key);
     if (!raw) return;
     const projects = JSON.parse(raw);
+    if (!Array.isArray(projects)) return;
     const tasks = getCachedTasks(projectId);
     const { taskCount, completedCount, progressPercent } = calculateTasksProgress(tasks);
 
@@ -57,7 +61,7 @@ export function updateProjectCacheProgress(projectId) {
     });
 
     if (modified) {
-      localStorage.setItem("taskflow_local_projects", JSON.stringify(updated));
+      localStorage.setItem(key, JSON.stringify(updated));
     }
   } catch (err) {
     console.error("Error updating project cache progress:", err);

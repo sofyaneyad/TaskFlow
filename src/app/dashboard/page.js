@@ -28,15 +28,12 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState(() => {
     if (typeof window !== "undefined") {
       try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        const authRaw = localStorage.getItem("taskflow_auth_cache");
-        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
-        if (raw && cachedUid) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed.filter(
-              (p) => p.ownerId === cachedUid || (Array.isArray(p.memberIds) && p.memberIds.includes(cachedUid))
-            );
+        const uid = localStorage.getItem("taskflow_auth_uid");
+        if (uid) {
+          const raw = localStorage.getItem(`taskflow_projects_${uid}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
           }
         }
       } catch {}
@@ -46,8 +43,11 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(() => {
     if (typeof window !== "undefined") {
       try {
-        const raw = localStorage.getItem("taskflow_dashboard_stats");
-        if (raw) return JSON.parse(raw);
+        const uid = localStorage.getItem("taskflow_auth_uid");
+        if (uid) {
+          const raw = localStorage.getItem(`taskflow_stats_${uid}`);
+          if (raw) return JSON.parse(raw);
+        }
       } catch {}
     }
     return null;
@@ -56,13 +56,12 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(() => {
     if (typeof window !== "undefined") {
       try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        const authRaw = localStorage.getItem("taskflow_auth_cache");
-        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
-        if (raw && cachedUid) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.some((p) => p.ownerId === cachedUid || (Array.isArray(p.memberIds) && p.memberIds.includes(cachedUid)))) {
-            return false;
+        const uid = localStorage.getItem("taskflow_auth_uid");
+        if (uid) {
+          const raw = localStorage.getItem(`taskflow_projects_${uid}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) return false;
           }
         }
       } catch {}
@@ -112,20 +111,20 @@ export default function DashboardPage() {
       const calculatedStats = await getUserDashboardStats(userProjects);
       setStats(calculatedStats);
       try {
-        localStorage.setItem("taskflow_dashboard_stats", JSON.stringify(calculatedStats));
+        localStorage.setItem(`taskflow_stats_${user.uid}`, JSON.stringify(calculatedStats));
       } catch {}
 
       // 3. Background remote sync in case of updates on other sessions/devices
       syncRemoteProjects(user.uid)
         .then((latest) => {
-          if (latest && latest.length > 0) {
-            const userOnly = latest.filter(
-              (p) => p.ownerId === user.uid || (Array.isArray(p.memberIds) && p.memberIds.includes(user.uid))
-            );
-            setProjects(userOnly);
-            getUserDashboardStats(userOnly)
+          if (Array.isArray(latest)) {
+            setProjects(latest);
+            getUserDashboardStats(latest)
               .then((updatedStats) => {
                 setStats(updatedStats);
+                try {
+                  localStorage.setItem(`taskflow_stats_${user.uid}`, JSON.stringify(updatedStats));
+                } catch {}
               })
               .catch(() => {});
           }

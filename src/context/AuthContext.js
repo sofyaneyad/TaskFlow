@@ -38,6 +38,8 @@ function getCachedAuthUser() {
   }
 }
 
+const getCachedAuth = getCachedAuthUser;
+
 function getCachedUserProfile() {
   if (typeof window === "undefined") return null;
   try {
@@ -59,12 +61,17 @@ function saveAuthCache(user, profile) {
         photoURL: user.photoURL || profile?.photoURL || null,
       };
       localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify(sessionData));
+      localStorage.setItem("taskflow_auth_uid", user.uid);
       if (profile) {
         localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profile));
       }
     } else {
       localStorage.removeItem(AUTH_CACHE_KEY);
       localStorage.removeItem(PROFILE_CACHE_KEY);
+      localStorage.removeItem("taskflow_auth_uid");
+      localStorage.removeItem("taskflow_local_projects");
+      localStorage.removeItem("taskflow_dashboard_stats");
+      localStorage.removeItem("taskflow_current_project");
     }
   } catch {}
 }

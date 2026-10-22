@@ -14,8 +14,6 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
-// Local storage keys
-const LOCAL_PROJECTS_KEY = "taskflow_local_projects";
 
 // Helper to compute weighted task progress
 export function calculateTasksProgress(tasks) {
@@ -77,51 +75,34 @@ export function attachProjectProgress(projectList) {
   });
 }
 
-// Local cache helpers to guarantee instant sub-50ms speeds and offline resilience
-function getCachedProjects() {
+function getProjectsKey(userId) {
+  const uid = userId || auth.currentUser?.uid;
+  return uid ? `taskflow_projects_${uid}` : null;
+}
+
+// Local cache helpers to guarantee instant sub-50ms speeds and offline resilience (strictly scoped by user ID)
+export function getCachedProjects(userId) {
   if (typeof window === "undefined") return [];
+  const key = getProjectsKey(userId);
+  if (!key) return [];
   try {
-    const raw = localStorage.getItem(LOCAL_PROJECTS_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return [];
     const list = JSON.parse(raw);
-    let changed = false;
-    const cleaned = list.map((p) => {
-      if (Array.isArray(p.memberIds)) {
-        const filtered = p.memberIds.filter(
-          (id) =>
-            id &&
-            typeof id === "string" &&
-            !id.startsWith("member_") &&
-            !id.startsWith("user_") &&
-            id !== "member" &&
-            id !== "owner"
-        );
-        if (filtered.length !== p.memberIds.length) {
-          changed = true;
-          return {
-            ...p,
-            memberIds: filtered.length > 0 ? filtered : (p.ownerId ? [p.ownerId] : []),
-          };
-        }
-      }
-      return p;
-    });
-    if (changed) {
-      try {
-        localStorage.setItem(LOCAL_PROJECTS_KEY, JSON.stringify(cleaned));
-      } catch {}
-    }
-    return attachProjectProgress(cleaned);
+    if (!Array.isArray(list)) return [];
+    return attachProjectProgress(list);
   } catch {
     return [];
   }
 }
 
-function saveCachedProjects(projects) {
+export function saveCachedProjects(projects, userId) {
   if (typeof window === "undefined") return;
+  const key = getProjectsKey(userId);
+  if (!key) return;
   try {
     const withProgress = attachProjectProgress(projects);
-    localStorage.setItem(LOCAL_PROJECTS_KEY, JSON.stringify(withProgress));
+    localStorage.setItem(key, JSON.stringify(withProgress));
   } catch (err) {
     console.error("Cache save error:", err);
   }
@@ -205,6 +186,11 @@ export async function createProject({ name, description = "", ownerId }) {
     throw new Error("Description must not exceed 1000 characters.");
   }
 
+  const effectiveOwnerId = ownerId || auth.currentUser?.uid;
+  if (!effectiveOwnerId) {
+    throw new Error("User must be authenticated to create a project.");
+  }
+
   // 1. Generate unique Firestore Document Reference & ID
   const projectsColRef = collection(db, "projects");
   const newDocRef = doc(projectsColRef);
@@ -215,15 +201,15 @@ export async function createProject({ name, description = "", ownerId }) {
     id: projectId,
     name: name.trim(),
     description: description.trim(),
-    ownerId,
-    memberIds: [ownerId],
+    ownerId: effectiveOwnerId,
+    memberIds: [effectiveOwnerId],
     createdAt: nowIso,
     updatedAt: nowIso,
   };
 
-  // 2. Save to local cache immediately (instant 0.01s feedback!)
-  const cached = getCachedProjects();
-  saveCachedProjects([projectData, ...cached]);
+  // 2. Save strictly to user's scoped cache immediately
+  const cached = getCachedProjects(effectiveOwnerId);
+  saveCachedProjects([projectData, ...cached], effectiveOwnerId);
 
   // 3. Persist to Cloud Firestore in background without blocking
   setDoc(newDocRef, {
@@ -249,12 +235,7 @@ export async function syncRemoteProjects(userId) {
   const now = Date.now();
   const lastSync = lastProjectSyncMap.get(userId) || 0;
   if (now - lastSync < PROJECT_SYNC_THROTTLE_MS) {
-    const local = getCachedProjects();
-    return attachProjectProgress(
-      local.filter(
-        (p) => p.ownerId === userId || (Array.isArray(p.memberIds) && p.memberIds.includes(userId))
-      )
-    );
+    return getCachedProjects(userId);
   }
   lastProjectSyncMap.set(userId, now);
 
@@ -263,7 +244,7 @@ export async function syncRemoteProjects(userId) {
       collection(db, "projects"),
       where("memberIds", "array-contains", userId)
     );
-    const querySnapshot = await withTimeout(getDocs(q), 2500);
+    const querySnapshot = await withTimeout(getDocs(q), 3000);
     const remoteProjects = [];
     querySnapshot.forEach((docSnap) => {
       remoteProjects.push({ id: docSnap.id, ...docSnap.data() });
@@ -275,7 +256,7 @@ export async function syncRemoteProjects(userId) {
         collection(db, "projects"),
         where("ownerId", "==", userId)
       );
-      const ownerSnapshot = await withTimeout(getDocs(qOwner), 2500);
+      const ownerSnapshot = await withTimeout(getDocs(qOwner), 3000);
       ownerSnapshot.forEach((docSnap) => {
         if (!remoteProjects.some((rp) => rp.id === docSnap.id)) {
           remoteProjects.push({ id: docSnap.id, ...docSnap.data() });
@@ -283,12 +264,7 @@ export async function syncRemoteProjects(userId) {
       });
     } catch {}
 
-    const local = getCachedProjects();
-    // Keep local projects of other users intact, but merge remote for this user
-    const otherProjects = local.filter(
-      (p) => p.ownerId !== userId && (!Array.isArray(p.memberIds) || !p.memberIds.includes(userId))
-    );
-
+    const local = getCachedProjects(userId);
     const mergedUserProjects = remoteProjects.map((p) => {
       const existing = local.find((l) => l.id === p.id) || {};
       return {
@@ -300,16 +276,10 @@ export async function syncRemoteProjects(userId) {
       };
     });
 
-    saveCachedProjects([...mergedUserProjects, ...otherProjects]);
+    saveCachedProjects(mergedUserProjects, userId);
     return attachProjectProgress(mergedUserProjects);
   } catch (err) {
-    // Firestore offline or not configured
-    const local = getCachedProjects();
-    return attachProjectProgress(
-      local.filter(
-        (p) => p.ownerId === userId || (Array.isArray(p.memberIds) && p.memberIds.includes(userId))
-      )
-    );
+    return getCachedProjects(userId);
   }
 }
 
@@ -318,14 +288,11 @@ export async function getUserProjects(userId) {
   const currentUid = userId || auth.currentUser?.uid;
   if (!currentUid) return [];
 
-  const allCached = getCachedProjects();
-
-  // Strictly filter cached projects belonging to the current user (Owner or Member)
-  const userCached = allCached.filter((p) => {
-    const isOwner = p.ownerId === currentUid;
-    const isMember = Array.isArray(p.memberIds) && p.memberIds.includes(currentUid);
-    return isOwner || isMember;
-  });
+  // Strictly get cache for this specific user
+  const cached = getCachedProjects(currentUid);
+  const userCached = cached.filter(
+    (p) => p.ownerId === currentUid || (Array.isArray(p.memberIds) && p.memberIds.includes(currentUid))
+  );
 
   if (userId) {
     syncRemoteProjects(userId).catch(() => {});
@@ -337,16 +304,17 @@ export async function getUserProjects(userId) {
 // Get single project by ID
 export async function getProjectById(projectId) {
   if (!projectId) return null;
+  const currentUid = auth.currentUser?.uid;
 
-  // Check cache first for instant 0ms access
-  const allCached = getCachedProjects();
+  // Check user cache first for instant 0ms access
+  const allCached = getCachedProjects(currentUid);
   const cached = allCached.find((p) => p.id === projectId);
   if (cached) {
     // Background refresh
     (async () => {
       try {
         const docRef = doc(db, "projects", projectId);
-        const docSnap = await withTimeout(getDoc(docRef), 1500);
+        const docSnap = await withTimeout(getDoc(docRef), 2000);
         if (docSnap && docSnap.exists()) {
           const remoteData = { id: docSnap.id, ...docSnap.data() };
           const data = {
@@ -356,8 +324,8 @@ export async function getProjectById(projectId) {
             completedCount: remoteData.completedCount ?? cached.completedCount,
             progressPercent: remoteData.progressPercent ?? cached.progressPercent,
           };
-          const list = getCachedProjects().filter((p) => p.id !== projectId);
-          saveCachedProjects([data, ...list]);
+          const list = getCachedProjects(currentUid).filter((p) => p.id !== projectId);
+          saveCachedProjects([data, ...list], currentUid);
         }
       } catch {}
     })().catch(() => {});
@@ -366,19 +334,20 @@ export async function getProjectById(projectId) {
 
   try {
     const docRef = doc(db, "projects", projectId);
-    const docSnap = await withTimeout(getDoc(docRef), 1500);
-
+    const docSnap = await withTimeout(getDoc(docRef), 2500);
     if (docSnap && docSnap.exists()) {
       const data = { id: docSnap.id, ...docSnap.data() };
-      const list = getCachedProjects().filter((p) => p.id !== projectId);
-      saveCachedProjects([data, ...list]);
+      if (currentUid) {
+        const list = getCachedProjects(currentUid).filter((p) => p.id !== projectId);
+        saveCachedProjects([data, ...list], currentUid);
+      }
       return attachProjectProgress([data])[0];
     }
-  } catch {
-    // Return cache if remote is slow or offline
+  } catch (err) {
+    console.warn("Could not fetch remote project:", err?.message);
   }
 
-  return cached || null;
+  return null;
 }
 
 // FR-06: Update project details (Owner only)
@@ -395,13 +364,14 @@ export async function updateProject(projectId, { name, description }) {
   const nowIso = new Date().toISOString();
 
   // 1. Update cache instantly
-  const list = getCachedProjects().map((p) => {
+  const currentUid = auth.currentUser?.uid;
+  const list = getCachedProjects(currentUid).map((p) => {
     if (p.id === projectId) {
       return { ...p, name: trimmedName, description: trimmedDesc, updatedAt: nowIso };
     }
     return p;
   });
-  saveCachedProjects(list);
+  saveCachedProjects(list, currentUid);
 
   // 2. Persist to Firestore in background without blocking
   try {
@@ -417,8 +387,9 @@ export async function updateProject(projectId, { name, description }) {
 // FR-06 & Section 13: Delete project
 export async function deleteProject(projectId) {
   // 1. Remove from cache immediately
-  const list = getCachedProjects().filter((p) => p.id !== projectId);
-  saveCachedProjects(list);
+  const currentUid = auth.currentUser?.uid;
+  const list = getCachedProjects(currentUid).filter((p) => p.id !== projectId);
+  saveCachedProjects(list, currentUid);
 
   // 2. Delete tasks and doc in Firestore in background
   try {
@@ -532,7 +503,8 @@ export async function addProjectMemberByEmail(projectId, email) {
   saveCachedMemberProfile(targetUserId, targetUserData);
 
   // Update local cache
-  const list = getCachedProjects().map((p) => {
+  const currentUid = auth.currentUser?.uid;
+  const list = getCachedProjects(currentUid).map((p) => {
     if (p.id === projectId) {
       const currentMembers = p.memberIds || [];
       if (currentMembers.includes(targetUserId)) {
@@ -542,7 +514,7 @@ export async function addProjectMemberByEmail(projectId, email) {
     }
     return p;
   });
-  saveCachedProjects(list);
+  saveCachedProjects(list, currentUid);
 
   // Sync to Firestore in background without blocking
   try {
@@ -563,13 +535,14 @@ export async function removeProjectMember(projectId, memberId, ownerId) {
   }
 
   // Update cache immediately
-  const list = getCachedProjects().map((p) => {
+  const currentUid = auth.currentUser?.uid;
+  const list = getCachedProjects(currentUid).map((p) => {
     if (p.id === projectId) {
       return { ...p, memberIds: (p.memberIds || []).filter((id) => id !== memberId) };
     }
     return p;
   });
-  saveCachedProjects(list);
+  saveCachedProjects(list, currentUid);
 
   // Sync to Firestore in background without blocking
   try {

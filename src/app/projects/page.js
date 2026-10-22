@@ -23,15 +23,12 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState(() => {
     if (typeof window !== "undefined") {
       try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        const authRaw = localStorage.getItem("taskflow_auth_cache");
-        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
-        if (raw && cachedUid) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed.filter(
-              (p) => p.ownerId === cachedUid || (Array.isArray(p.memberIds) && p.memberIds.includes(cachedUid))
-            );
+        const uid = localStorage.getItem("taskflow_auth_uid");
+        if (uid) {
+          const raw = localStorage.getItem(`taskflow_projects_${uid}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
           }
         }
       } catch {}
@@ -41,13 +38,12 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(() => {
     if (typeof window !== "undefined") {
       try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        const authRaw = localStorage.getItem("taskflow_auth_cache");
-        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
-        if (raw && cachedUid) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.some((p) => p.ownerId === cachedUid || (Array.isArray(p.memberIds) && p.memberIds.includes(cachedUid)))) {
-            return false;
+        const uid = localStorage.getItem("taskflow_auth_uid");
+        if (uid) {
+          const raw = localStorage.getItem(`taskflow_projects_${uid}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) return false;
           }
         }
       } catch {}
@@ -80,11 +76,8 @@ export default function ProjectsPage() {
 
       syncRemoteProjects(user.uid)
         .then((latest) => {
-          if (latest && latest.length > 0) {
-            const userOnly = latest.filter(
-              (p) => p.ownerId === user.uid || (Array.isArray(p.memberIds) && p.memberIds.includes(user.uid))
-            );
-            setProjects(userOnly);
+          if (Array.isArray(latest)) {
+            setProjects(latest);
           }
         })
         .catch(() => {});

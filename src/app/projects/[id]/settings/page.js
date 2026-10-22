@@ -42,10 +42,14 @@ function ProjectSettingsContent() {
   const [project, setProject] = useState(() => {
     if (typeof window !== "undefined" && projectId) {
       try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        if (raw) {
-          const list = JSON.parse(raw);
-          return list.find((p) => p.id === projectId) || null;
+        const uid = localStorage.getItem("taskflow_auth_uid");
+        if (uid) {
+          const raw = localStorage.getItem(`taskflow_projects_${uid}`);
+          if (raw) {
+            const list = JSON.parse(raw);
+            const found = list.find((p) => p.id === projectId);
+            if (found && found.ownerId === uid) return found;
+          }
         }
       } catch {}
     }
@@ -113,10 +117,11 @@ function ProjectSettingsContent() {
         return;
       }
 
-      const userIsOwner = proj.ownerId === user?.uid || !proj.ownerId;
+      const userIsOwner = proj.ownerId === user?.uid;
       setIsOwner(userIsOwner);
-      if (!userIsOwner && proj.ownerId && proj.ownerId !== user?.uid) {
+      if (!userIsOwner) {
         setLoading(false);
+        router.push(`/projects/${projectId}`);
         return;
       }
 

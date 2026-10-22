@@ -47,16 +47,17 @@ function ProjectDetailsContent() {
   const [project, setProject] = useState(() => {
     if (typeof window !== "undefined" && projectId) {
       try {
-        const raw = localStorage.getItem("taskflow_local_projects");
-        const authRaw = localStorage.getItem("taskflow_auth_cache");
-        const cachedUid = authRaw ? JSON.parse(authRaw)?.uid : null;
-        if (raw && cachedUid) {
-          const list = JSON.parse(raw);
-          const found = list.find((p) => p.id === projectId);
-          if (found) {
-            const isOwner = found.ownerId === cachedUid;
-            const isMember = Array.isArray(found.memberIds) && found.memberIds.includes(cachedUid);
-            if (isOwner || isMember) return found;
+        const uid = localStorage.getItem("taskflow_auth_uid");
+        if (uid) {
+          const raw = localStorage.getItem(`taskflow_projects_${uid}`);
+          if (raw) {
+            const list = JSON.parse(raw);
+            const found = list.find((p) => p.id === projectId);
+            if (found) {
+              const isOwner = found.ownerId === uid;
+              const isMember = Array.isArray(found.memberIds) && found.memberIds.includes(uid);
+              if (isOwner || isMember) return found;
+            }
           }
         }
       } catch {}

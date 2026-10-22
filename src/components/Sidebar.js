@@ -141,10 +141,11 @@ export default function Sidebar({ isOpen, onClose }) {
             type="button"
             onClick={async () => {
               try {
-                router.push("/login");
                 await logout();
+                router.push("/login");
               } catch (e) {
                 console.error("Logout error:", e);
+                router.push("/login");
               }
             }}
             className="p-1.5 rounded-lg text-[#64748B] dark:text-[#A1A1AA] hover:text-amber-600 dark:hover:text-[#FDE047] hover:bg-amber-50 dark:hover:bg-[#1F170D] transition shrink-0 cursor-pointer"
